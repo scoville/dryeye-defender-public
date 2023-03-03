@@ -3,7 +3,7 @@ import sys
 import time
 
 import cv2
-from PySide6.QtCore import Qt, QThread, Signal, Slot
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QTimer
 from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
 from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox,
                                QHBoxLayout, QLabel, QMainWindow, QPushButton,
@@ -23,6 +23,7 @@ class EyeblinkModelThread(QThread):
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
 
+        print("init thread")
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.face_detector = RetinaFace(quality="speed")  # speed for better performance
         self.keypoint_model = load_keypoint_model("./assets/ckpt/epoch_80.pth.tar", self.DEVICE)
@@ -40,7 +41,6 @@ class EyeblinkModelThread(QThread):
                                            self.keypoint_model, self.cap, self.DEVICE)
 
         self.update_label_output.emit(blink_value)
-        print("finished")
         # sys.exit(-1)
         # print(len(blink_history), blink_value)
         # blink_history.append((time.time(), blink_value))
@@ -72,15 +72,21 @@ class Window(QWidget):
         self.th.finished.connect(self.finished)
         self.th.update_label_output.connect(self.set_label_output)
 
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.start)
+        self.timer.setInterval(500)
+
     def create_settings(self):
         group_box = QGroupBox(("&Settings"))
-        toggleButton = QPushButton(("&Toggle Button"))
-        toggleButton.setCheckable(True)
-        toggleButton.setChecked(True)
+        self.toggleButton = QPushButton(("&Toggle Button"))
+        self.toggleButton.setCheckable(True)
+        self.toggleButton.setChecked(False)
+        # toggleButton.setEnabled(True)
+        self.toggleButton.clicked.connect(self.set_timer)
         flatButton = QPushButton(("&Flat Button"))
         flatButton.setFlat(True)
         vbox = QVBoxLayout()
-        vbox.addWidget(toggleButton)
+        vbox.addWidget(self.toggleButton)
         vbox.addWidget(flatButton)
         vbox.addStretch(1)
         group_box.setLayout(vbox)
@@ -98,6 +104,17 @@ class Window(QWidget):
     @Slot(int)
     def set_label_output(self, output):
         self.label_output.setText(str(output))
+
+    @Slot()
+    def set_timer(self):
+        print("timer check")
+        button_state = self.toggleButton.isChecked()
+        if button_state:
+            self.timer.start()
+            print("timer started")
+        else:
+            print("timer stop")
+            self.timer.stop()
 
 
 if __name__ == "__main__":
