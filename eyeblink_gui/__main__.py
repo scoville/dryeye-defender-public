@@ -1,7 +1,13 @@
+import os
+import sys
 import time
-import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
+
+import cv2
+from PySide6.QtCore import Qt, QThread, Signal, Slot
+from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
+from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox,
+                               QHBoxLayout, QLabel, QMainWindow, QPushButton,
+                               QSizePolicy, QVBoxLayout, QWidget, QGridLayout)
 
 import cv2
 import torch
@@ -10,49 +16,92 @@ from retinaface import RetinaFace
 from blinkdetector.models.heatmapmodel import load_keypoint_model
 from eyeblink_gui.utils.eyeblink_verification import compute_single_frame, lack_of_blink_detection
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+class EyeblinkModelThread(QThread):
+    update_label_output = Signal(int)
+
+    def __init__(self, parent=None):
+        QThread.__init__(self, parent)
+
+        self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.face_detector = RetinaFace(quality="speed")  # speed for better performance
+        self.keypoint_model = load_keypoint_model("./assets/ckpt/epoch_80.pth.tar", self.DEVICE)
+
+        self.blink_history = []
+        # last_alert = time.time()
+        self.cap = cv2.VideoCapture(0)
+
+    def run(self):
+        time_start = time.time()
+        # id_after = root.after(slider_value, compute_test_camera)
+        # print(slider_value)
+        # global last_alert
+        blink_value = compute_single_frame(self.face_detector,
+                                           self.keypoint_model, self.cap, self.DEVICE)
+
+        self.update_label_output.emit(blink_value)
+        print("finished")
+        # sys.exit(-1)
+        # print(len(blink_history), blink_value)
+        # blink_history.append((time.time(), blink_value))
+        # if (time.time() - last_alert > 20) and lack_of_blink_detection(blink_history):
+        #     last_alert = time.time()
+        #     root.after_cancel(id_after)
+        #     messagebox.showwarning(title="Lack of blink", message="You need to blink")
+        #     id_after = root.after(10000, compute_test_camera)  # stop computing for 10s
+
+        # output_model.set(str(blink_value))
+        # print("time to process"+str(time.time()-time_start))
 
 
-def compute_test_camera():
-    time_start = time.time()
-    id_after = root.after(slider_value, compute_test_camera)
-    print(slider_value)
-    global last_alert
-    blink_value = compute_single_frame(face_detector, keypoint_model, cap, DEVICE)
-    print(len(blink_history), blink_value)
-    blink_history.append((time.time(), blink_value))
-    if (time.time() - last_alert > 20) and lack_of_blink_detection(blink_history):
-        last_alert = time.time()
-        root.after_cancel(id_after)
-        messagebox.showwarning(title="Lack of blink", message="You need to blink")
-        id_after = root.after(10000, compute_test_camera)  # stop computing for 10s
+class Window(QWidget):
+    def __init__(self, parent=None):
+        super(Window, self).__init__(parent)
+        # Title and dimensions
+        self.setWindowTitle("Eyeblink detection")
+        self.setGeometry(0, 0, 800, 500)
+        self.window_layout = QGridLayout(self)
+        self.window_layout.addWidget(self.create_settings())
+        self.pushButton = QPushButton(("Compute one frame"))
+        self.pushButton.clicked.connect(self.start)
+        self.label_output = QLabel("0")
+        self.window_layout.addWidget(self.pushButton)
+        self.window_layout.addWidget(self.label_output)
 
-    output_model.set(str(blink_value))
-    print("time to process"+str(time.time()-time_start))
+        self.th = EyeblinkModelThread(self)
+        self.th.finished.connect(self.finished)
+        self.th.update_label_output.connect(self.set_label_output)
+
+    def create_settings(self):
+        group_box = QGroupBox(("&Settings"))
+        toggleButton = QPushButton(("&Toggle Button"))
+        toggleButton.setCheckable(True)
+        toggleButton.setChecked(True)
+        flatButton = QPushButton(("&Flat Button"))
+        flatButton.setFlat(True)
+        vbox = QVBoxLayout()
+        vbox.addWidget(toggleButton)
+        vbox.addWidget(flatButton)
+        vbox.addStretch(1)
+        group_box.setLayout(vbox)
+        return group_box
+
+    @Slot()
+    def start(self):
+        print("starting thread for computing one frame")
+        self.th.start()
+
+    @Slot()
+    def finished(self):
+        print("Thread is finished")
+
+    @Slot(int)
+    def set_label_output(self, output):
+        self.label_output.setText(str(output))
 
 
-def set_slider(val):
-    global slider_value
-    slider_value = val
-
-
-face_detector = RetinaFace(quality="speed")  # speed for better performance
-keypoint_model = load_keypoint_model("./assets/ckpt/epoch_80.pth.tar", DEVICE)
-
-blink_history = []
-last_alert = time.time()
-slider_value = 300
-cap = cv2.VideoCapture(0)
-
-root = tk.Tk()
-root.after(2000, compute_test_camera)
-frm = ttk.Frame(root, padding=10)
-frm.grid()
-output_model = tk.StringVar(root, "0")
-ttk.Label(frm, text="Activate").grid(column=0, row=0)
-ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=0)
-ttk.Button(frm, text="Compute camera frame", command=compute_test_camera).grid(column=0, row=1)
-ttk.Label(frm, textvariable=output_model).grid(column=1, row=1)
-ms_slider = ttk.Scale(root, from_=50, to=300, orient="horizontal",
-                      command="set_slider", value=300).grid(column=0, row=3)
-root.mainloop()
+if __name__ == "__main__":
+    app = QApplication()
+    w = Window()
+    w.show()
+    sys.exit(app.exec())
