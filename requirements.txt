@@ -1,0 +1,24 @@
+albumentations==1.2.1
+ffmpeg-python==0.2.0
+imgaug==0.4.0
+mxnet==1.9.1
+opencv-python==4.2.0.32
+# opencv-python-headless==4.6.0.66 (for mac users)
+retinaface==1.1.1
+seaborn==0.11.2
+torch==1.13.1 #1.12.0
+torchvision==0.14.1 #0.13.0
+yacs==0.1.8
+coverage>=5.0.3
+mypy>=0.761
+mypy-extensions>=0.4.3
+pycodestyle>=2.7.0
+pydocstyle>=6.1
+pylint>=2.6.2
+pylint-quotes>=0.2.1
+pytest>=4.4.0
+pytest-timeout>=1.4.1
+pytest-xdist>=1.27.0
+stubs>=1.0.0
+pyside6
+# -e .
