@@ -62,4 +62,4 @@ __pycache__/**
 .idea/
 .coverage
 .venv
-blinkdetector/
+assets/
