@@ -2,12 +2,14 @@ import os
 import sys
 import time
 
+
 import cv2
 from PySide6.QtCore import Qt, QThread, Signal, Slot, QTimer
 from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
 from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox,
                                QHBoxLayout, QLabel, QMainWindow, QPushButton,
-                               QSizePolicy, QVBoxLayout, QWidget, QGridLayout)
+                               QSizePolicy, QVBoxLayout, QWidget, QGridLayout,
+                               QMessageBox, QSlider)
 
 import cv2
 import torch
@@ -83,11 +85,16 @@ class Window(QWidget):
         self.toggleButton.setChecked(False)
         # toggleButton.setEnabled(True)
         self.toggleButton.clicked.connect(self.set_timer)
-        flatButton = QPushButton(("&Flat Button"))
-        flatButton.setFlat(True)
+        self.frequency_slider = QSlider(Qt.Horizontal)
+        self.frequency_slider.setSingleStep(50)
+        self.frequency_slider.setTickInterval(50)
+        self.frequency_slider.setRange(50, 1000)
+        self.frequency_slider.setTickPosition(QSlider.TicksBothSides)
+        self.frequency_slider.setValue(500)
+        self.frequency_slider.valueChanged.connect(self.set_timer_interval)
         vbox = QVBoxLayout()
         vbox.addWidget(self.toggleButton)
-        vbox.addWidget(flatButton)
+        vbox.addWidget(self.frequency_slider)
         vbox.addStretch(1)
         group_box.setLayout(vbox)
         return group_box
@@ -104,6 +111,10 @@ class Window(QWidget):
     @Slot(int)
     def set_label_output(self, output):
         self.label_output.setText(str(output))
+    @Slot()
+    def set_timer_interval(self, slider_value):
+        self.timer.setInterval(slider_value)
+        print(f"{slider_value=}")
 
     @Slot()
     def set_timer(self):
