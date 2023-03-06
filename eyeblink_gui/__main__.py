@@ -72,15 +72,21 @@ class Window(QWidget):
 
         self.th = EyeblinkModelThread(self)
         self.th.finished.connect(self.finished)
-        self.th.update_label_output.connect(self.set_label_output)
+        self.th.update_label_output.connect(self.output_slot)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start)
-        self.timer.setInterval(500)
+        # self.timer.setInterval(500)
+
+        self.blink_history = []
+        self.blink_messagebox = QMessageBox()
+        # self.blink_messagebox.setIcon(QMessageBox.Information)
+        self.blink_messagebox.setText("You didn't blink in the last 10 secondes")
+        self.blink_messagebox.setInformativeText("Blink now to close the window!")
 
     def create_settings(self):
         group_box = QGroupBox(("&Settings"))
-        self.toggleButton = QPushButton(("&Toggle Button"))
+        self.toggleButton = QPushButton(("&Enable blinking detection"))
         self.toggleButton.setCheckable(True)
         self.toggleButton.setChecked(False)
         # toggleButton.setEnabled(True)
@@ -107,10 +113,17 @@ class Window(QWidget):
     @Slot()
     def finished(self):
         print("Thread is finished")
+        lack_blink = lack_of_blink_detection(self.blink_history)
+        if lack_blink:
+            self.blink_messagebox.exec()
 
     @Slot(int)
-    def set_label_output(self, output):
+    def output_slot(self, output):
         self.label_output.setText(str(output))
+        self.blink_history.append((time.time(), output))
+        if output == 1:
+            self.blink_messagebox.close()
+
     @Slot()
     def set_timer_interval(self, slider_value):
         self.timer.setInterval(slider_value)
