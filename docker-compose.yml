@@ -1,0 +1,22 @@
+version: '3'
+services:
+  eyeblink:
+    image: eyeblink
+    stdin_open: true # docker run -i
+    tty: true
+    build:
+      context: .
+      args:
+        GROUP_ID: 1000
+        USER_ID: 1000
+    environment:
+      USERNAME: user
+      DISPLAY:
+      QT_X11_NO_MITSHM: 1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - $HOME/.Xauthority:/.Xauthority:rw
+      - .:/mount/
+      - /dev/video0:/dev/video0
+    working_dir: /mount/
+    privileged: true
