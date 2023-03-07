@@ -20,16 +20,18 @@ def compute_single_frame(face_detector, keypoint_model, cap, DEVICE) -> int:
         return 1
 
     return -1
+def lack_of_blink_detection(blink_history: List[Tuple[float, int]], duration_lack: int) -> bool:
 
 
 def lack_of_blink_detection(blink_history) -> bool:
     current_time = time.time()
 
-    # finding the index of element
     for time_code, blink_value in reversed(blink_history):
+        # search for the last detected blink
         if blink_value == 1:  # blink detected
-            since_last_blink_duration = current_time - time_code
-            if since_last_blink_duration > 10:
+            since_last_blink_duration = current_time - time_code  # how long ago was the last blink
+
+            if since_last_blink_duration > duration_lack:  # is it was more than 10s ago
                 print(f"{time_code=}{blink_value=}{since_last_blink_duration=}")
                 return True
             # meaning that the last blink was more than 6 second ago
