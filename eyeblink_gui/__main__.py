@@ -73,6 +73,8 @@ class BlinkGraph(QWidget):
 
         axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
         axis_y.setTitleText("Number of blink")
+        if not blink_per_minutes:
+            blink_per_minutes = 5  # defaut for axis y
         axis_y.setRange(0, max(blink_per_minutes))
 
 
@@ -118,9 +120,10 @@ class Window(QWidget):
         # Title and dimensions
         self.setWindowTitle("Eyeblink detection")
         self.setGeometry(0, 0, 800, 700)
+
+        self.duration_lack = 10  # minimum duration for considering lack of blink
         window_layout = QGridLayout(self)
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
-        self.duration_lack = 10  # minimum duration for considering lack of blink
 
         self.compute_button = QPushButton(("Compute one frame"))
         self.compute_button.clicked.connect(self.start_thread)
@@ -139,7 +142,7 @@ class Window(QWidget):
         self.blink_history: List[Tuple[float, int]] = []
         self.blink_messagebox = QMessageBox()
         # self.blink_messagebox.setIcon(QMessageBox.Information)
-        self.blink_messagebox.setText("You didn't blink in the last 10 secondes")
+        self.blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
         self.blink_messagebox.setInformativeText("Blink now to close the window!")
 
         self.blink_graph = BlinkGraph()
@@ -161,7 +164,7 @@ class Window(QWidget):
         self.toggle_button.clicked.connect(self.set_timer)
 
         self.frequency_spin_box = QSpinBox()
-        self.frequency_label = QLabel("Interval of the blinking detection:")
+        self.frequency_label = QLabel("Interval of the blinking detection (ms):")
         self.frequency_slider = QSlider(Qt.Orientation.Horizontal)
         self.frequency_slider.setSingleStep(50)
         # self.frequency_spin_box.singleStep(50)
@@ -178,7 +181,7 @@ class Window(QWidget):
         self.duration_lack_spin_box.setRange(5, 60)
         self.duration_lack_spin_box.setValue(self.duration_lack)
         self.duration_lack_spin_box.valueChanged.connect(self.update_duration_lack)
-        self.duration_lack_label = QLabel("Minimum duration for considering lack of blink:")
+        self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
         grid = QGridLayout()
         grid.addWidget(self.toggle_label, 0, 0, 1, 1)
         grid.addWidget(self.toggle_button, 0, 1, 1, 1)
