@@ -1,6 +1,6 @@
 """Utils function"""
 import time
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import torch
 from blinkdetector.models.heatmapmodel import HeatMapLandmarker
@@ -9,13 +9,13 @@ from retinaface import RetinaFace
 
 
 def compute_single_frame(face_detector: RetinaFace, keypoint_model: HeatMapLandmarker,
-                         cap, device: torch.device) -> int:
+                         cap: Any, device: torch.device) -> int:
     """Wrapper for calling function from blinkdetector library, compute ear threshold
 
     :param face_detector: model object of the face detector
     :param keypoint_model: model object to detect keypoint
-    :param cap: _description_
-    :param device: capture device
+    :param cap: capture device cv2 object
+    :param device: cuda device
     :return: blink value from inference, 1 if detected blink else -1
     """
     ret, img = cap.read()
