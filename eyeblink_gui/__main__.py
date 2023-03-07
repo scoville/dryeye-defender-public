@@ -1,25 +1,30 @@
-from eyeblink_gui.utils.eyeblink_verification import compute_single_frame, lack_of_blink_detection
-from blinkdetector.models.heatmapmodel import load_keypoint_model
-from retinaface import RetinaFace
-import torch
-import os
+"""Main qt file, containing code for the qt window etc """
 import sys
 import time
-import numpy as np
-
+from typing import List, Optional, Tuple
 
 import cv2
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QTimer
-from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap, QPainter
-from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox,
-                               QHBoxLayout, QLabel, QMainWindow, QPushButton,
-                               QSizePolicy, QVBoxLayout, QWidget, QGridLayout,
-                               QMessageBox, QSlider)
-from PySide6.QtCharts import QBarSeries, QLineSeries, QChart, QBarSet, QValueAxis, QChartView
+import torch
+from blinkdetector.models.heatmapmodel import load_keypoint_model
+from PySide6.QtCharts import (QBarSeries, QBarSet, QChart, QChartView,
+                              QLineSeries, QValueAxis)
+from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
+from PySide6.QtGui import QAction, QImage, QKeySequence, QPainter, QPixmap
+from PySide6.QtWidgets import (QApplication, QSpinBox, QGridLayout, QGroupBox,
+                               QHBoxLayout, QLabel, QMainWindow, QMessageBox,
+                               QPushButton, QSizePolicy, QSlider, QVBoxLayout,
+                               QWidget)
+from retinaface import RetinaFace
+
+from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame,
+                                                      lack_of_blink_detection)
 
 
 class BlinkGraph(QWidget):
-    def __init__(self):
+    """Widget for the blink frequency graph"""
+
+    def __init__(self) -> None:
+        """Initialize the graph variables"""
         super().__init__()
 
         self.series = QBarSeries()
@@ -27,26 +32,30 @@ class BlinkGraph(QWidget):
         self.chart = QChart()
         self.chart.addSeries(self.series)
         self.chart.setTitle("How many blink per minutes")
-        self.chart.setAnimationOptions(QChart.SeriesAnimations)
+        self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
         self.chart.createDefaultAxes()
 
-        axis_y = self.chart.axes(Qt.Vertical)[0]
+        axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
         # axis_x = self.chart.axes(Qt.Horizontal)[0]
         axis_y.setTitleText("Number of blink")
         # axis_x.setTitleText("Minutes")
 
         self.chart.legend().setVisible(True)
-        self.chart.legend().setAlignment(Qt.AlignBottom)
+        self.chart.legend().setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         self.chart_view = QChartView(self.chart)
-        self.chart_view.setRenderHint(QPainter.Antialiasing)
+        self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         self.main_layout = QGridLayout()
         self.main_layout.addWidget(self.chart_view, 0, 0, 5, 6)
         self.setLayout(self.main_layout)
 
     @Slot(list)
-    def update_graph(self, blink_history):
+    def update_graph(self, blink_history: List[Tuple[float, int]]) -> None:
+        """Update the graph with next value
+
+        :param blink_history: List of blink value(1 if detected blink, else -1) associated with time
+        """
         print("updating graph")
         current_time = time.time()
         if blink_history:
@@ -64,15 +73,23 @@ class BlinkGraph(QWidget):
 
         self.chart.createDefaultAxes()
 
-        axis_y = self.chart.axes(Qt.Vertical)[0]
+        axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
         axis_y.setTitleText("Number of blink")
         axis_y.setRange(0, max(blink_per_minutes))
 
 
 class EyeblinkModelThread(QThread):
+    """Thread doing the inference of the model and outputting if blink is detected
+    callable maximum one at a time
+    """
     update_label_output = Signal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: Optional[QObject] = None) -> None:
+        """Initialized the model and class variables, 
+        these variables are saved between inference and even on different thread
+
+        :param parent: parent of the thread, defaults to None
+        """
         QThread.__init__(self, parent)
 
         print("init thread")
@@ -80,11 +97,11 @@ class EyeblinkModelThread(QThread):
         self.face_detector = RetinaFace(quality="speed")  # speed for better performance
         self.keypoint_model = load_keypoint_model("./assets/ckpt/epoch_80.pth.tar", self.DEVICE)
 
-        self.blink_history = []
         # last_alert = time.time()
         self.cap = cv2.VideoCapture(0)
 
-    def run(self):
+    def run(self) -> None:
+        """Run the inference and emit to a slot the blink value"""
         time_start = time.time()
         blink_value = compute_single_frame(self.face_detector,
                                            self.keypoint_model, self.cap, self.DEVICE)
@@ -93,7 +110,12 @@ class EyeblinkModelThread(QThread):
 
 
 class Window(QWidget):
-    def __init__(self, parent=None):
+    """Widget of the main window"""
+
+    def __init__(self, parent: Optional[QWidget] = None) -> None:
+        """Initialize all variable and create the layout of the window
+        :param parent: parent of the widget, defaults to None
+        """
         super(Window, self).__init__(parent)
         # Title and dimensions
         self.setWindowTitle("Eyeblink detection")
@@ -101,20 +123,20 @@ class Window(QWidget):
         window_layout = QGridLayout(self)
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         self.compute_button = QPushButton(("Compute one frame"))
-        self.compute_button.clicked.connect(self.start)
+        self.compute_button.clicked.connect(self.start_thread)
         self.label_output = QLabel("0")
         window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
         window_layout.addWidget(self.label_output, 0, 1, 1, 1)
 
         self.th = EyeblinkModelThread(self)
-        self.th.finished.connect(self.finished)
+        self.th.finished.connect(self.thread_finished)
         self.th.update_label_output.connect(self.output_slot)
 
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.start)
+        self.timer.timeout.connect(self.start_thread)
         self.timer.setInterval(100)
 
-        self.blink_history = []
+        self.blink_history: List[Tuple[float, int]] = []
         self.blink_messagebox = QMessageBox()
         # self.blink_messagebox.setIcon(QMessageBox.Information)
         self.blink_messagebox.setText("You didn't blink in the last 10 secondes")
@@ -126,9 +148,11 @@ class Window(QWidget):
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
 
-    def create_settings(self):
+    def create_settings(self) -> QGroupBox:
+        """Initialize all variable/object for the settings part of the program"""
+
         group_box = QGroupBox(("&Settings"))
-        self.toggle_label = QLabel(("Enable blinking detection"))
+        self.toggle_label = QLabel(("Enable blinking detection:"))
         # self.toggle_label.adjustSize()
         self.toggle_button = QPushButton()
         self.toggle_button.setText("Disabled")
@@ -170,19 +194,24 @@ class Window(QWidget):
         return group_box
 
     @ Slot()
-    def start(self):
+    def start_thread(self) -> None:
+        """Slot that call the thread for inference"""
         print("starting thread for computing one frame")
         self.th.start()
 
     @ Slot()
-    def finished(self):
+    def thread_finished(self) -> None:
+        """Slot called at the end of the thread, and manage the lack of blink detection"""
         print("Thread is finished")
         lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
         if lack_blink:
             self.blink_messagebox.exec()
 
-    @ Slot(int)
-    def output_slot(self, output):
+    @ Slot()
+    def output_slot(self, output: int) -> None:
+        """Slot called when the output from the thread is ready
+
+        :param output:output for the frame processed 1 for blink detected, -1 for no blink"""
         self.blink_history.append((time.time(), output))
         if output == 1:
             self.label_output.setText("Blink detected")
@@ -217,7 +246,8 @@ class Window(QWidget):
         self.duration_lack = spinbox_value
 
     @ Slot()
-    def set_timer(self):
+    def set_timer(self) -> None:
+        """Slot called when automatic inference is enable, manage button and timer state"""
         print("timer check")
         button_state = self.toggle_button.isChecked()
         if button_state:
