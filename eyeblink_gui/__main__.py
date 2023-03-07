@@ -136,21 +136,37 @@ class Window(QWidget):
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
         self.toggle_button.clicked.connect(self.set_timer)
-        self.frequency_label = QLabel("Interval of the blinking detection")
-        self.frequency_slider = QSlider(Qt.Horizontal)
+
+        self.frequency_spin_box = QSpinBox()
+        self.frequency_label = QLabel("Interval of the blinking detection:")
+        self.frequency_slider = QSlider(Qt.Orientation.Horizontal)
         self.frequency_slider.setSingleStep(50)
+        # self.frequency_spin_box.singleStep(50)
         self.frequency_slider.setTickInterval(50)
         self.frequency_slider.setRange(50, 1000)
-        self.frequency_slider.setTickPosition(QSlider.TicksBothSides)
+        self.frequency_spin_box.setRange(50, 1000)
+        self.frequency_slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
         self.frequency_slider.setValue(100)
+        self.frequency_spin_box.setValue(100)
         self.frequency_slider.valueChanged.connect(self.set_timer_interval)
-        vbox = QGridLayout()
-        vbox.addWidget(self.toggle_label, 0, 0, 1, 1)
-        vbox.addWidget(self.toggle_button, 0, 1, 1, 1)
-        vbox.addWidget(self.frequency_label, 1, 0, 1, 1)
-        vbox.addWidget(self.frequency_slider, 1, 1, 1, 3)
+        self.frequency_spin_box.valueChanged.connect(self.synch_slider)
+
+        self.duration_lack = 10  # minimum duration for considering lack of blink
+        self.duration_lack_spin_box = QSpinBox()
+        self.duration_lack_spin_box.setRange(5, 60)
+        self.duration_lack_spin_box.setValue(self.duration_lack)
+        self.duration_lack_spin_box.valueChanged.connect(self.update_duration_lack)
+        self.duration_lack_label = QLabel("Minimum duration for considering lack of blink:")
+        grid = QGridLayout()
+        grid.addWidget(self.toggle_label, 0, 0, 1, 1)
+        grid.addWidget(self.toggle_button, 0, 1, 1, 1)
+        grid.addWidget(self.frequency_label, 1, 0, 1, 1)
+        grid.addWidget(self.frequency_spin_box, 1, 1, 1, 1)
+        grid.addWidget(self.frequency_slider, 1, 2, 1, 4)
+        grid.addWidget(self.duration_lack_label, 2, 0, 1, 1)
+        grid.addWidget(self.duration_lack_spin_box, 2, 1, 1, 1)
         # vbox.addStretch(1)
-        group_box.setLayout(vbox)
+        group_box.setLayout(grid)
         return group_box
 
     @ Slot()
@@ -161,7 +177,7 @@ class Window(QWidget):
     @ Slot()
     def finished(self):
         print("Thread is finished")
-        lack_blink = lack_of_blink_detection(self.blink_history)
+        lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
         if lack_blink:
             self.blink_messagebox.exec()
 
@@ -175,9 +191,30 @@ class Window(QWidget):
             self.label_output.setText("No blink detected")
 
     @ Slot()
-    def set_timer_interval(self, slider_value):
+    def set_timer_interval(self, slider_value: int) -> None:
+        """Slot called when slider is modified, update the timer value(frequency of the inference)
+
+        :param slider_value: current value of the slider
+        """
         self.timer.setInterval(slider_value)
+        self.frequency_spin_box.setValue(slider_value)
         print(f"{slider_value=}")
+
+    @Slot()
+    def synch_slider(self, spinbox_value: int) -> None:
+        """Synch the slider with the spinbox
+
+        :param spinbox_value: current value of the spin box
+        """
+        self.frequency_slider.setValue(spinbox_value)
+
+    @Slot()
+    def update_duration_lack(self, spinbox_value: int) -> None:
+        """Update the value of duration_lack
+
+        :param spinbox_value: current value of the spin box
+        """
+        self.duration_lack = spinbox_value
 
     @ Slot()
     def set_timer(self):
