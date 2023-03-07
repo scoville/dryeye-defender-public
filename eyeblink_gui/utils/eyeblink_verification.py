@@ -25,12 +25,12 @@ def compute_single_frame(face_detector, keypoint_model, cap, DEVICE) -> int:
 def lack_of_blink_detection(blink_history) -> bool:
     current_time = time.time()
 
-    blink_history.reverse()  # newer first
     # finding the index of element
-    for blink_tuple in blink_history:
-        if blink_tuple[1] == 1:  # blink detected
-            since_last_blink_duration = current_time - blink_tuple[0]
-            if since_last_blink_duration > 6:
+    for time_code, blink_value in reversed(blink_history):
+        if blink_value == 1:  # blink detected
+            since_last_blink_duration = current_time - time_code
+            if since_last_blink_duration > 10:
+                print(f"{time_code=}{blink_value=}{since_last_blink_duration=}")
                 return True
             # meaning that the last blink was more than 6 second ago
             # meaning there is less than 10 blink per minutes, healthy average is 15-20
