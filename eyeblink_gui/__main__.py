@@ -30,6 +30,11 @@ class BlinkGraph(QWidget):
         self.chart.setAnimationOptions(QChart.SeriesAnimations)
         self.chart.createDefaultAxes()
 
+        axis_y = self.chart.axes(Qt.Vertical)[0]
+        # axis_x = self.chart.axes(Qt.Horizontal)[0]
+        axis_y.setTitleText("Number of blink")
+        # axis_x.setTitleText("Minutes")
+
         self.chart.legend().setVisible(True)
         self.chart.legend().setAlignment(Qt.AlignBottom)
 
@@ -37,25 +42,30 @@ class BlinkGraph(QWidget):
         self.chart_view.setRenderHint(QPainter.Antialiasing)
 
         self.main_layout = QGridLayout()
-        self.main_layout.addWidget(self.chart_view, 0, 0, 3, 6)
+        self.main_layout.addWidget(self.chart_view, 0, 0, 5, 6)
         self.setLayout(self.main_layout)
 
     @Slot(list)
     def update_graph(self, blink_history):
         print("updating graph")
         current_time = time.time()
-        n_minutes = ((int(current_time) - int(blink_history[0][0]))//60)
-        blink_per_minutes = [0]+[0]*n_minutes
-        for time_code, blink_value in reversed(blink_history):
-            current_minute = (int(current_time) - int(time_code))//60
-            if blink_value == 1:
-                blink_per_minutes[current_minute] += 1
-        blink_per_minutes.reverse()
-        print(f"{blink_per_minutes=}")
-        self.blink_bar.append(blink_per_minutes)
-        self.series.append(self.blink_bar)
+        if blink_history:
+            start_of_detection = blink_history[0][0]
+            n_minutes = ((int(current_time) - int(start_of_detection))//60)
+            blink_per_minutes = [0]+[0]*n_minutes
+            for time_code, blink_value in reversed(blink_history):
+                current_minute = (int(current_time) - int(time_code))//60
+                if blink_value == 1:
+                    blink_per_minutes[current_minute] += 1
+            blink_per_minutes.reverse()
+            print(f"{blink_per_minutes=}")
+            self.blink_bar.append(blink_per_minutes)
+            self.series.append(self.blink_bar)
+
         self.chart.createDefaultAxes()
+
         axis_y = self.chart.axes(Qt.Vertical)[0]
+        axis_y.setTitleText("Number of blink")
         axis_y.setRange(0, max(blink_per_minutes))
 
 
@@ -87,14 +97,14 @@ class Window(QWidget):
         super(Window, self).__init__(parent)
         # Title and dimensions
         self.setWindowTitle("Eyeblink detection")
-        self.setGeometry(0, 0, 800, 500)
-        self.window_layout = QGridLayout(self)
-        self.window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
+        self.setGeometry(0, 0, 800, 700)
+        window_layout = QGridLayout(self)
+        window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         self.compute_button = QPushButton(("Compute one frame"))
         self.compute_button.clicked.connect(self.start)
         self.label_output = QLabel("0")
-        self.window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
-        self.window_layout.addWidget(self.label_output, 0, 1, 1, 1)
+        window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
+        window_layout.addWidget(self.label_output, 0, 1, 1, 1)
 
         self.th = EyeblinkModelThread(self)
         self.th.finished.connect(self.finished)
@@ -102,7 +112,7 @@ class Window(QWidget):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start)
-        self.timer.setInterval(500)
+        self.timer.setInterval(100)
 
         self.blink_history = []
         self.blink_messagebox = QMessageBox()
@@ -113,8 +123,8 @@ class Window(QWidget):
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
         self.get_stats.clicked.connect(lambda: self.blink_graph.update_graph(self.blink_history))
-        self.window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
-        self.window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
+        window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
+        window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
 
     def create_settings(self):
         group_box = QGroupBox(("&Settings"))
@@ -132,7 +142,7 @@ class Window(QWidget):
         self.frequency_slider.setTickInterval(50)
         self.frequency_slider.setRange(50, 1000)
         self.frequency_slider.setTickPosition(QSlider.TicksBothSides)
-        self.frequency_slider.setValue(500)
+        self.frequency_slider.setValue(100)
         self.frequency_slider.valueChanged.connect(self.set_timer_interval)
         vbox = QGridLayout()
         vbox.addWidget(self.toggle_label, 0, 0, 1, 1)
@@ -157,10 +167,12 @@ class Window(QWidget):
 
     @ Slot(int)
     def output_slot(self, output):
-        self.label_output.setText(str(output))
         self.blink_history.append((time.time(), output))
         if output == 1:
+            self.label_output.setText("Blink detected")
             self.blink_messagebox.close()
+        else:
+            self.label_output.setText("No blink detected")
 
     @ Slot()
     def set_timer_interval(self, slider_value):
