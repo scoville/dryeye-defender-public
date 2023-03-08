@@ -57,8 +57,8 @@ pipeline {
 //           echo "${PIPESTATUS[0]}" | tee coverage_status.log
 //         '''
 //       }
-//     }
-//   }
+    // }
+  }
 
   post {
     unsuccessful {
