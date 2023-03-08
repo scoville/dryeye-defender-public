@@ -15,7 +15,12 @@ WORKDIR /home/app
 
 COPY requirements.txt ./
 
-RUN pip install -r requirements.txt --no-cache-dir
+COPY submodules/eyeblink-detection submodules/eyeblink-detection
+
+# RUN pip install ./submodules/eyeblink-detection/
+
+RUN pip install -r requirements.txt
+
 
 COPY . .
 
