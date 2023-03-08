@@ -40,24 +40,24 @@ pipeline {
       }
     }
 
-    // stage('Test') {
-    //   steps {
-    //     sh '''#!/usr/bin/env bash
-    //       set -Eeuxo pipefail
-    //       python3 -m coverage run --branch --source . -m pytest -v''' \
-    //       + ' -W ignore::PendingDeprecationWarning -W ignore::DeprecationWarning -W ignore::UserWarning'
-    //   }
-    // }
+    stage('Test') {
+      steps {
+        sh '''#!/usr/bin/env bash
+          set -Eeuxo pipefail
+          python3 -m coverage run --branch --source . -m pytest -v''' \
+          + ' -W ignore::PendingDeprecationWarning -W ignore::DeprecationWarning -W ignore::UserWarning'
+      }
+    }
 
-//     stage('Coverage') {
-//       steps {
-//         sh '''#!/usr/bin/env bash
-//           set -Eeux
-//           python3 -m coverage report --show-missing |& tee coverage.log
-//           echo "${PIPESTATUS[0]}" | tee coverage_status.log
-//         '''
-//       }
-    // }
+    stage('Coverage') {
+      steps {
+        sh '''#!/usr/bin/env bash
+          set -Eeux
+          python3 -m coverage report --show-missing |& tee coverage.log
+          echo "${PIPESTATUS[0]}" | tee coverage_status.log
+        '''
+      }
+    }
   }
 
   post {
