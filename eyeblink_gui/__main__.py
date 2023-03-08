@@ -8,10 +8,10 @@ import torch
 from blinkdetector.models.heatmapmodel import load_keypoint_model
 from PySide6.QtCharts import (QBarSeries, QBarSet, QChart, QChartView)
 from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtWidgets import (QApplication, QSpinBox, QGridLayout, QGroupBox,
                                QLabel, QMessageBox, QPushButton, QSlider,
-                               QWidget)
+                               QWidget, QSystemTrayIcon, QMenu)
 from retinaface import RetinaFace
 
 from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame,
@@ -112,7 +112,7 @@ class EyeblinkModelThread(QThread):
 class Window(QWidget):
     """Widget of the main window"""
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(self,  parent: Optional[QWidget] = None,) -> None:
         """Initialize all variable and create the layout of the window
         :param parent: parent of the widget, defaults to None
         """
@@ -140,10 +140,13 @@ class Window(QWidget):
         self.timer.setInterval(100)
 
         self.blink_history: List[Tuple[float, int]] = []
-        self.blink_messagebox = QMessageBox()
-        # self.blink_messagebox.setIcon(QMessageBox.Information)
-        self.blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
-        self.blink_messagebox.setInformativeText("Blink now to close the window!")
+        # if tray is None:
+        #     # system tray is not available for notification, so we use the backup solution
+
+        #     self.blink_messagebox = QMessageBox()
+        #     # self.blink_messagebox.setIcon(QMessageBox.Information)
+        #     self.blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
+        #     self.blink_messagebox.setInformativeText("Blink now to close the window!")
 
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
@@ -206,7 +209,9 @@ class Window(QWidget):
         print("Thread is finished")
         lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
         if lack_blink:
-            self.blink_messagebox.exec()
+            # self.blink_messagebox.exec()
+            print("Lack of blink detected")
+            lack_of_blink_notif(self.duration_lack)
 
     @ Slot()
     def output_slot(self, output: int) -> None:
@@ -217,7 +222,7 @@ class Window(QWidget):
         self.blink_history.append((time.time(), output))
         if output == 1:
             self.label_output.setText("Blink detected")
-            self.blink_messagebox.close()
+            # self.blink_messagebox.close()
         else:
             self.label_output.setText("No blink detected")
 
@@ -262,8 +267,28 @@ class Window(QWidget):
             self.timer.stop()
 
 
+def lack_of_blink_notif(since_second: int):
+    tray.showMessage(f"You didn't blink in the last {since_second} secondes",
+                     "Blink now to close the window!", icon, 5000)
+
+
 if __name__ == "__main__":
     app = QApplication()
+    # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
+
+    if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
+        print("using system tray")
+        icon = QIcon("assets/blink.png")
+        menu = QMenu()
+        message = menu.addAction("Message")
+        menu.addAction("Enable")
+        tray = QSystemTrayIcon(icon)
+        tray.setContextMenu(menu)
+        # system_tray.setContextMenu()
+        tray.setVisible(True)
+        tray.showMessage("Test", "Tray initialized", icon, 5000)
+    else:
+        tray = None
     w = Window()
     w.show()
     sys.exit(app.exec())
