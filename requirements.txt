@@ -21,4 +21,5 @@ pytest-timeout>=1.4.1
 pytest-xdist>=1.27.0
 stubs>=1.0.0
 pyside6
+submodules/eyeblink-detection
 # -e .
