@@ -74,7 +74,7 @@ class BlinkGraph(QWidget):
         axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
         axis_y.setTitleText("Number of blink")
         if not blink_per_minutes:
-            blink_per_minutes = 5  # defaut for axis y
+            blink_per_minutes = [5]  # defaut for axis y
         axis_y.setRange(0, max(blink_per_minutes))
 
 
@@ -154,6 +154,10 @@ class Window(QWidget):
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
 
     def create_messagebox(self) -> QMessageBox:
+        """Initialize messagebox for later usage
+
+        :return: return the messagebox object
+        """
         blink_messagebox = QMessageBox()
         # blink_messagebox.setIcon(QMessageBox.Information)
         blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
@@ -161,6 +165,10 @@ class Window(QWidget):
         return blink_messagebox
 
     def create_tray(self) -> QSystemTrayIcon:
+        """Initialize system tray
+
+        :return: Return the system tray initialized
+        """
         print("using system tray")
         menu = QMenu()
         message = menu.addAction("Message")
@@ -260,6 +268,7 @@ class Window(QWidget):
 
     @Slot()
     def switch_mode(self):
+        """Update the button to switch alert mode and also change the alert mode"""
         if self.alert_mode == "popup":
             self.alert_mode = "notification"
         else:
@@ -310,10 +319,14 @@ class Window(QWidget):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, widget: QWidget) -> None:
+    """Main window that contain the main widget"""
+
+    def __init__(self) -> None:
+        """Initialize main window with custom config"""
         QMainWindow.__init__(self)
         self.setWindowTitle("Eyeblink detection")
         self.resize(800, 700)
+        widget = Window()
         self.setCentralWidget(widget)
         self.setWindowIcon(icon)
 
@@ -324,7 +337,6 @@ if __name__ == "__main__":
 
     icon = QIcon("assets/images/blink.png")
     # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
-    main_widget = Window()
-    main_window = MainWindow(main_widget)
+    main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec())
