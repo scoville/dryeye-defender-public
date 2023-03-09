@@ -29,7 +29,7 @@ class BlinkGraph(QWidget):
         self.blink_bar = QBarSet("blink")
         self.chart = QChart()
         self.chart.addSeries(self.series)
-        self.chart.setTitle("How many blink per minutes")
+        self.chart.setTitle("How many blink per minute")
         self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
         self.chart.createDefaultAxes()
 
@@ -120,7 +120,6 @@ class Window(QWidget):
 
         self.duration_lack = 10  # minimum duration for considering lack of blink
         window_layout = QGridLayout(self)
-        window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
 
         self.compute_button = QPushButton(("Compute one frame"))
         self.compute_button.clicked.connect(self.start_thread)
@@ -138,20 +137,28 @@ class Window(QWidget):
 
         self.blink_history: List[Tuple[float, int]] = []
 
-        self.tray = self.create_tray()
-        # if tray is None:
-        #     # system tray is not available for notification, so we use the backup solution
-
-        #     self.blink_messagebox = QMessageBox()
-        #     # self.blink_messagebox.setIcon(QMessageBox.Information)
-        #     self.blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
-        #     self.blink_messagebox.setInformativeText("Blink now to close the window!")
+        self.tray_available = QSystemTrayIcon.isSystemTrayAvailable() and \
+            QSystemTrayIcon.supportsMessages()
+        if self.tray_available:
+            self.alert_mode = "notification"
+            self.tray = self.create_tray()
+        else:
+            self.alert_mode = "popup"
+        self.blink_messagebox = self.create_messagebox()
 
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
         self.get_stats.clicked.connect(lambda: self.blink_graph.update_graph(self.blink_history))
+        window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
+
+    def create_messagebox(self) -> QMessageBox:
+        blink_messagebox = QMessageBox()
+        # blink_messagebox.setIcon(QMessageBox.Information)
+        blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
+        blink_messagebox.setInformativeText("Blink now to close the window!")
+        return blink_messagebox
 
     def create_tray(self) -> QSystemTrayIcon:
         print("using system tray")
@@ -176,6 +183,14 @@ class Window(QWidget):
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
         self.toggle_button.clicked.connect(self.set_timer)
+
+        self.alert_mode_label = QLabel(("Lack of blink alert (Window popup|OS notification)"))
+        self.alert_mode_button = QPushButton()
+        self.alert_mode_button.setText(self.alert_mode)
+        # togalert_mode_buttonEnabled(True)
+        self.alert_mode_button.clicked.connect(self.switch_mode)
+        if not self.tray_available:
+            self.alert_mode_button.setEnabled(False)
 
         self.frequency_spin_box = QSpinBox()
         self.frequency_label = QLabel("Interval of the blinking detection (ms):")
@@ -204,6 +219,8 @@ class Window(QWidget):
         grid.addWidget(self.frequency_slider, 1, 2, 1, 4)
         grid.addWidget(self.duration_lack_label, 2, 0, 1, 1)
         grid.addWidget(self.duration_lack_spin_box, 2, 1, 1, 1)
+        grid.addWidget(self.alert_mode_label, 3, 0, 1, 1)
+        grid.addWidget(self.alert_mode_button, 3, 1, 1, 1)
         # vbox.addStretch(1)
         group_box.setLayout(grid)
         return group_box
@@ -220,10 +237,12 @@ class Window(QWidget):
         print("Thread is finished")
         lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
         if lack_blink:
-            # self.blink_messagebox.exec()
             print("Lack of blink detected")
-            self.tray.showMessage(f"You didn't blink in the last {self.duration_lack} secondes",
-                                  "Blink now to close the window!", icon, 5000)
+            if self.alert_mode == "popup":
+                self.blink_messagebox.exec()
+            else:
+                self.tray.showMessage(f"You didn't blink in the last {self.duration_lack} secondes",
+                                      "Blink now to close the window!", icon, 5000)
 
     @Slot()
     def output_slot(self, output: int) -> None:
@@ -234,9 +253,18 @@ class Window(QWidget):
         self.blink_history.append((time.time(), output))
         if output == 1:
             self.label_output.setText("Blink detected")
-            # self.blink_messagebox.close()
+            if self.alert_mode == "popup":
+                self.blink_messagebox.close()
         else:
             self.label_output.setText("No blink detected")
+
+    @Slot()
+    def switch_mode(self):
+        if self.alert_mode == "popup":
+            self.alert_mode = "notification"
+        else:
+            self.alert_mode = "popup"
+        self.alert_mode_button.setText(self.alert_mode)
 
     @Slot()
     def set_timer_interval(self, slider_value: int) -> None:
