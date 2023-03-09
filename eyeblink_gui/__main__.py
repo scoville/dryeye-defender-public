@@ -11,7 +11,7 @@ from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
 from PySide6.QtGui import QPainter, QIcon
 from PySide6.QtWidgets import (QApplication, QSpinBox, QGridLayout, QGroupBox,
                                QLabel, QMessageBox, QPushButton, QSlider,
-                               QWidget, QSystemTrayIcon, QMenu)
+                               QWidget, QSystemTrayIcon, QMenu, QMainWindow)
 from retinaface import RetinaFace
 
 from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame,
@@ -112,14 +112,11 @@ class EyeblinkModelThread(QThread):
 class Window(QWidget):
     """Widget of the main window"""
 
-    def __init__(self,  parent: Optional[QWidget] = None,) -> None:
+    def __init__(self,  parent: Optional[QWidget] = None) -> None:
         """Initialize all variable and create the layout of the window
         :param parent: parent of the widget, defaults to None
         """
         super(Window, self).__init__(parent)
-        # Title and dimensions
-        self.setWindowTitle("Eyeblink detection")
-        self.setGeometry(0, 0, 800, 700)
 
         self.duration_lack = 10  # minimum duration for considering lack of blink
         window_layout = QGridLayout(self)
@@ -267,6 +264,15 @@ class Window(QWidget):
             self.timer.stop()
 
 
+class MainWindow(QMainWindow):
+    def __init__(self, widget: QWidget) -> None:
+        QMainWindow.__init__(self)
+        self.setWindowTitle("Eyeblink detection")
+        self.resize(800, 700)
+        self.setCentralWidget(widget)
+        self.setWindowIcon(icon)
+
+
 def lack_of_blink_notif(since_second: int):
     tray.showMessage(f"You didn't blink in the last {since_second} secondes",
                      "Blink now to close the window!", icon, 5000)
@@ -276,9 +282,9 @@ if __name__ == "__main__":
     app = QApplication()
     # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
 
+    icon = QIcon("assets/images/blink.png")
     if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
         print("using system tray")
-        icon = QIcon("assets/blink.png")
         menu = QMenu()
         message = menu.addAction("Message")
         menu.addAction("Enable")
@@ -289,6 +295,7 @@ if __name__ == "__main__":
         tray.showMessage("Test", "Tray initialized", icon, 5000)
     else:
         tray = None
-    w = Window()
-    w.show()
+    main_widget = Window()
+    main_window = MainWindow(main_widget)
+    main_window.show()
     sys.exit(app.exec())
