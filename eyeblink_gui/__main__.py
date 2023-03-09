@@ -137,6 +137,8 @@ class Window(QWidget):
         self.timer.setInterval(100)
 
         self.blink_history: List[Tuple[float, int]] = []
+
+        self.tray = self.create_tray()
         # if tray is None:
         #     # system tray is not available for notification, so we use the backup solution
 
@@ -150,6 +152,18 @@ class Window(QWidget):
         self.get_stats.clicked.connect(lambda: self.blink_graph.update_graph(self.blink_history))
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
+
+    def create_tray(self) -> QSystemTrayIcon:
+        print("using system tray")
+        menu = QMenu()
+        message = menu.addAction("Message")
+        menu.addAction("Enable")
+        tray = QSystemTrayIcon(icon)
+        tray.setContextMenu(menu)
+        # system_tray.setContextMenu()
+        tray.setVisible(True)
+        tray.showMessage("Test", "Tray initialized", icon, 5000)
+        return tray
 
     def create_settings(self) -> QGroupBox:
         """Initialize all variable/object for the settings part of the program"""
@@ -194,13 +208,13 @@ class Window(QWidget):
         group_box.setLayout(grid)
         return group_box
 
-    @ Slot()
+    @Slot()
     def start_thread(self) -> None:
         """Slot that call the thread for inference"""
         print("starting thread for computing one frame")
         self.th.start()
 
-    @ Slot()
+    @Slot()
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
         print("Thread is finished")
@@ -208,9 +222,10 @@ class Window(QWidget):
         if lack_blink:
             # self.blink_messagebox.exec()
             print("Lack of blink detected")
-            lack_of_blink_notif(self.duration_lack)
+            self.tray.showMessage(f"You didn't blink in the last {self.duration_lack} secondes",
+                                  "Blink now to close the window!", icon, 5000)
 
-    @ Slot()
+    @Slot()
     def output_slot(self, output: int) -> None:
         """Slot called when the output from the thread is ready
 
@@ -223,7 +238,7 @@ class Window(QWidget):
         else:
             self.label_output.setText("No blink detected")
 
-    @ Slot()
+    @Slot()
     def set_timer_interval(self, slider_value: int) -> None:
         """Slot called when slider is modified, update the timer value(frequency of the inference)
 
@@ -249,13 +264,15 @@ class Window(QWidget):
         """
         self.duration_lack = spinbox_value
 
-    @ Slot()
+    @Slot()
     def set_timer(self) -> None:
         """Slot called when automatic inference is enable, manage button and timer state"""
         print("timer check")
         button_state = self.toggle_button.isChecked()
         if button_state:
             self.toggle_button.setText("Enabled")
+            self.blink_history = [(time.time(), 1)]
+            # initialize with a blink, maybe need to change
             self.timer.start()
             print("timer started")
         else:
@@ -273,28 +290,12 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(icon)
 
 
-def lack_of_blink_notif(since_second: int):
-    tray.showMessage(f"You didn't blink in the last {since_second} secondes",
-                     "Blink now to close the window!", icon, 5000)
-
-
 if __name__ == "__main__":
     app = QApplication()
     # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
 
     icon = QIcon("assets/images/blink.png")
-    if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
-        print("using system tray")
-        menu = QMenu()
-        message = menu.addAction("Message")
-        menu.addAction("Enable")
-        tray = QSystemTrayIcon(icon)
-        tray.setContextMenu(menu)
-        # system_tray.setContextMenu()
-        tray.setVisible(True)
-        tray.showMessage("Test", "Tray initialized", icon, 5000)
-    else:
-        tray = None
+    # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
     main_widget = Window()
     main_window = MainWindow(main_widget)
     main_window.show()
