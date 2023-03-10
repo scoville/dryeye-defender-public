@@ -171,7 +171,7 @@ class Window(QWidget):
         """
         print("using system tray")
         menu = QMenu()
-        message = menu.addAction("Message")
+        # message = menu.addAction("Message")
         menu.addAction("Enable")
         tray = QSystemTrayIcon(icon)
         tray.setContextMenu(menu)
