@@ -336,7 +336,7 @@ if __name__ == "__main__":
     app = QApplication()
     # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
 
-    icon = QIcon("assets/images/blink.png")
+    icon = QIcon("images/blink.png")
     # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
     main_window = MainWindow()
     main_window.show()
