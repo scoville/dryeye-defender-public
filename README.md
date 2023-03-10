@@ -3,8 +3,10 @@
 Basic prototype for detecting eyeblink and warn user when blinking is too low
 
 ## How to install
+
+### Local
 1. Create a venv of python3.8
-    1. `python -m venv .venv`
+    1. `python3.8 -m venv .venv`
     2. `source .venv/bin/activate`
 
 2. Update submodules
@@ -19,4 +21,17 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
     2. or using another solution `python -m pip install "git+https://github.com/scoville/eyeblink-detection.git"`
 
 5. Run program
-   1. `python -m eyeblink-gui`
+   1. `python -m eyeblink_gui`
+
+### Docker (doesn't seem to currently work)
+
+1. Building docker image
+   1. `docker compose build`
+   1. or `docker-compose build`
+
+2. Running docker image
+   1. `docker compose run --rm eyeblink bash`
+   1. or `docker-compose run --rm eyeblink bash`
+
+3. Run program
+   1. `python -m eyeblink_gui`
