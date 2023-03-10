@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 
 import cv2
 import torch
-from blinkdetector.models.heatmapmodel import load_keypoint_model
+from blinkdetector.models.heatmapmodel import load_keypoint_model  # type:ignore
 from PySide6.QtCharts import (QBarSeries, QBarSet, QChart, QChartView)
 from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
 from PySide6.QtGui import QPainter
@@ -95,7 +95,8 @@ class EyeblinkModelThread(QThread):
         print("init thread")
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.face_detector = RetinaFace(quality="speed")  # speed for better performance
-        self.keypoint_model = load_keypoint_model("./assets/ckpt/epoch_80.pth.tar", self.DEVICE)
+        self.keypoint_model = load_keypoint_model(
+            "submodules/eyeblink-detection/assets/ckpt/epoch_80.pth.tar", self.DEVICE)
 
         # last_alert = time.time()
         self.cap = cv2.VideoCapture(0)
