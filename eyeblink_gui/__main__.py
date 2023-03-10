@@ -172,8 +172,11 @@ class Window(QWidget):
         """
         print("using system tray")
         menu = QMenu()
-        # message = menu.addAction("Message")
-        menu.addAction("Enable")
+        self.toggle_tray = menu.addAction("Disabled")
+        quit = menu.addAction("Quit")
+        quit.triggered.connect(sys.exit)
+        # self.toggle_tray.triggered.connect(self.set_timer)
+
         tray = QSystemTrayIcon(icon)
         tray.setContextMenu(menu)
         # system_tray.setContextMenu()
@@ -192,6 +195,8 @@ class Window(QWidget):
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
         self.toggle_button.clicked.connect(self.set_timer)
+        self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
+        self.toggle_tray.triggered.connect(self.set_timer)
 
         self.alert_mode_label = QLabel(("Lack of blink alert (Window popup|OS notification)"))
         self.alert_mode_button = QPushButton()
@@ -309,12 +314,14 @@ class Window(QWidget):
         button_state = self.toggle_button.isChecked()
         if button_state:
             self.toggle_button.setText("Enabled")
+            self.toggle_tray.setText("Enabled")
             self.blink_history = [(time.time(), 1)]
             # initialize with a blink, maybe need to change
             self.timer.start()
             print("timer started")
         else:
             self.toggle_button.setText("Disabled")
+            self.toggle_tray.setText("Disabled")
             print("timer stop")
             self.timer.stop()
 
