@@ -3,8 +3,8 @@ import time
 from typing import Any, List, Tuple
 
 import torch
-from blinkdetector.models.heatmapmodel import HeatMapLandmarker
-from blinkdetector.services.blinkdetect import compute_ear
+from blinkdetector.models.heatmapmodel import HeatMapLandmarker  # type : ignore
+from blinkdetector.services.blinkdetect import compute_ear  # type : ignore
 from retinaface import RetinaFace
 
 
