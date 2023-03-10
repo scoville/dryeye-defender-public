@@ -7,15 +7,16 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
     1. `python -m venv .venv`
     2. `source .venv/bin/activate`
 
-2. Install `requirement.txt`
-    1. `python -m pip install -r requirements.txt`
+2. Update submodules
+   1.  `git submodule update --init` 
 
-3. Install other repo with pip
+3. Install `requirement.txt`
+    1. `python -m pip install -r requirements.txt`
+    1. for linting and ci libraries : `python -m pip install -r requirements_ci.txt`
+
+4. Install other repo with pip
     1. `python -m pip install submodules/eyeblink-detection`
     2. or using another solution `python -m pip install "git+https://github.com/scoville/eyeblink-detection.git"`
 
-<!-- 4. Copy checkpoint file from eyeblink-detection repo
-   1. `mkdir -p ./assets/ckpt`
-   2. `cp ../eyeblink-detection/assets/ckpt/epoch_80.pth.tar ./assets/ckpt/epoch_80.pth.tar ` -->
 5. Run program
    1. `python -m eyeblink-gui`
