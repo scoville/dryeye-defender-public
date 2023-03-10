@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 
 import cv2
 import torch
-from blinkdetector.models.heatmapmodel import load_keypoint_model  # type:ignore
+from blinkdetector.models.heatmapmodel import load_keypoint_model
 from PySide6.QtCharts import (QBarSeries, QBarSet, QChart, QChartView)
 from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
 from PySide6.QtGui import QPainter, QIcon
@@ -93,10 +93,10 @@ class EyeblinkModelThread(QThread):
         QThread.__init__(self, parent)
 
         print("init thread")
-        self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.face_detector = RetinaFace(quality="speed")  # speed for better performance
         self.keypoint_model = load_keypoint_model(
-            "submodules/eyeblink-detection/assets/ckpt/epoch_80.pth.tar", self.DEVICE)
+            "submodules/eyeblink-detection/assets/ckpt/epoch_80.pth.tar", self.device)
 
         # last_alert = time.time()
         self.cap = cv2.VideoCapture(0)
@@ -105,7 +105,7 @@ class EyeblinkModelThread(QThread):
         """Run the inference and emit to a slot the blink value"""
         # time_start = time.time()
         blink_value = compute_single_frame(self.face_detector,
-                                           self.keypoint_model, self.cap, self.DEVICE)
+                                           self.keypoint_model, self.cap, self.device)
 
         self.update_label_output.emit(blink_value)
 
@@ -117,7 +117,7 @@ class Window(QWidget):
         """Initialize all variable and create the layout of the window
         :param parent: parent of the widget, defaults to None
         """
-        super(Window, self).__init__(parent)
+        super().__init__(parent)
 
         self.duration_lack = 10  # minimum duration for considering lack of blink
         window_layout = QGridLayout(self)
@@ -128,9 +128,9 @@ class Window(QWidget):
         window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
         window_layout.addWidget(self.label_output, 0, 1, 1, 1)
 
-        self.th = EyeblinkModelThread(self)
-        self.th.finished.connect(self.thread_finished)
-        self.th.update_label_output.connect(self.output_slot)
+        self.eye_th = EyeblinkModelThread(self)
+        self.eye_th.finished.connect(self.thread_finished)
+        self.eye_th.update_label_output.connect(self.output_slot)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start_thread)
@@ -173,8 +173,8 @@ class Window(QWidget):
         print("using system tray")
         menu = QMenu()
         self.toggle_tray = menu.addAction("Disabled")
-        quit = menu.addAction("Quit")
-        quit.triggered.connect(sys.exit)
+        quit_tray = menu.addAction("Quit")
+        quit_tray.triggered.connect(sys.exit)
         # self.toggle_tray.triggered.connect(self.set_timer)
 
         tray = QSystemTrayIcon(icon)
@@ -243,7 +243,7 @@ class Window(QWidget):
     def start_thread(self) -> None:
         """Slot that call the thread for inference"""
         print("starting thread for computing one frame")
-        self.th.start()
+        self.eye_th.start()
 
     @Slot()
     def thread_finished(self) -> None:
@@ -273,7 +273,7 @@ class Window(QWidget):
             self.label_output.setText("No blink detected")
 
     @Slot()
-    def switch_mode(self):
+    def switch_mode(self) -> None:
         """Update the button to switch alert mode and also change the alert mode"""
         if self.alert_mode == "popup":
             self.alert_mode = "notification"
@@ -326,7 +326,7 @@ class Window(QWidget):
             self.timer.stop()
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
     """Main window that contain the main widget"""
 
     def __init__(self) -> None:
