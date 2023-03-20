@@ -5,13 +5,13 @@ from typing import List, Optional, Tuple
 
 import cv2
 import torch
-from blinkdetector.models.heatmapmodel import load_keypoint_model
-from PySide6.QtCharts import (QBarSeries, QBarSet, QChart, QChartView)
+from blinkdetector.models.heatmapmodel import load_keypoint_model_vino
+from PySide6.QtCharts import QBarSeries, QBarSet, QChart, QChartView
 from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
-from PySide6.QtGui import QPainter, QIcon
-from PySide6.QtWidgets import (QApplication, QSpinBox, QGridLayout, QGroupBox,
-                               QLabel, QMessageBox, QPushButton, QSlider,
-                               QWidget, QSystemTrayIcon, QMenu, QMainWindow)
+from PySide6.QtGui import QIcon, QPainter
+from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QLabel,
+                               QMainWindow, QMenu, QMessageBox, QPushButton,
+                               QSlider, QSpinBox, QSystemTrayIcon, QWidget)
 from retinaface import RetinaFace
 
 from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame,
@@ -95,8 +95,8 @@ class EyeblinkModelThread(QThread):
         print("init thread")
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.face_detector = RetinaFace(quality="speed")  # speed for better performance
-        self.keypoint_model = load_keypoint_model(
-            "submodules/eyeblink-detection/assets/ckpt/epoch_80.pth.tar", self.device)
+        self.keypoint_model = load_keypoint_model_vino(
+            "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
 
         # last_alert = time.time()
         self.cap = cv2.VideoCapture(0)
