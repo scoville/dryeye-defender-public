@@ -3,12 +3,12 @@ import time
 from typing import Any, List, Tuple
 
 import torch
-from blinkdetector.models.heatmapmodel import HeatMapLandmarker  # type : ignore
+from openvino.runtime import CompiledModel
 from blinkdetector.services.blinkdetect import compute_ear  # type : ignore
 from retinaface import RetinaFace
 
 
-def compute_single_frame(face_detector: RetinaFace, keypoint_model: HeatMapLandmarker,
+def compute_single_frame(face_detector: RetinaFace, keypoint_model: CompiledModel,
                          cap: Any, device: torch.device) -> int:
     """Wrapper for calling function from blinkdetector library, compute ear threshold
 
