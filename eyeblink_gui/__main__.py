@@ -103,10 +103,10 @@ class EyeblinkModelThread(QThread):
 
     def run(self) -> None:
         """Run the inference and emit to a slot the blink value"""
-        # time_start = time.time()
+        time_start = time.time()
         blink_value = compute_single_frame(self.face_detector,
                                            self.keypoint_model, self.cap, self.device)
-
+        print("time to compute frame:"+str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
 
 
