@@ -138,6 +138,10 @@ class Window(QWidget):
 
         self.blink_history: List[Tuple[float, int]] = []
 
+        self.time_last_finished_th = 0.0
+        self.label_fps = QLabel("fps: 0")
+        window_layout.addWidget(self.label_fps, 0, 2, 1, 1)
+
         self.tray_available = QSystemTrayIcon.isSystemTrayAvailable() and \
             QSystemTrayIcon.supportsMessages()
         if self.tray_available:
@@ -242,13 +246,17 @@ class Window(QWidget):
     @Slot()
     def start_thread(self) -> None:
         """Slot that call the thread for inference"""
-        print("starting thread for computing one frame")
-        self.eye_th.start()
+        if not self.eye_th.isRunning():
+            print("starting thread for computing one frame")
+            self.eye_th.start()
 
     @Slot()
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
         print("Thread is finished")
+        diff_time = time.time() - self.time_last_finished_th
+        self.time_last_finished_th = time.time()
+        self.label_fps.setText(f"fps:{str(int(1/diff_time))}")
         lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
         if lack_blink:
             print("Lack of blink detected")
