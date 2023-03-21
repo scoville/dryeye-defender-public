@@ -20,7 +20,7 @@ COPY requirements_ci.txt .
 RUN pip install -r requirements_ci.txt
 
 # Make the git submodule accessible:
-# ENV PYTHONPATH="submodules/eyeblink-detection:$PYTHONPATH"
+ENV PYTHONPATH="submodules/eyeblink-detection:$PYTHONPATH"
 
 USER user
 
