@@ -16,5 +16,7 @@ def get_cap_indexes() -> List[Any]:
         if cap.read()[0]:
             available_cap.append(str(index))
         cap.release()
-    print(available_cap)
+    if not available_cap:  # empty list
+        raise ValueError("No capture device detected")
+
     return available_cap
