@@ -3,123 +3,17 @@ import sys
 import time
 from typing import List, Optional, Tuple
 
-import cv2
-import torch
-from blinkdetector.models.heatmapmodel import load_keypoint_model_vino
-from PySide6.QtCharts import QBarSeries, QBarSet, QChart, QChartView
-from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
-from PySide6.QtGui import QIcon, QPainter
-from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QLabel,
-                               QMainWindow, QMenu, QMessageBox, QPushButton,
-                               QSlider, QSpinBox, QSystemTrayIcon, QWidget,
-                               QComboBox)
-from retinaface import RetinaFace
+from PySide6.QtCore import Qt, QTimer, Slot
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
+                               QLabel, QMainWindow, QMenu, QMessageBox,
+                               QPushButton, QSlider, QSpinBox, QSystemTrayIcon,
+                               QWidget)
 
-from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame,
-                                                      lack_of_blink_detection)
+from eyeblink_gui.utils.eyeblink_verification import lack_of_blink_detection
 from eyeblink_gui.utils.utils import get_cap_indexes
-
-
-class BlinkGraph(QWidget):
-    """Widget for the blink frequency graph"""
-
-    def __init__(self) -> None:
-        """Initialize the graph variables"""
-        super().__init__()
-
-        self.series = QBarSeries()
-        self.blink_bar = QBarSet("blink")
-        self.chart = QChart()
-        self.chart.addSeries(self.series)
-        self.chart.setTitle("How many blink per minute")
-        self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
-        self.chart.createDefaultAxes()
-
-        axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
-        # axis_x = self.chart.axes(Qt.Horizontal)[0]
-        axis_y.setTitleText("Number of blink")
-        # axis_x.setTitleText("Minutes")
-
-        self.chart.legend().setVisible(True)
-        self.chart.legend().setAlignment(Qt.AlignmentFlag.AlignBottom)
-
-        self.chart_view = QChartView(self.chart)
-        self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        self.main_layout = QGridLayout()
-        self.main_layout.addWidget(self.chart_view, 0, 0, 5, 6)
-        self.setLayout(self.main_layout)
-
-    @Slot(list)
-    def update_graph(self, blink_history: List[Tuple[float, int]]) -> None:
-        """Update the graph with next value
-
-        :param blink_history: List of blink value(1 if detected blink, else -1) associated with time
-        """
-        print("updating graph")
-        current_time = time.time()
-        if blink_history:
-            start_of_detection = blink_history[0][0]
-            n_minutes = ((int(current_time) - int(start_of_detection))//60)
-            blink_per_minutes = [0]+[0]*n_minutes
-            for time_code, blink_value in reversed(blink_history):
-                current_minute = (int(current_time) - int(time_code))//60
-                if blink_value == 1:
-                    blink_per_minutes[current_minute] += 1
-            blink_per_minutes.reverse()
-            print(f"{blink_per_minutes=}")
-            self.blink_bar.append(blink_per_minutes)
-            self.series.append(self.blink_bar)
-
-        self.chart.createDefaultAxes()
-
-        axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
-        axis_y.setTitleText("Number of blink")
-        if not blink_per_minutes:
-            blink_per_minutes = [5]  # defaut for axis y
-        axis_y.setRange(0, max(blink_per_minutes))
-
-
-class EyeblinkModelThread(QThread):
-    """Thread doing the inference of the model and outputting if blink is detected
-    callable maximum one at a time
-    """
-    update_label_output = Signal(int)
-
-    def __init__(self, parent: Optional[QObject] = None) -> None:
-        """Initialized the model and class variables,
-        these variables are saved between inference and even on different thread
-
-        :param parent: parent of the thread, defaults to None
-        """
-        QThread.__init__(self, parent)
-
-        print("init thread")
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.face_detector = RetinaFace(quality="speed")  # speed for better performance
-        self.keypoint_model = load_keypoint_model_vino(
-            "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
-
-        # last_alert = time.time()
-        self.cap = None
-        # self.init_cap()
-
-    def init_cap(self, input_device: int = 0) -> None:
-        """Initialise the capture device with the selected cam
-
-        :param input_device: camera to choose, defaults to 0
-        """
-        if self.cap is not None:
-            self.cap.release()
-        self.cap = cv2.VideoCapture(input_device)
-
-    def run(self) -> None:
-        """Run the inference and emit to a slot the blink value"""
-        time_start = time.time()
-        blink_value = compute_single_frame(self.face_detector,
-                                           self.keypoint_model, self.cap, self.device)
-        print("time to compute frame:"+str(time.time()-time_start))
-        self.update_label_output.emit(blink_value)
+from eyeblink_gui.widgets.blink_graph import BlinkGraph
+from eyeblink_gui.widgets.eyeblink_thread import EyeblinkModelThread
 
 
 class Window(QWidget):
