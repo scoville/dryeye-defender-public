@@ -176,7 +176,7 @@ class Window(QWidget):
         :return: return the messagebox object
         """
         blink_messagebox = QMessageBox()
-        # blink_messagebox.setIcon(QMessageBox.Information)
+        blink_messagebox.setIcon(QMessageBox.Icon.Information)
         blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
         blink_messagebox.setInformativeText("Blink now to close the window!")
         return blink_messagebox
@@ -269,6 +269,15 @@ class Window(QWidget):
         # vbox.addStretch(1)
         group_box.setLayout(grid)
         return group_box
+
+    def alert_no_cam(self) -> None:
+        """Alert the user with a window popup that there is no webcam connected"""
+
+        no_cam_messagebox = QMessageBox()
+        no_cam_messagebox.setIcon(QMessageBox.Icon.Warning)
+        no_cam_messagebox.setText(f"No webcam has been detected")
+        no_cam_messagebox.setInformativeText("Connect a webcam for blinking detection")
+        no_cam_messagebox.exec()
 
     @Slot()
     def start_thread(self) -> None:
