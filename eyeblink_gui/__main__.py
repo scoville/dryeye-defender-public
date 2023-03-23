@@ -99,7 +99,17 @@ class EyeblinkModelThread(QThread):
             "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
 
         # last_alert = time.time()
-        self.cap = cv2.VideoCapture(0)
+        self.cap = None
+        # self.init_cap()
+
+    def init_cap(self, input_device: int = 0) -> None:
+        """Initialise the capture device with the selected cam
+
+        :param input_device: camera to choose, defaults to 0
+        """
+        if self.cap is not None:
+            self.cap.release()
+        self.cap = cv2.VideoCapture(input_device)
 
     def run(self) -> None:
         """Run the inference and emit to a slot the blink value"""
