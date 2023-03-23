@@ -11,11 +11,13 @@ from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
 from PySide6.QtGui import QIcon, QPainter
 from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QLabel,
                                QMainWindow, QMenu, QMessageBox, QPushButton,
-                               QSlider, QSpinBox, QSystemTrayIcon, QWidget)
+                               QSlider, QSpinBox, QSystemTrayIcon, QWidget,
+                               QComboBox)
 from retinaface import RetinaFace
 
 from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame,
                                                       lack_of_blink_detection)
+from eyeblink_gui.utils.utils import get_cap_indexes
 
 
 class BlinkGraph(QWidget):
@@ -239,6 +241,14 @@ class Window(QWidget):
         self.duration_lack_spin_box.setValue(self.duration_lack)
         self.duration_lack_spin_box.valueChanged.connect(self.update_duration_lack)
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
+
+        self.select_cam_label = QLabel(("Choose which camera device to use"))
+        self.select_cam = QComboBox()
+        cap_indexes = get_cap_indexes()
+        self.select_cam.addItems(cap_indexes)
+        self.select_cam.activated.connect(lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
+        self.eye_th.init_cap(cap_indexes[0])
+
         grid = QGridLayout()
         grid.addWidget(self.toggle_label, 0, 0, 1, 1)
         grid.addWidget(self.toggle_button, 0, 1, 1, 1)
@@ -249,6 +259,8 @@ class Window(QWidget):
         grid.addWidget(self.duration_lack_spin_box, 2, 1, 1, 1)
         grid.addWidget(self.alert_mode_label, 3, 0, 1, 1)
         grid.addWidget(self.alert_mode_button, 3, 1, 1, 1)
+        grid.addWidget(self.select_cam_label, 4, 0, 1, 1)
+        grid.addWidget(self.select_cam, 4, 1, 1, 1)
         # vbox.addStretch(1)
         group_box.setLayout(grid)
         return group_box
