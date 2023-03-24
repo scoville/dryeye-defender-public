@@ -96,29 +96,8 @@ class Window(QWidget):
         tray.showMessage("Test", "Tray initialized", icon, 5000)
         return tray
 
-    def create_settings(self) -> QGroupBox:
-        """Initialize all variable/object for the settings part of the program"""
-        group_box = QGroupBox(("&Settings"))
-        self.toggle_label = QLabel(("Enable blinking detection:"))
-        # self.toggle_label.adjustSize()
-        self.toggle_button = QPushButton()
-        self.toggle_button.setText("Disabled")
-        self.toggle_button.setCheckable(True)
-        self.toggle_button.setChecked(False)
-        # toggleButton.setEnabled(True)
-        self.toggle_button.clicked.connect(self.set_timer)  # type: ignore[attr-defined]
-        self.toggle_tray.triggered.connect(  # type: ignore[attr-defined]
-            self.toggle_button.nextCheckState)
-        self.toggle_tray.triggered.connect(self.set_timer)  # type: ignore[attr-defined]
-
-        self.alert_mode_label = QLabel(("Lack of blink alert (Window popup|OS notification)"))
-        self.alert_mode_button = QPushButton()
-        self.alert_mode_button.setText(self.alert_mode)
-        # togalert_mode_buttonEnabled(True)
-        self.alert_mode_button.clicked.connect(self.switch_mode)  # type: ignore[attr-defined]
-        if not self.tray_available:
-            self.alert_mode_button.setEnabled(False)
-
+    def create_frequency_slider(self) -> None:
+        """Create frequency slider for settings"""
         self.frequency_spin_box = QSpinBox()
         self.frequency_label = QLabel("Interval of the blinking detection (ms):")
         self.frequency_slider = QSlider(Qt.Orientation.Horizontal)
@@ -133,8 +112,33 @@ class Window(QWidget):
         self.frequency_slider.valueChanged.connect(  # type: ignore[attr-defined]
             self.set_timer_interval)
         self.frequency_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
-            self.synch_slider)
+            self.sync_slider)
 
+    def create_toggle_settings(self) -> None:
+        """Create toggle widget for toggle settings"""
+        self.toggle_label = QLabel(("Enable blinking detection:"))
+        # self.toggle_label.adjustSize()
+        self.toggle_button = QPushButton()
+        self.toggle_button.setText("Disabled")
+        self.toggle_button.setCheckable(True)
+        self.toggle_button.setChecked(False)
+        # toggleButton.setEnabled(True)
+        self.toggle_button.clicked.connect(self.set_timer)  # type: ignore[attr-defined]
+        self.toggle_tray.triggered.connect(  # type: ignore[attr-defined]
+            self.toggle_button.nextCheckState)
+        self.toggle_tray.triggered.connect(self.set_timer)  # type: ignore[attr-defined]
+
+    def create_alert_settings(self) -> None:
+        self.alert_mode_label = QLabel(("Lack of blink alert (Window popup|OS notification)"))
+        self.alert_mode_button = QPushButton()
+        self.alert_mode_button.setText(self.alert_mode)
+        # togalert_mode_buttonEnabled(True)
+        self.alert_mode_button.clicked.connect(self.switch_mode)  # type: ignore[attr-defined]
+        if not self.tray_available:
+            self.alert_mode_button.setEnabled(False)
+
+    def create_duration_settings(self) -> None:
+        """Create duration for settings button and label"""
         self.duration_lack_spin_box = QSpinBox()
         self.duration_lack_spin_box.setRange(5, 60)
         self.duration_lack_spin_box.setValue(self.duration_lack)
@@ -142,6 +146,8 @@ class Window(QWidget):
             self.update_duration_lack)
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
 
+    def create_select_cam_settings(self) -> None:
+        """Create select cam and label cam """
         self.select_cam_label = QLabel(("Choose which camera device to use"))
         self.select_cam = QComboBox()
         try:
@@ -153,6 +159,15 @@ class Window(QWidget):
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
         self.select_cam.activated.connect(lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
+
+    def create_settings(self) -> QGroupBox:
+        """Initialize all variable/object for the settings part of the program"""
+        group_box = QGroupBox(("&Settings"))
+        self.create_toggle_settings()
+        self.create_alert_settings()
+        self.create_frequency_slider()
+        self.create_duration_settings()
+        self.create_select_cam_settings()
 
         grid = QGridLayout()
         grid.addWidget(self.toggle_label, 0, 0, 1, 1)
@@ -236,8 +251,8 @@ class Window(QWidget):
         print(f"{slider_value=}")
 
     @Slot()
-    def synch_slider(self, spinbox_value: int) -> None:
-        """Synch the slider with the spinbox
+    def sync_slider(self, spinbox_value: int) -> None:
+        """Sync the slider with the spinbox
 
         :param spinbox_value: current value of the spin box
         """
