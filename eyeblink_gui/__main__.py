@@ -113,6 +113,7 @@ class EyeblinkModelThread(QThread):
 class Window(QWidget):
     """Widget of the main window"""
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self,  parent: Optional[QWidget] = None) -> None:
         """Initialize all variable and create the layout of the window
         :param parent: parent of the widget, defaults to None
