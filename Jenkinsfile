@@ -9,7 +9,7 @@ pipeline {
   }
 
   environment {
-    PYTHON_MODULES = 'eyeblink_gui'
+    PYTHON_MODULES = 'eyeblink_gui tests'
   }
 
   agent {
