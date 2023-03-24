@@ -11,6 +11,23 @@ RUN groupadd --gid "${GROUP_ID}" "${USERNAME}" && \
     echo "${AUX_GROUP_IDS}" | xargs -n1 echo | xargs -I% groupadd --gid % group% && \
     echo "${AUX_GROUP_IDS}" | xargs -n1 echo | xargs -I% usermod --append --groups group% "${USERNAME}"
 
+RUN apt-get update
+RUN apt-get autoclean && \
+    apt-get install -y --no-install-recommends \
+    libegl1-mesa \
+    libgl1 \
+    libdbus-1-3 \
+    libxcb1\
+    libxcb-icccm4\ 
+    libxcb-image0\
+    libxcb-keysyms1\
+    libxcb-randr0\
+    libxcb-render-util0\
+    x11-xserver-utils \
+    libxkbcommon-x11-0 \
+    x11-utils \
+    && apt-get clean
+
 # Install essential packages
 COPY requirements.txt .
 RUN pip install -r requirements.txt

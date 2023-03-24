@@ -9,7 +9,7 @@ pipeline {
   }
 
   environment {
-    PYTHON_MODULES = 'eyeblink_gui'
+    PYTHON_MODULES = 'eyeblink_gui tests'
   }
 
   agent {
@@ -27,13 +27,13 @@ pipeline {
       steps {
         sh """#!/usr/bin/env bash
           set -Eeux
-          python3 -m pylint ${PYTHON_MODULES} tests |& tee pylint.log
+          python3 -m pylint ${PYTHON_MODULES} |& tee pylint.log
           echo "\${PIPESTATUS[0]}" | tee pylint_status.log
-          python3 -m mypy ${PYTHON_MODULES} tests |& tee mypy.log
+          python3 -m mypy ${PYTHON_MODULES} |& tee mypy.log
           echo "\${PIPESTATUS[0]}" | tee mypy_status.log
-          python3 -m pycodestyle ${PYTHON_MODULES} tests |& tee pycodestyle.log
+          python3 -m pycodestyle ${PYTHON_MODULES} |& tee pycodestyle.log
           echo "\${PIPESTATUS[0]}" | tee pycodestyle_status.log
-          python -m pydocstyle ${PYTHON_MODULES} tests |& tee pydocstyle.log
+          python -m pydocstyle ${PYTHON_MODULES} |& tee pydocstyle.log
           echo "\${PIPESTATUS[0]}" | tee pydocstyle_status.log
           """
       }

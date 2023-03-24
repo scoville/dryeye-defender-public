@@ -5,13 +5,13 @@ from typing import List, Optional, Tuple
 
 import cv2
 import torch
-from blinkdetector.models.heatmapmodel import load_keypoint_model
-from PySide6.QtCharts import (QBarSeries, QBarSet, QChart, QChartView)
+from blinkdetector.models.heatmapmodel import load_keypoint_model_vino
+from PySide6.QtCharts import QBarSeries, QBarSet, QChart, QChartView
 from PySide6.QtCore import QObject, Qt, QThread, QTimer, Signal, Slot
-from PySide6.QtGui import QPainter, QIcon
-from PySide6.QtWidgets import (QApplication, QSpinBox, QGridLayout, QGroupBox,
-                               QLabel, QMessageBox, QPushButton, QSlider,
-                               QWidget, QSystemTrayIcon, QMenu, QMainWindow)
+from PySide6.QtGui import QIcon, QPainter
+from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QLabel,
+                               QMainWindow, QMenu, QMessageBox, QPushButton,
+                               QSlider, QSpinBox, QSystemTrayIcon, QWidget)
 from retinaface import RetinaFace
 
 from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame,
@@ -95,24 +95,25 @@ class EyeblinkModelThread(QThread):
         print("init thread")
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.face_detector = RetinaFace(quality="speed")  # speed for better performance
-        self.keypoint_model = load_keypoint_model(
-            "submodules/eyeblink-detection/assets/ckpt/epoch_80.pth.tar", self.device)
+        self.keypoint_model = load_keypoint_model_vino(
+            "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
 
         # last_alert = time.time()
         self.cap = cv2.VideoCapture(0)
 
     def run(self) -> None:
         """Run the inference and emit to a slot the blink value"""
-        # time_start = time.time()
+        time_start = time.time()
         blink_value = compute_single_frame(self.face_detector,
                                            self.keypoint_model, self.cap, self.device)
-
+        print("time to compute frame:"+str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
 
 
 class Window(QWidget):
     """Widget of the main window"""
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self,  parent: Optional[QWidget] = None) -> None:
         """Initialize all variable and create the layout of the window
         :param parent: parent of the widget, defaults to None
@@ -123,20 +124,24 @@ class Window(QWidget):
         window_layout = QGridLayout(self)
 
         self.compute_button = QPushButton(("Compute one frame"))
-        self.compute_button.clicked.connect(self.start_thread)
+        self.compute_button.clicked.connect(self.start_thread)  # type: ignore[attr-defined]
         self.label_output = QLabel("0")
         window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
         window_layout.addWidget(self.label_output, 0, 1, 1, 1)
 
         self.eye_th = EyeblinkModelThread(self)
-        self.eye_th.finished.connect(self.thread_finished)
+        self.eye_th.finished.connect(self.thread_finished)  # type: ignore[attr-defined]
         self.eye_th.update_label_output.connect(self.output_slot)
 
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.start_thread)
+        self.timer.timeout.connect(self.start_thread)  # type: ignore[attr-defined]
         self.timer.setInterval(100)
 
         self.blink_history: List[Tuple[float, int]] = []
+
+        self.time_last_finished_th = 0.0
+        self.label_fps = QLabel("fps: 0")
+        window_layout.addWidget(self.label_fps, 0, 2, 1, 1)
 
         self.tray_available = QSystemTrayIcon.isSystemTrayAvailable() and \
             QSystemTrayIcon.supportsMessages()
@@ -149,7 +154,8 @@ class Window(QWidget):
 
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
-        self.get_stats.clicked.connect(lambda: self.blink_graph.update_graph(self.blink_history))
+        self.get_stats.clicked.connect(  # type: ignore[attr-defined]
+            lambda: self.blink_graph.update_graph(self.blink_history))
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
@@ -174,7 +180,7 @@ class Window(QWidget):
         menu = QMenu()
         self.toggle_tray = menu.addAction("Disabled")
         quit_tray = menu.addAction("Quit")
-        quit_tray.triggered.connect(sys.exit)
+        quit_tray.triggered.connect(sys.exit)  # type: ignore[attr-defined]
         # self.toggle_tray.triggered.connect(self.set_timer)
 
         tray = QSystemTrayIcon(icon)
@@ -194,15 +200,16 @@ class Window(QWidget):
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
-        self.toggle_button.clicked.connect(self.set_timer)
-        self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
-        self.toggle_tray.triggered.connect(self.set_timer)
+        self.toggle_button.clicked.connect(self.set_timer)  # type: ignore[attr-defined]
+        self.toggle_tray.triggered.connect(  # type: ignore[attr-defined]
+            self.toggle_button.nextCheckState)
+        self.toggle_tray.triggered.connect(self.set_timer)  # type: ignore[attr-defined]
 
         self.alert_mode_label = QLabel(("Lack of blink alert (Window popup|OS notification)"))
         self.alert_mode_button = QPushButton()
         self.alert_mode_button.setText(self.alert_mode)
         # togalert_mode_buttonEnabled(True)
-        self.alert_mode_button.clicked.connect(self.switch_mode)
+        self.alert_mode_button.clicked.connect(self.switch_mode)  # type: ignore[attr-defined]
         if not self.tray_available:
             self.alert_mode_button.setEnabled(False)
 
@@ -217,13 +224,16 @@ class Window(QWidget):
         self.frequency_slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
         self.frequency_slider.setValue(100)
         self.frequency_spin_box.setValue(100)
-        self.frequency_slider.valueChanged.connect(self.set_timer_interval)
-        self.frequency_spin_box.valueChanged.connect(self.synch_slider)
+        self.frequency_slider.valueChanged.connect(  # type: ignore[attr-defined]
+            self.set_timer_interval)
+        self.frequency_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
+            self.synch_slider)
 
         self.duration_lack_spin_box = QSpinBox()
         self.duration_lack_spin_box.setRange(5, 60)
         self.duration_lack_spin_box.setValue(self.duration_lack)
-        self.duration_lack_spin_box.valueChanged.connect(self.update_duration_lack)
+        self.duration_lack_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
+            self.update_duration_lack)
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
         grid = QGridLayout()
         grid.addWidget(self.toggle_label, 0, 0, 1, 1)
@@ -242,13 +252,17 @@ class Window(QWidget):
     @Slot()
     def start_thread(self) -> None:
         """Slot that call the thread for inference"""
-        print("starting thread for computing one frame")
-        self.eye_th.start()
+        if not self.eye_th.isRunning():
+            print("starting thread for computing one frame")
+            self.eye_th.start()
 
     @Slot()
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
         print("Thread is finished")
+        diff_time = time.time() - self.time_last_finished_th
+        self.time_last_finished_th = time.time()
+        self.label_fps.setText(f"fps:{str(int(1/diff_time))}")
         lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
         if lack_blink:
             print("Lack of blink detected")
