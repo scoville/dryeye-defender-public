@@ -154,8 +154,8 @@ class Window(QWidget):
 
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
-        self.get_stats.clicked.connect(
-            lambda: self.blink_graph.update_graph(self.blink_history))  # type: ignore[attr-defined]
+        self.get_stats.clicked.connect(  # type: ignore[attr-defined]
+            lambda: self.blink_graph.update_graph(self.blink_history))
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
@@ -201,8 +201,8 @@ class Window(QWidget):
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
         self.toggle_button.clicked.connect(self.set_timer)  # type: ignore[attr-defined]
-        self.toggle_tray.triggered.connect(
-            self.toggle_button.nextCheckState)  # type: ignore[attr-defined]
+        self.toggle_tray.triggered.connect(  # type: ignore[attr-defined]
+            self.toggle_button.nextCheckState)
         self.toggle_tray.triggered.connect(self.set_timer)  # type: ignore[attr-defined]
 
         self.alert_mode_label = QLabel(("Lack of blink alert (Window popup|OS notification)"))
@@ -224,16 +224,16 @@ class Window(QWidget):
         self.frequency_slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
         self.frequency_slider.setValue(100)
         self.frequency_spin_box.setValue(100)
-        self.frequency_slider.valueChanged.connect(
-            self.set_timer_interval)  # type: ignore[attr-defined]
-        self.frequency_spin_box.valueChanged.connect(
-            self.synch_slider)  # type: ignore[attr-defined]
+        self.frequency_slider.valueChanged.connect(  # type: ignore[attr-defined]
+            self.set_timer_interval)
+        self.frequency_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
+            self.synch_slider)
 
         self.duration_lack_spin_box = QSpinBox()
         self.duration_lack_spin_box.setRange(5, 60)
         self.duration_lack_spin_box.setValue(self.duration_lack)
-        self.duration_lack_spin_box.valueChanged.connect(
-            self.update_duration_lack)  # type: ignore[attr-defined]
+        self.duration_lack_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
+            self.update_duration_lack)
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
         grid = QGridLayout()
         grid.addWidget(self.toggle_label, 0, 0, 1, 1)
