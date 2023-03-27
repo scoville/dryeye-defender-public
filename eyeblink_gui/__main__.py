@@ -84,7 +84,7 @@ class Window(QWidget):
         """
         print("using system tray")
         menu = QMenu()
-        self.toggle_tray = menu.addAction("Disabled")
+        self.toggle_tray = menu.addAction("Enable")
         quit_tray = menu.addAction("Quit")
         quit_tray.triggered.connect(sys.exit)  # type: ignore[attr-defined]
         # self.toggle_tray.triggered.connect(self.set_timer)
@@ -119,7 +119,7 @@ class Window(QWidget):
         self.toggle_label = QLabel(("Enable blinking detection:"))
         # self.toggle_label.adjustSize()
         self.toggle_button = QPushButton()
-        self.toggle_button.setText("Disabled")
+        self.toggle_button.setText("Enable")
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
@@ -272,15 +272,15 @@ class Window(QWidget):
         print("timer check")
         button_state = self.toggle_button.isChecked()
         if button_state:
-            self.toggle_button.setText("Enabled")
-            self.toggle_tray.setText("Enabled")
+            self.toggle_button.setText("Disable")
+            self.toggle_tray.setText("Disable")
             self.blink_history = [(time.time(), 1)]
             # initialize with a blink, maybe need to change
             self.timer.start()
             print("timer started")
         else:
-            self.toggle_button.setText("Disabled")
-            self.toggle_tray.setText("Disabled")
+            self.toggle_button.setText("Enable")
+            self.toggle_tray.setText("Enable")
             print("timer stop")
             self.timer.stop()
 
