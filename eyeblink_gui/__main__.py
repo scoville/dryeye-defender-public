@@ -153,7 +153,7 @@ class Window(QWidget):
         try:
             cap_indexes = get_cap_indexes()
             self.select_cam.addItems(cap_indexes)
-            self.eye_th.init_cap(cap_indexes[0])
+            self.eye_th.init_cap(int(cap_indexes[0]))
         except ValueError as err:
             print(err)
             self.toggle_button.setEnabled(False)
