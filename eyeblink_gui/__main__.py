@@ -13,7 +13,10 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
 from eyeblink_gui.utils.eyeblink_verification import lack_of_blink_detection
 from eyeblink_gui.utils.utils import get_cap_indexes
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
+from eyeblink_gui.widgets.debug_window import DebugWindow
 from eyeblink_gui.widgets.eyeblink_thread import EyeblinkModelThread
+
+DEBUG = True
 
 
 class Window(QWidget):
@@ -29,13 +32,18 @@ class Window(QWidget):
         self.duration_lack = 10  # minimum duration for considering lack of blink
         window_layout = QGridLayout(self)
 
-        self.compute_button = QPushButton(("Compute one frame"))
-        self.compute_button.clicked.connect(self.start_thread)  # type: ignore[attr-defined]
-        self.label_output = QLabel("0")
-        window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
-        window_layout.addWidget(self.label_output, 0, 1, 1, 1)
+        if DEBUG:
+            self.compute_button = QPushButton(("Compute one frame"))
+            self.compute_button.clicked.connect(self.start_thread)  # type: ignore[attr-defined]
+            self.label_output = QLabel("0")
+            self.debug_window_button = QPushButton("Open debug window")
+            self.debug_window_button.clicked.connect(  # type: ignore[attr-defined]
+                self.open_debug_window)
+            window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
+            window_layout.addWidget(self.label_output, 0, 1, 1, 1)
+            window_layout.addWidget(self.debug_window_button, 0, 2, 1, 1)
 
-        self.eye_th = EyeblinkModelThread(self)
+        self.eye_th = EyeblinkModelThread(self, DEBUG)
         self.eye_th.finished.connect(self.thread_finished)  # type: ignore[attr-defined]
         self.eye_th.update_label_output.connect(self.output_slot)
 
@@ -45,9 +53,10 @@ class Window(QWidget):
 
         self.blink_history: List[Tuple[float, int]] = []
 
-        self.time_last_finished_th = 0.0
-        self.label_fps = QLabel("fps: 0")
-        window_layout.addWidget(self.label_fps, 0, 2, 1, 1)
+        if DEBUG:
+            self.time_last_finished_th = 0.0
+            self.label_fps = QLabel("fps: 0")
+            window_layout.addWidget(self.label_fps, 0, 3, 1, 1)
 
         self.tray_available = QSystemTrayIcon.isSystemTrayAvailable() and \
             QSystemTrayIcon.supportsMessages()
@@ -205,9 +214,10 @@ class Window(QWidget):
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
         print("Thread is finished")
-        diff_time = time.time() - self.time_last_finished_th
-        self.time_last_finished_th = time.time()
-        self.label_fps.setText(f"fps:{str(int(1/diff_time))}")
+        if DEBUG:
+            diff_time = time.time() - self.time_last_finished_th
+            self.time_last_finished_th = time.time()
+            self.label_fps.setText(f"fps:{str(int(1/diff_time))}")
         lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
         if lack_blink:
             print("Lack of blink detected")
@@ -225,10 +235,11 @@ class Window(QWidget):
         """
         self.blink_history.append((time.time(), output))
         if output == 1:
-            self.label_output.setText("Blink detected")
+            if DEBUG:
+                self.label_output.setText("Blink detected")
             if self.alert_mode == "popup":
                 self.blink_messagebox.close()
-        else:
+        elif DEBUG:
             self.label_output.setText("No blink detected")
 
     @Slot()
@@ -283,6 +294,12 @@ class Window(QWidget):
             self.toggle_tray.setText("Enable")
             print("timer stop")
             self.timer.stop()
+
+    @Slot()
+    def open_debug_window(self) -> None:
+        self.debug_window = DebugWindow(self.eye_th)
+        self.debug_window.show()
+        print("open debug")
 
 
 class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
