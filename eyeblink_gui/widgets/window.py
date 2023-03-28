@@ -51,8 +51,6 @@ class Window(QWidget):
         self.timer.timeout.connect(self.start_thread)  # type: ignore[attr-defined]
         self.timer.setInterval(100)
 
-        self.blink_history: List[Tuple[float, int]] = []
-
         if DEBUG:
             self.time_last_finished_th = 0.0
             self.label_fps = QLabel("fps: 0")
@@ -70,7 +68,7 @@ class Window(QWidget):
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
         self.get_stats.clicked.connect(  # type: ignore[attr-defined]
-            lambda: self.blink_graph.update_graph(self.blink_history))
+            lambda: self.blink_graph.update_graph(self.eye_th.model_api._blink_history))
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
@@ -219,7 +217,7 @@ class Window(QWidget):
             diff_time = time.time() - self.time_last_finished_th
             self.time_last_finished_th = time.time()
             self.label_fps.setText(f"fps:{str(int(1/diff_time))}")
-        lack_blink = lack_of_blink_detection(self.blink_history, self.duration_lack)
+        lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
         if lack_blink:
             print("Lack of blink detected")
             if self.alert_mode == "popup":
@@ -234,7 +232,7 @@ class Window(QWidget):
 
         :param output: output for the frame processed 1 for blink detected, -1 for no blink
         """
-        self.blink_history.append((time.time(), output))
+        self.eye_th.model_api.add_blink(time.time(), output)
         if output == 1:
             if DEBUG:
                 self.label_output.setText("Blink detected")
@@ -286,7 +284,7 @@ class Window(QWidget):
         if button_state:
             self.toggle_button.setText("Disable")
             self.toggle_tray.setText("Disable")
-            self.blink_history = [(time.time(), 1)]
+            self.eye_th.model_api.init_blink()
             # initialize with a blink, maybe need to change
             self.timer.start()
             print("timer started")
