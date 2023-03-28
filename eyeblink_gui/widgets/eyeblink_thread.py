@@ -2,12 +2,13 @@ import time
 from typing import Optional
 
 import cv2
-import torch
-from blinkdetector.models.heatmapmodel import load_keypoint_model_vino
+from blinkdetector.api.model_api import OpenVinoModelAPI
+from PIL import Image
+from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
-from retinaface import RetinaFace
+from PySide6.QtGui import QPixmap
 
-from eyeblink_gui.utils.eyeblink_verification import (compute_single_frame)
+from eyeblink_gui.utils.eyeblink_verification import compute_single_frame
 
 
 class EyeblinkModelThread(QThread):
@@ -15,8 +16,9 @@ class EyeblinkModelThread(QThread):
     callable maximum one at a time
     """
     update_label_output = Signal(int)
+    update_debug_img = Signal(QPixmap)
 
-    def __init__(self, parent: Optional[QObject] = None) -> None:
+    def __init__(self,  parent: Optional[QObject] = None, debug: bool = False) -> None:
         """Initialized the model and class variables,
         these variables are saved between inference and even on different thread
 
@@ -33,6 +35,7 @@ class EyeblinkModelThread(QThread):
             "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
         # last_alert = time.time()
         self.cap = None
+        self.debug = debug
         # self.init_cap()
 
     def init_cap(self, input_device: int = 0) -> None:
@@ -53,3 +56,7 @@ class EyeblinkModelThread(QThread):
         blink_value, img = self.model_api.update(img, debug=self.debug)
         print("time to compute frame:"+str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
+        if self.debug:
+            rgb_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            PIL_image = Image.fromarray(rgb_image).convert('RGB')
+            self.update_debug_img.emit(QPixmap.fromImage(ImageQt(PIL_image)))
