@@ -196,7 +196,7 @@ class Window(QWidget):
         group_box.setLayout(grid)
         return group_box
 
-    def alert_no_cam(self) -> None:  # type: ignore[attr-defined]
+    def alert_no_cam(self) -> None:  # pylint: disable=no-self-use
         """Alert the user with a window popup that there is no webcam connected"""
         no_cam_messagebox = QMessageBox()
         no_cam_messagebox.setIcon(QMessageBox.Icon.Warning)
