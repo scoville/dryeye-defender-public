@@ -31,6 +31,7 @@ class Window(QWidget):
         self.duration_lack = 10  # minimum duration for considering lack of blink
         window_layout = QGridLayout(self)
 
+        self.icon = QIcon("images/blink.png")
         if DEBUG:
             self.compute_button = QPushButton(("Compute one frame"))
             self.compute_button.clicked.connect(self.start_thread)  # type: ignore[attr-defined]
@@ -97,12 +98,11 @@ class Window(QWidget):
         quit_tray.triggered.connect(sys.exit)  # type: ignore[attr-defined]
         # self.toggle_tray.triggered.connect(self.set_timer)
 
-        icon = QIcon("images/blink.png")
-        tray = QSystemTrayIcon(icon)
+        tray = QSystemTrayIcon(self.icon)
         tray.setContextMenu(menu)
         # system_tray.setContextMenu()
         tray.setVisible(True)
-        tray.showMessage("Test", "Tray initialized", icon, 5000)
+        tray.showMessage("Test", "Tray initialized", self.icon, 5000)
         return tray
 
     def create_frequency_slider(self) -> None:
@@ -227,7 +227,7 @@ class Window(QWidget):
                 self.blink_messagebox.exec()
             else:
                 self.tray.showMessage(f"You didn't blink in the last {self.duration_lack} secondes",
-                                      "Blink now to close the window!", icon, 5000)
+                                      "Blink now to close the window!", self.icon, 5000)
 
     @Slot()
     def output_slot(self, output: int) -> None:
