@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
         self.resize(800, 700)
         widget = Window()
         self.setCentralWidget(widget)
+        icon = QIcon("images/blink.png")
         self.setWindowIcon(icon)
 
 
@@ -24,7 +25,6 @@ if __name__ == "__main__":
     app = QApplication()
     # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
 
-    icon = QIcon("images/blink.png")
     # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
     main_window = MainWindow()
     main_window.show()
