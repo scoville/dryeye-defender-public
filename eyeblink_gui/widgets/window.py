@@ -1,7 +1,7 @@
 """Class for the main window widget"""
 import sys
 import time
-from typing import List, Optional, Tuple
+from typing import Optional
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
@@ -9,7 +9,6 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
-from eyeblink_gui.utils.eyeblink_verification import lack_of_blink_detection
 from eyeblink_gui.utils.utils import get_cap_indexes
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
 from eyeblink_gui.widgets.debug_window import DebugWindow
