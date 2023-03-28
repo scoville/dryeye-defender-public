@@ -1,19 +1,19 @@
 """Class for the main window widget"""
-from eyeblink_gui.widgets.eyeblink_thread import EyeblinkModelThread
-from eyeblink_gui.widgets.debug_window import DebugWindow
-from eyeblink_gui.widgets.blink_graph import BlinkGraph
-from eyeblink_gui.utils.utils import get_cap_indexes
-from eyeblink_gui.utils.eyeblink_verification import lack_of_blink_detection
-from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
-                               QMenu, QMessageBox, QPushButton, QSlider,
-                               QSpinBox, QSystemTrayIcon, QWidget)
-from PySide6.QtGui import QIcon
 import sys
 import time
 from typing import List, Optional, Tuple
 
 from PySide6.QtCore import Qt, QTimer, Slot
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
+                               QMenu, QMessageBox, QPushButton, QSlider,
+                               QSpinBox, QSystemTrayIcon, QWidget)
 
+from eyeblink_gui.utils.eyeblink_verification import lack_of_blink_detection
+from eyeblink_gui.utils.utils import get_cap_indexes
+from eyeblink_gui.widgets.blink_graph import BlinkGraph
+from eyeblink_gui.widgets.debug_window import DebugWindow
+from eyeblink_gui.widgets.eyeblink_thread import EyeblinkModelThread
 
 DEBUG = True
 
@@ -75,7 +75,7 @@ class Window(QWidget):
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
 
-    def create_messagebox(self) -> QMessageBox:  # pylint: disable=no-self-use
+    def create_messagebox(self) -> QMessageBox:
         """Initialize messagebox for later usage
 
         :return: return the messagebox object
@@ -196,7 +196,7 @@ class Window(QWidget):
         group_box.setLayout(grid)
         return group_box
 
-    def alert_no_cam(self) -> None:
+    def alert_no_cam(self) -> None:  # type: ignore[attr-defined]
         """Alert the user with a window popup that there is no webcam connected"""
 
         no_cam_messagebox = QMessageBox()
