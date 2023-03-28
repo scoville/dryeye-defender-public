@@ -1,3 +1,4 @@
+"""Class for the thread computing the model"""
 import time
 from typing import Optional
 
@@ -7,8 +8,6 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
 from PySide6.QtGui import QPixmap
-
-from eyeblink_gui.utils.eyeblink_verification import compute_single_frame
 
 
 class EyeblinkModelThread(QThread):
@@ -48,6 +47,7 @@ class EyeblinkModelThread(QThread):
         self.cap = cv2.VideoCapture(input_device)
 
     def run(self) -> None:
+        """Run the thread, compute model and signal the image and output"""
         ret, img = self.cap.read()
         if not ret:
             raise ValueError("No output from camera")
@@ -58,5 +58,5 @@ class EyeblinkModelThread(QThread):
         self.update_label_output.emit(blink_value)
         if self.debug:
             rgb_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            PIL_image = Image.fromarray(rgb_image).convert('RGB')
-            self.update_debug_img.emit(QPixmap.fromImage(ImageQt(PIL_image)))
+            pil_image = Image.fromarray(rgb_image).convert("RGB")
+            self.update_debug_img.emit(QPixmap.fromImage(ImageQt(pil_image)))
