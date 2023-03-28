@@ -33,6 +33,7 @@ class EyeblinkModelThread(QThread):
         self.model_api = OpenVinoModelAPI(
             "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
         # last_alert = time.time()
+
         self.cap = None
         self.debug = debug
         # self.init_cap()
@@ -48,7 +49,7 @@ class EyeblinkModelThread(QThread):
 
     def run(self) -> None:
         """Run the thread, compute model and signal the image and output"""
-        ret, img = self.cap.read()
+        ret, img = self.cap.read()  # type: ignore[attr-defined]
         if not ret:
             raise ValueError("No output from camera")
 
