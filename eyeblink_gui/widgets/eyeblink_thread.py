@@ -25,11 +25,12 @@ class EyeblinkModelThread(QThread):
         QThread.__init__(self, parent)
 
         print("init thread")
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.face_detector = RetinaFace(quality="speed")  # speed for better performance
-        self.keypoint_model = load_keypoint_model_vino(
-            "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
-
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.face_detector = RetinaFace(quality="speed")  # speed for better performance
+        # self.keypoint_model = load_keypoint_model_vino(
+        #     "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
+        self.model_api = OpenVinoModelAPI(
+            "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
         # last_alert = time.time()
         self.cap = None
         # self.init_cap()
@@ -44,9 +45,11 @@ class EyeblinkModelThread(QThread):
         self.cap = cv2.VideoCapture(input_device)
 
     def run(self) -> None:
-        """Run the inference and emit to a slot the blink value"""
+        ret, img = self.cap.read()
+        if not ret:
+            raise ValueError("No output from camera")
+
         time_start = time.time()
-        blink_value = compute_single_frame(self.face_detector,
-                                           self.keypoint_model, self.cap, self.device)
+        blink_value, img = self.model_api.update(img, debug=self.debug)
         print("time to compute frame:"+str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
