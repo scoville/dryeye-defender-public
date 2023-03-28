@@ -157,7 +157,7 @@ class Window(QWidget):
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
 
     def create_select_cam_settings(self) -> None:
-        """Create select cam and label cam """
+        """Create select cam and label cam"""
         self.select_cam_label = QLabel(("Choose which camera device to use"))
         self.select_cam = QComboBox()
         try:
@@ -198,7 +198,6 @@ class Window(QWidget):
 
     def alert_no_cam(self) -> None:  # type: ignore[attr-defined]
         """Alert the user with a window popup that there is no webcam connected"""
-
         no_cam_messagebox = QMessageBox()
         no_cam_messagebox.setIcon(QMessageBox.Icon.Warning)
         no_cam_messagebox.setText("No webcam has been detected")
