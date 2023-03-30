@@ -43,4 +43,4 @@ USER user
 
 # Not needed, but makes it easy to run outside of Jenkins:
 workdir /home/user/eyeblink
-COPY . .
+# COPY . .
