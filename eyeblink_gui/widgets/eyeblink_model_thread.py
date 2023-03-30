@@ -1,4 +1,5 @@
 """Class for the thread computing the model"""
+import logging
 import time
 from typing import Optional
 
@@ -8,6 +9,8 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
 from PySide6.QtGui import QPixmap
+
+LOGGER = logging.getLogger(__name__)
 
 
 class EyeblinkModelThread(QThread):
@@ -25,7 +28,7 @@ class EyeblinkModelThread(QThread):
         """
         QThread.__init__(self, parent)
 
-        print("init thread")
+        LOGGER.info("init thread")
         # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # self.face_detector = RetinaFace(quality="speed")  # speed for better performance
         # self.keypoint_model = load_keypoint_model_vino(
@@ -55,7 +58,7 @@ class EyeblinkModelThread(QThread):
 
         time_start = time.time()
         blink_value, annotated_img = self.model_api.update(img, debug=self.debug)
-        print("time to compute frame:"+str(time.time()-time_start))
+        LOGGER.info("time to compute frame:"+str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
         if self.debug:
             # assert annotated_img, f"The image was invalid {annotated_img }"
