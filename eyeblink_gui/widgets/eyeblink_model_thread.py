@@ -51,13 +51,14 @@ class EyeblinkModelThread(QThread):
         """Run the thread, compute model and signal the image and output"""
         ret, img = self.cap.read()  # type: ignore[attr-defined]
         if not ret:
-            raise ValueError("No output from camera")
+            raise IOError("No output from camera")
 
         time_start = time.time()
-        blink_value, img = self.model_api.update(img, debug=self.debug)
+        blink_value, annotated_img = self.model_api.update(img, debug=self.debug)
         print("time to compute frame:"+str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
         if self.debug:
-            rgb_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            pil_image = Image.fromarray(rgb_image).convert("RGB")
-            self.update_debug_img.emit(QPixmap.fromImage(ImageQt(pil_image)))
+            # assert annotated_img, f"The image was invalid {annotated_img }"
+            annotated_img = cv2.cvtColor(annotated_img, cv2.COLOR_BGR2RGB)
+            annotated_img = Image.fromarray(annotated_img).convert("RGB")
+            self.update_debug_img.emit(QPixmap.fromImage(ImageQt(annotated_img)))
