@@ -3,14 +3,17 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from eyeblink_gui.widgets.eyeblink_thread import EyeblinkModelThread
+from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 
 class DebugWindow(QWidget):
     """Class to create the debug window with a juste a simple image of the output of the model"""
 
     def __init__(self, thread: EyeblinkModelThread):
-        """Init the debug window"""
+        """Init the debug window
+
+        :param thread: thread that compute the model
+        """
         super().__init__()
         # Title and dimensions
         # self.setWindowTitle("Debug window")
