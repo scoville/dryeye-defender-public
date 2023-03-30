@@ -1,4 +1,5 @@
 """Class for the main window widget"""
+import logging
 import sys
 import time
 from typing import Optional
@@ -15,6 +16,7 @@ from eyeblink_gui.widgets.debug_window import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 DEBUG = True
+LOGGER = logging.getLogger(__name__)
 
 
 class Window(QWidget):
@@ -88,7 +90,7 @@ class Window(QWidget):
 
         :return: Return the system tray initialized
         """
-        print("using system tray")
+        LOGGER.info("using system tray")
         menu = QMenu()
         self.toggle_tray = menu.addAction("Enable")
         quit_tray = menu.addAction("Quit")
@@ -162,7 +164,7 @@ class Window(QWidget):
             self.select_cam.addItems(cap_indexes)
             self.eye_th.init_cap(int(cap_indexes[0]))
         except ValueError as err:
-            print(err)
+            LOGGER.exception("Error has occured when trying to obtain the camera %s", err)
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
         self.select_cam.activated.connect(  # type: ignore[attr-defined]
@@ -205,20 +207,20 @@ class Window(QWidget):
     def start_thread(self) -> None:
         """Slot that call the thread for inference"""
         if not self.eye_th.isRunning():
-            print("starting thread for computing one frame")
+            LOGGER.info("starting thread for computing one frame")
             self.eye_th.start()
 
     @Slot()
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
-        print("Thread is finished")
+        LOGGER.info("Thread is finished")
         if DEBUG:
             diff_time = time.time() - self.time_last_finished_th
             self.time_last_finished_th = time.time()
             self.label_fps.setText(f"fps:{str(int(1/diff_time))}")
         lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
         if lack_blink:
-            print("Lack of blink detected")
+            LOGGER.info("Lack of blink detected")
             if self.alert_mode == "popup":
                 self.blink_messagebox.exec()
             else:
@@ -257,7 +259,7 @@ class Window(QWidget):
         """
         self.timer.setInterval(slider_value)
         self.frequency_spin_box.setValue(slider_value)
-        print(f"{slider_value=}")
+        LOGGER.info(f"{slider_value=}")
 
     @Slot()
     def sync_slider(self, spinbox_value: int) -> None:
@@ -278,7 +280,7 @@ class Window(QWidget):
     @Slot()
     def set_timer(self) -> None:
         """Slot called when automatic inference is enabled, manage button and timer state"""
-        print("timer check")
+        LOGGER.info("timer check")
         button_state = self.toggle_button.isChecked()
         if button_state:
             self.toggle_button.setText("Disable")
@@ -286,11 +288,11 @@ class Window(QWidget):
             self.eye_th.model_api.init_blink()  # pylint:disable=no-member
             # initialize with a blink, maybe need to change
             self.timer.start()
-            print("timer started")
+            LOGGER.info("timer started")
         else:
             self.toggle_button.setText("Enable")
             self.toggle_tray.setText("Enable")
-            print("timer stop")
+            LOGGER.info("timer stop")
             self.timer.stop()
 
     @Slot()
@@ -298,4 +300,4 @@ class Window(QWidget):
         """Create debug window and launch it"""
         self.debug_window = DebugWindow(self.eye_th)
         self.debug_window.show()
-        print("open debug")
+        LOGGER.info("open debug")
