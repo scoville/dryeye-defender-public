@@ -1,22 +1,30 @@
 """Utils functions"""
 
+from typing import List
 
-from typing import List, Any
 import cv2
 
 
-def get_cap_indexes() -> List[Any]:
-    """Find all camera available
-
-    :return: List of all cap device available
-    """
-    available_cap = []
-    for index in range(10):
-        cap = cv2.VideoCapture(index)
-        if cap.read()[0]:
-            available_cap.append(str(index))
-        cap.release()
-    if not available_cap:  # empty list
-        raise ValueError("No capture device detected")
-
-    return available_cap
+def get_cap_indexes() -> List[str]:
+    """Test the ports and returns a tuple with the available ports and the ones that are working."""
+    # non_working_ports = []
+    dev_port = 0
+    working_ports: List[str] = []
+    # available_ports = []
+    for dev_port in range(6):  # if there are more than 5 non working ports stop the testing.
+        camera = cv2.VideoCapture(dev_port)
+        if not camera.isOpened():
+            # non_working_ports.append(dev_port)
+            print("Port %s is not working." % dev_port)
+        else:
+            is_reading, _ = camera.read()
+            w = camera.get(3)
+            h = camera.get(4)
+            if is_reading:
+                print("Port %s is working and reads images (%s x %s)" % (dev_port, h, w))
+                working_ports.append(str(dev_port))
+            else:
+                print("Port %s for camera ( %s x %s) is present but does not reads." % (
+                    dev_port, h, w))
+                # available_ports.append(dev_port)
+    return working_ports
