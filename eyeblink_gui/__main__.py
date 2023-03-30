@@ -1,10 +1,14 @@
 """Main qt file, containing code for the qt window etc"""
+import logging
+import os
 import sys
 
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from eyeblink_gui.widgets.window import Window
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
 class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
