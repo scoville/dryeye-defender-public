@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
 from eyeblink_gui.utils.utils import get_cap_indexes
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
 from eyeblink_gui.widgets.debug_window import DebugWindow
-from eyeblink_gui.widgets.eyeblink_thread import EyeblinkModelThread
+from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 DEBUG = True
 
@@ -79,7 +79,7 @@ class Window(QWidget):
         """
         blink_messagebox = QMessageBox()
         blink_messagebox.setIcon(QMessageBox.Icon.Information)
-        blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} secondes")
+        blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} seconds")
         blink_messagebox.setInformativeText("Blink now to close the window!")
         return blink_messagebox
 
@@ -277,8 +277,7 @@ class Window(QWidget):
 
     @Slot()
     def set_timer(self) -> None:
-        """Slot called when automatic inference is enable, manage button and timer state"""
-        print("timer check")
+        """Slot called when automatic inference is enabled, manage button and timer state""" print("timer check")
         button_state = self.toggle_button.isChecked()
         if button_state:
             self.toggle_button.setText("Disable")
