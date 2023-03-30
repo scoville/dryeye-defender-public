@@ -277,7 +277,8 @@ class Window(QWidget):
 
     @Slot()
     def set_timer(self) -> None:
-        """Slot called when automatic inference is enabled, manage button and timer state""" print("timer check")
+        """Slot called when automatic inference is enabled, manage button and timer state"""
+        print("timer check")
         button_state = self.toggle_button.isChecked()
         if button_state:
             self.toggle_button.setText("Disable")
