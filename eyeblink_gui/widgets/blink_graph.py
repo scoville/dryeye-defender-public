@@ -58,7 +58,7 @@ class BlinkGraph(QWidget):
                 if blink_value == 1:
                     blink_per_minutes[current_minute] += 1
             blink_per_minutes.reverse()
-            LOGGER.info(f"{blink_per_minutes=}")
+            LOGGER.info("blink_per_minutes=%s", blink_per_minutes)
             self.blink_bar.append(blink_per_minutes)
             self.series.append(self.blink_bar)
 
