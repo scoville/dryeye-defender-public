@@ -222,7 +222,8 @@ class Window(QWidget):
         if lack_blink:
             LOGGER.info("Lack of blink detected")
             if self.alert_mode == "popup":
-                self.blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} seconds")
+                self.blink_messagebox.setText(
+                    "You didn't blink in the last {self.duration_lack} seconds")
                 self.blink_messagebox.exec()
             else:
                 self.tray.showMessage(f"You didn't blink in the last {self.duration_lack} secondes",
@@ -260,7 +261,7 @@ class Window(QWidget):
         """
         self.timer.setInterval(slider_value)
         self.frequency_spin_box.setValue(slider_value)
-        LOGGER.info(f"{slider_value=}")
+        LOGGER.info("slider_value=%s", slider_value)
 
     @Slot()
     def sync_slider(self, spinbox_value: int) -> None:
