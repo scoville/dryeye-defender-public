@@ -1,3 +1,4 @@
+# pylint: disable=attribute-defined-outside-init
 """Class for the main window widget"""
 import logging
 import sys
@@ -17,8 +18,6 @@ from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 DEBUG = True
 LOGGER = logging.getLogger(__name__)
-
-# pylint : disable=attribute-defined-outside-init
 
 
 class Window(QWidget):
