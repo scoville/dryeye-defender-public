@@ -24,7 +24,7 @@ def get_cap_indexes() -> List[str]:
             w = camera.get(3)
             h = camera.get(4)
             if is_reading:
-                LOGGER.info("Port %s is working and reads images (%h x %w)", dev_port, h, w)
+                LOGGER.info("Port %s is working and reads images (%s x %s)", dev_port, h, w)
                 working_ports.append(str(dev_port))
             else:
                 LOGGER.info("Port %s for camera ( %s x %s) is present but does not reads.")
