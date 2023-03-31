@@ -18,15 +18,15 @@ def get_cap_indexes() -> List[str]:
         camera = cv2.VideoCapture(dev_port)
         if not camera.isOpened():
             # non_working_ports.append(dev_port)
-            LOGGER.info(f"Port {dev_port} is not working.")
+            LOGGER.info("Port %s is not working.", dev_port)
         else:
             is_reading, _ = camera.read()
             w = camera.get(3)
             h = camera.get(4)
             if is_reading:
-                LOGGER.info(f"Port {dev_port} is working and reads images ({h} x {w})")
+                LOGGER.info("Port %s is working and reads images (%h x %w)", dev_port, h, w)
                 working_ports.append(str(dev_port))
             else:
-                LOGGER.info(f"Port {dev_port} for camera ( {h} x {w}) is present but does not reads.")
+                LOGGER.info("Port %s for camera ( %s x %s) is present but does not reads.")
                 # available_ports.append(dev_port)
     return working_ports

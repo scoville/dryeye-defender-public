@@ -22,7 +22,6 @@ def lack_of_blink_detection(blink_history: List[Tuple[float, int]], duration_lac
             since_last_blink_duration = current_time - time_code  # how long ago was the last blink
 
             if since_last_blink_duration > duration_lack:  # is it was more than 10s ago
-                LOGGER.info(f"{time_code=}{blink_value=}{since_last_blink_duration=}")
                 return True
             # meaning that the last blink was more than 6 second ago
             # meaning there is less than 10 blink per minutes, healthy average is 15-20

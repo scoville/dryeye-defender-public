@@ -58,7 +58,7 @@ class EyeblinkModelThread(QThread):
 
         time_start = time.time()
         blink_value, annotated_img = self.model_api.update(img, debug=self.debug)
-        LOGGER.info("time to compute frame:"+str(time.time()-time_start))
+        LOGGER.info("time to compute frame: %s", str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
         if self.debug:
             # assert annotated_img, f"The image was invalid {annotated_img }"
