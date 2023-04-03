@@ -164,14 +164,14 @@ class Window(QWidget):
         """Create select cam and label cam"""
         self.select_cam_label = QLabel(("Choose which camera device to use"))
         self.select_cam = QComboBox()
-        try:
-            cap_indexes = get_cap_indexes()
-            self.select_cam.addItems(cap_indexes)
-            self.eye_th.init_cap(int(cap_indexes[0]))
-        except ValueError as err:
-            LOGGER.exception("Error has occured when trying to obtain the camera %s", err)
+        cap_indexes = get_cap_indexes()
+        if not cap_indexes:
+            LOGGER.error("No cameras could be found")
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
+        cap_indexes = get_cap_indexes()
+        self.select_cam.addItems(cap_indexes)
+        self.eye_th.init_cap(int(cap_indexes[0]))  # default to first camera index detected
         self.select_cam.activated.connect(  # type: ignore[attr-defined]
             lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
 
