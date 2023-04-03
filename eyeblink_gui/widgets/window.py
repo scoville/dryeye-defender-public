@@ -221,7 +221,7 @@ class Window(QWidget):
             LOGGER.info("starting thread for computing one frame")
             self.eye_th.start()
         else:
-            print("inference thread already running so skipping computing this frame")
+            LOGGER.info("inference thread already running so skipping computing this frame")
 
     @Slot()
     def thread_finished(self) -> None:
@@ -300,8 +300,8 @@ class Window(QWidget):
         if button_state:
             self.toggle_button.setText("Disable")
             self.toggle_tray.setText("Disable")
+            # initialize with a blink, https://app.clickup.com/t/7508642/POC-2256
             self.eye_th.model_api.init_blink()  # pylint:disable=no-member
-            # initialize with a blink, maybe need to change
             self.timer.start()
             LOGGER.info("timer started")
         else:
