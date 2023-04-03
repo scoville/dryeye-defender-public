@@ -93,7 +93,7 @@ class Window(QWidget):
         blink_messagebox.setInformativeText("Blink now to close the window or click 'Dismiss' to "
                                             f"dismiss for {POPUP_DISMISS_SECONDS_COOLDOWN_S} "
                                             "seconds")
-        blink_messagebox.setButtonText(QMessageBox.Ok, "Dismiss")
+        blink_messagebox.setButtonText(QMessageBox.Ok, "Dismiss")  # type: ignore[attr-defined]
         self.last_popup_dismissal_time = time.time() - POPUP_DISMISS_SECONDS_COOLDOWN_S
         return blink_messagebox
 
@@ -244,7 +244,7 @@ class Window(QWidget):
                     self.blink_messagebox.setText(
                         f"You didn't blink in the last {self.duration_lack} seconds")
                     ret = self.blink_messagebox.exec()
-                    if (ret is QMessageBox.Ok) or (ret is -1):
+                    if ret in (QMessageBox.Ok, -1):  # type: ignore[attr-defined]
                         self.last_popup_dismissal_time = time.time()
                     else:
                         raise NotImplementedError("Only Ok has been implemented for this button "
