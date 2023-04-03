@@ -207,6 +207,11 @@ class Window(QWidget):
         no_cam_messagebox.setText("No webcam has been detected")
         no_cam_messagebox.setInformativeText("Connect a webcam for blinking detection")
         no_cam_messagebox.exec()
+        cap_indexes = get_cap_indexes()
+        if not cap_indexes:
+            LOGGER.error("No cameras could be found")
+            self.toggle_button.setEnabled(False)
+            self.alert_no_cam()
 
     @Slot()
     def start_thread(self) -> None:
