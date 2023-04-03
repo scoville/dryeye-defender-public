@@ -1,4 +1,6 @@
+# pylint: disable=attribute-defined-outside-init
 """Class for the main window widget"""
+import logging
 import sys
 import time
 from typing import Optional
@@ -19,6 +21,7 @@ MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack 
 DEFAULT_INFERENCE_INTERVAL_MS = 50
 MIN_INFERENCE_INTERVAL_MS = 10
 MAX_INFERENCE_INTERVAL_MS = 1000
+LOGGER = logging.getLogger(__name__)
 
 
 class Window(QWidget):
@@ -92,7 +95,7 @@ class Window(QWidget):
 
         :return: Return the system tray initialized
         """
-        print("using system tray")
+        LOGGER.info("using system tray")
         menu = QMenu()
         self.toggle_tray = menu.addAction("Enable")
         quit_tray = menu.addAction("Quit")
@@ -166,7 +169,7 @@ class Window(QWidget):
             self.select_cam.addItems(cap_indexes)
             self.eye_th.init_cap(int(cap_indexes[0]))
         except ValueError as err:
-            print(err)
+            LOGGER.exception("Error has occured when trying to obtain the camera %s", err)
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
         self.select_cam.activated.connect(  # type: ignore[attr-defined]
@@ -210,7 +213,7 @@ class Window(QWidget):
         """Slot that call the thread for inference"""
         # The following line ensures we only have one thread processing a frame at a time
         if not self.eye_th.isRunning():
-            print("starting thread for computing one frame")
+            LOGGER.info("starting thread for computing one frame")
             self.eye_th.start()
         else:
             print("inference thread already running so skipping computing this frame")
@@ -218,15 +221,17 @@ class Window(QWidget):
     @Slot()
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
-        print("Thread is finished")
+        LOGGER.info("Thread is finished")
         if DEBUG:
             diff_time = time.time() - self.time_last_finished_th
             self.time_last_finished_th = time.time()
             self.label_fps.setText(f"fps:{str(int(1 / diff_time))}")
         lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
         if lack_blink:
-            print("Lack of blink detected")
+            LOGGER.info("Lack of blink detected")
             if self.alert_mode == "popup":
+                self.blink_messagebox.setText(
+                    "You didn't blink in the last {self.duration_lack} seconds")
                 self.blink_messagebox.exec()
             else:
                 self.tray.showMessage(f"You didn't blink in the last {self.duration_lack} secondes",
@@ -264,7 +269,7 @@ class Window(QWidget):
         """
         self.timer.setInterval(slider_value)
         self.frequency_spin_box.setValue(slider_value)
-        print(f"{slider_value=}")
+        LOGGER.info("slider_value=%s", slider_value)
 
     @Slot()
     def sync_slider(self, spinbox_value: int) -> None:
@@ -285,7 +290,7 @@ class Window(QWidget):
     @Slot()
     def set_timer(self) -> None:
         """Slot called when automatic inference is enabled, manage button and timer state"""
-        print("timer check")
+        LOGGER.info("timer check")
         button_state = self.toggle_button.isChecked()
         if button_state:
             self.toggle_button.setText("Disable")
@@ -293,11 +298,11 @@ class Window(QWidget):
             self.eye_th.model_api.init_blink()  # pylint:disable=no-member
             # initialize with a blink, maybe need to change
             self.timer.start()
-            print("timer started")
+            LOGGER.info("timer started")
         else:
             self.toggle_button.setText("Enable")
             self.toggle_tray.setText("Enable")
-            print("timer stop")
+            LOGGER.info("timer stop")
             self.timer.stop()
 
     @Slot()
@@ -305,4 +310,4 @@ class Window(QWidget):
         """Create debug window and launch it"""
         self.debug_window = DebugWindow(self.eye_th)
         self.debug_window.show()
-        print("open debug")
+        LOGGER.info("open debug")

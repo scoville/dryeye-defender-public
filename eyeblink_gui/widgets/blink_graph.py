@@ -1,4 +1,5 @@
 """Contains class blink graph"""
+import logging
 import time
 from typing import List, Tuple
 
@@ -6,6 +7,8 @@ from PySide6.QtCharts import QBarSeries, QBarSet, QChart, QChartView
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QGridLayout, QWidget
+
+LOGGER = logging.getLogger(__name__)
 
 
 class BlinkGraph(QWidget):
@@ -44,7 +47,7 @@ class BlinkGraph(QWidget):
 
         :param blink_history: List of blink value(1 if detected blink, else -1) associated with time
         """
-        print("updating graph")
+        LOGGER.info("updating graph")
         current_time = time.time()
         if blink_history:
             start_of_detection = blink_history[0][0]
@@ -55,7 +58,7 @@ class BlinkGraph(QWidget):
                 if blink_value == 1:
                     blink_per_minutes[current_minute] += 1
             blink_per_minutes.reverse()
-            print(f"{blink_per_minutes=}")
+            LOGGER.info("blink_per_minutes=%s", blink_per_minutes)
             self.blink_bar.append(blink_per_minutes)
             self.series.append(self.blink_bar)
 

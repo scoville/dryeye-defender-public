@@ -1,8 +1,11 @@
 """Utils functions"""
 
+import logging
 from typing import List
 
 import cv2
+
+LOGGER = logging.getLogger(__name__)
 
 
 def get_cap_indexes() -> List[str]:
@@ -15,16 +18,15 @@ def get_cap_indexes() -> List[str]:
         camera = cv2.VideoCapture(dev_port)
         if not camera.isOpened():
             # non_working_ports.append(dev_port)
-            print("Port %s is not working." % dev_port)
+            LOGGER.info("Port %s is not working.", dev_port)
         else:
             is_reading, _ = camera.read()
             w = camera.get(3)
             h = camera.get(4)
             if is_reading:
-                print("Port %s is working and reads images (%s x %s)" % (dev_port, h, w))
+                LOGGER.info("Port %s is working and reads images (%s x %s)", dev_port, h, w)
                 working_ports.append(str(dev_port))
             else:
-                print("Port %s for camera ( %s x %s) is present but does not reads." % (
-                    dev_port, h, w))
+                LOGGER.info("Port %s for camera ( %s x %s) is present but does not reads.")
                 # available_ports.append(dev_port)
     return working_ports
