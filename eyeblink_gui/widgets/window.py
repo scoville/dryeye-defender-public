@@ -23,6 +23,9 @@ MIN_INFERENCE_INTERVAL_MS = 10
 MAX_INFERENCE_INTERVAL_MS = 1000
 LOGGER = logging.getLogger(__name__)
 
+# if user dismisses a popup, allow this many seconds before permitting another popup
+POPUP_DISMISS_SECONDS_COOLDOWN_S = 10
+
 
 class Window(QWidget):
     """Widget of the main window"""
@@ -87,7 +90,11 @@ class Window(QWidget):
         blink_messagebox = QMessageBox()
         blink_messagebox.setIcon(QMessageBox.Icon.Information)
         blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} seconds")
-        blink_messagebox.setInformativeText("Blink now to close the window!")
+        blink_messagebox.setInformativeText("Blink now to close the window or click 'Dismiss' to "
+                                            f"dismiss for {POPUP_DISMISS_SECONDS_COOLDOWN_S} "
+                                            "seconds")
+        blink_messagebox.setButtonText(QMessageBox.Ok, "Dismiss")
+        self.last_popup_dismissal_time = time.time() - POPUP_DISMISS_SECONDS_COOLDOWN_S
         return blink_messagebox
 
     def create_tray(self) -> QSystemTrayIcon:
@@ -226,16 +233,27 @@ class Window(QWidget):
             diff_time = time.time() - self.time_last_finished_th
             self.time_last_finished_th = time.time()
             self.label_fps.setText(f"fps:{str(int(1 / diff_time))}")
+
         lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
         if lack_blink:
-            LOGGER.info("Lack of blink detected")
-            if self.alert_mode == "popup":
-                self.blink_messagebox.setText(
-                    f"You didn't blink in the last {self.duration_lack} seconds")
-                self.blink_messagebox.exec()
-            else:
-                self.tray.showMessage(f"You didn't blink in the last {self.duration_lack} seconds",
-                                      "Blink now to close the window!", self.icon, 5000)
+            # Only display popup if it's been > POPUP_DISMISS_SECONDS_COOLDOWN_S since last popup
+            # dismissal
+            if (time.time() - self.last_popup_dismissal_time) > POPUP_DISMISS_SECONDS_COOLDOWN_S:
+                LOGGER.info("Lack of blink detected")
+                if self.alert_mode == "popup":
+                    self.blink_messagebox.setText(
+                        f"You didn't blink in the last {self.duration_lack} seconds")
+                    ret = self.blink_messagebox.exec()
+                    if (ret is QMessageBox.Ok) or (ret is -1):
+                        self.last_popup_dismissal_time = time.time()
+                    else:
+                        raise NotImplementedError("Only Ok has been implemented for this button "
+                                                  f"but {ret} was returned")
+
+                else:
+                    self.tray.showMessage(
+                        f"You didn't blink in the last {self.duration_lack} seconds",
+                        "Blink now to close the window!", self.icon, 5000)
 
     @Slot()
     def output_slot(self, output: int) -> None:
