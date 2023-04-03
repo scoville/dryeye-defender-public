@@ -15,19 +15,23 @@ from eyeblink_gui.widgets.debug_window import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 DEBUG = True
+MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
+DEFAULT_INFERENCE_INTERVAL_MS = 50
+MIN_INFERENCE_INTERVAL_MS = 10
+MAX_INFERENCE_INTERVAL_MS = 1000
 
 
 class Window(QWidget):
     """Widget of the main window"""
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(self,  parent: Optional[QWidget] = None) -> None:
+    def __init__(self, parent: Optional[QWidget] = None) -> None:
         """Initialize all variable and create the layout of the window
         :param parent: parent of the widget, defaults to None
         """
         super().__init__(parent)
 
-        self.duration_lack = 10  # minimum duration for considering lack of blink
+        self.duration_lack = MINIMUM_DURATION_LACK_OF_BLINK_MS
         window_layout = QGridLayout(self)
 
         self.icon = QIcon("images/blink.png")
@@ -48,15 +52,15 @@ class Window(QWidget):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start_thread)  # type: ignore[attr-defined]
-        self.timer.setInterval(100)
+        self.timer.setInterval(DEFAULT_INFERENCE_INTERVAL_MS)
 
         if DEBUG:
             self.time_last_finished_th = 0.0
             self.label_fps = QLabel("fps: 0")
             window_layout.addWidget(self.label_fps, 0, 3, 1, 1)
 
-        self.tray_available = QSystemTrayIcon.isSystemTrayAvailable() and \
-            QSystemTrayIcon.supportsMessages()
+        self.tray_available = (QSystemTrayIcon.isSystemTrayAvailable() and
+                               QSystemTrayIcon.supportsMessages())
         if self.tray_available:
             self.alert_mode = "notification"
             self.tray = self.create_tray()
@@ -107,14 +111,14 @@ class Window(QWidget):
         self.frequency_spin_box = QSpinBox()
         self.frequency_label = QLabel("Interval of the blinking detection (ms):")
         self.frequency_slider = QSlider(Qt.Orientation.Horizontal)
-        self.frequency_slider.setSingleStep(50)
-        # self.frequency_spin_box.singleStep(50)
-        self.frequency_slider.setTickInterval(50)
-        self.frequency_slider.setRange(50, 1000)
-        self.frequency_spin_box.setRange(50, 1000)
+        self.frequency_slider.setSingleStep(MIN_INFERENCE_INTERVAL_MS)
+        # self.frequency_spin_box.singleStep(MIN_INFERENCE_INTERVAL_MS)
+        self.frequency_slider.setTickInterval(DEFAULT_INFERENCE_INTERVAL_MS)
+        self.frequency_slider.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
+        self.frequency_spin_box.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
         self.frequency_slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
-        self.frequency_slider.setValue(100)
-        self.frequency_spin_box.setValue(100)
+        self.frequency_slider.setValue(DEFAULT_INFERENCE_INTERVAL_MS)
+        self.frequency_spin_box.setValue(DEFAULT_INFERENCE_INTERVAL_MS)
         self.frequency_slider.valueChanged.connect(  # type: ignore[attr-defined]
             self.set_timer_interval)
         self.frequency_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
@@ -204,9 +208,12 @@ class Window(QWidget):
     @Slot()
     def start_thread(self) -> None:
         """Slot that call the thread for inference"""
+        # The following line ensures we only have one thread processing a frame at a time
         if not self.eye_th.isRunning():
             print("starting thread for computing one frame")
             self.eye_th.start()
+        else:
+            print("inference thread already running so skipping computing this frame")
 
     @Slot()
     def thread_finished(self) -> None:
@@ -215,7 +222,7 @@ class Window(QWidget):
         if DEBUG:
             diff_time = time.time() - self.time_last_finished_th
             self.time_last_finished_th = time.time()
-            self.label_fps.setText(f"fps:{str(int(1/diff_time))}")
+            self.label_fps.setText(f"fps:{str(int(1 / diff_time))}")
         lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
         if lack_blink:
             print("Lack of blink detected")
