@@ -18,5 +18,7 @@ services:
       - $HOME/.Xauthority:/.Xauthority:rw
       - .:/mount/
       - /dev/video0:/dev/video0
+      - /dev/video1:/dev/video1
+      - /dev/video2:/dev/video3
     working_dir: /mount/
     privileged: true
