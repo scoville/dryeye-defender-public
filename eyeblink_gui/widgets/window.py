@@ -164,14 +164,14 @@ class Window(QWidget):
         """Create select cam and label cam"""
         self.select_cam_label = QLabel(("Choose which camera device to use"))
         self.select_cam = QComboBox()
-        try:
-            cap_indexes = get_cap_indexes()
-            self.select_cam.addItems(cap_indexes)
-            self.eye_th.init_cap(int(cap_indexes[0]))
-        except ValueError as err:
-            LOGGER.exception("Error has occured when trying to obtain the camera %s", err)
+        cap_indexes = get_cap_indexes()
+        if not cap_indexes:
+            LOGGER.error("No cameras could be found")
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
+        cap_indexes = get_cap_indexes()
+        self.select_cam.addItems(cap_indexes)
+        self.eye_th.init_cap(int(cap_indexes[0]))  # default to first camera index detected
         self.select_cam.activated.connect(  # type: ignore[attr-defined]
             lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
 
@@ -207,6 +207,11 @@ class Window(QWidget):
         no_cam_messagebox.setText("No webcam has been detected")
         no_cam_messagebox.setInformativeText("Connect a webcam for blinking detection")
         no_cam_messagebox.exec()
+        cap_indexes = get_cap_indexes()
+        if not cap_indexes:
+            LOGGER.error("No cameras could be found")
+            self.toggle_button.setEnabled(False)
+            self.alert_no_cam()
 
     @Slot()
     def start_thread(self) -> None:
@@ -216,7 +221,7 @@ class Window(QWidget):
             LOGGER.info("starting thread for computing one frame")
             self.eye_th.start()
         else:
-            print("inference thread already running so skipping computing this frame")
+            LOGGER.info("inference thread already running so skipping computing this frame")
 
     @Slot()
     def thread_finished(self) -> None:
@@ -295,8 +300,8 @@ class Window(QWidget):
         if button_state:
             self.toggle_button.setText("Disable")
             self.toggle_tray.setText("Disable")
+            # initialize with a blink, https://app.clickup.com/t/7508642/POC-2256
             self.eye_th.model_api.init_blink()  # pylint:disable=no-member
-            # initialize with a blink, maybe need to change
             self.timer.start()
             LOGGER.info("timer started")
         else:
