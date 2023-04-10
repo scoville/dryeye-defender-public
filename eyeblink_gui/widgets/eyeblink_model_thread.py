@@ -4,7 +4,8 @@ import time
 from typing import Optional
 
 import cv2
-from blinkdetector.api.model_api import OpenVinoModelAPI
+# from blinkdetector.api.model_api import OpenVinoModelAPI
+from blinkdetector.api.model_e2e_openvino_api import E2EOpenVinoModelAPI
 from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
@@ -30,11 +31,12 @@ class EyeblinkModelThread(QThread):
 
         LOGGER.info("init thread")
         # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # self.face_detector = RetinaFace(quality="speed")  # speed for better performance
-        # self.keypoint_model = load_keypoint_model_vino(
-        #     "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
-        self.model_api = OpenVinoModelAPI(
+        # "submodules/eyeblink-detection/assets/vino/lmks_opti.xml")
+        self.model_api = E2EOpenVinoModelAPI(
+            "submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml",
             "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
+        # self.model_api = OpenVinoModelAPI(
+        #     "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
         # last_alert = time.time()
 
         self.cap = None
