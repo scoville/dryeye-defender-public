@@ -21,4 +21,10 @@ services:
       - /dev/video1:/dev/video1
       - /dev/video2:/dev/video3
     working_dir: /mount/
+    command: >
+      bash -c "cd submodules/eyeblink-detection/ && 
+      python scripts/optimizer/export_to_openvino.py &&
+      cd ../../ &&
+      echo 'Latest openvino model built' &&
+      python -m eyeblink_gui"
     privileged: true
