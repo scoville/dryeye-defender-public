@@ -61,5 +61,5 @@ __pycache__/**
 *.pyc
 .idea/
 .coverage
-.venv
 assets/
+.venv*
