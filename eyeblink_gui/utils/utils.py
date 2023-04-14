@@ -11,18 +11,18 @@ LOGGER = logging.getLogger(__name__)
 
 
 def find_data_file(filename: str) -> str:
-    """Search where the file is, depending if the app is compiled(frozen?) or not
+    """Search where the file is, depending if the app is compiled(frozen) or not
 
     :param filename: name of the file to find
     :return: path to the file
     """
     if getattr(sys, "frozen", False):
-        # The application is frozen
+        # The application is frozen(binary file)
         # datadir = os.path.dirname("/usr/share/eyeblinkgui/")
         datadir = os.path.join(os.path.dirname(sys.executable), "assets/")
     else:
-        # The application is not frozen
-        # Change this bit to match where you store your data files:
+        # The application is not frozen (python mode)
+        # where we store your data files:
         datadir = os.path.dirname("submodules/eyeblink-detection/assets/")
     return os.path.join(datadir, filename)
 
