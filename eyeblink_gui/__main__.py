@@ -7,6 +7,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from eyeblink_gui.widgets.window import Window
+from eyeblink_gui.utils.utils import find_data_file
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
@@ -21,7 +22,8 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
         self.resize(800, 700)
         widget = Window()
         self.setCentralWidget(widget)
-        icon = QIcon("images/blink.png")
+        icon_path = find_data_file("blink.png")
+        icon = QIcon(icon_path)
         self.setWindowIcon(icon)
 
 

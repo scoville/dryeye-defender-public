@@ -9,6 +9,7 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
 from PySide6.QtGui import QPixmap
+from eyeblink_gui.utils.utils import find_data_file
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,9 +30,13 @@ class EyeblinkModelThread(QThread):
         QThread.__init__(self, parent)
 
         LOGGER.info("init thread")
+        
         self.model_api = E2EOpenVinoModelAPI(
-            "submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml",
-            "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
+            find_data_file("face-detection-adas-0001.xml"),
+            find_data_file("lmks.xml"))
+        # self.model_api = E2EOpenVinoModelAPI(
+        #     "submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml",
+        #     "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
 
         self.cap = None
         self.debug = debug
