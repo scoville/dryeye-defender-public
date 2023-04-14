@@ -1,12 +1,30 @@
 """Utils functions"""
 
 import logging
+import os
+import sys
 from typing import List
 
 import cv2
 
 LOGGER = logging.getLogger(__name__)
 
+
+def find_data_file(filename):
+    """Search where the file is, depending if the app is compiled(frozen?) or not
+
+    :param filename: name of the file to find
+    :return: path to the file
+    """
+    if getattr(sys, "frozen", False):
+        # The application is frozen
+        # datadir = os.path.dirname("/usr/share/eyeblinkgui/")
+        datadir = os.path.dirname(sys.executable)
+    else:
+        # The application is not frozen
+        # Change this bit to match where you store your data files:
+        datadir = os.path.dirname(__file__)
+    return os.path.join(datadir, filename)
 
 def get_cap_indexes() -> List[str]:
     """Test the ports and returns a tuple with the available ports and the ones that are working."""
