@@ -10,7 +10,7 @@ import cv2
 LOGGER = logging.getLogger(__name__)
 
 
-def find_data_file(filename)->str:
+def find_data_file(filename: str) -> str:
     """Search where the file is, depending if the app is compiled(frozen?) or not
 
     :param filename: name of the file to find
@@ -19,11 +19,11 @@ def find_data_file(filename)->str:
     if getattr(sys, "frozen", False):
         # The application is frozen
         # datadir = os.path.dirname("/usr/share/eyeblinkgui/")
-        datadir = os.path.dirname(sys.executable)
+        datadir = os.path.join(os.path.dirname(sys.executable), "assets/")
     else:
         # The application is not frozen
         # Change this bit to match where you store your data files:
-        datadir = os.path.dirname(__file__)
+        datadir = os.path.dirname("submodules/eyeblink-detection/assets/")
     return os.path.join(datadir, filename)
 
 
@@ -37,7 +37,7 @@ def get_cap_indexes() -> List[str]:
     working_ports: List[str] = []
     # available_ports = []
     for dev_port in range(6):  # if there are more than 5 non working ports stop the testing.
-        camera = cv2.VideoCapture(dev_port) # pylint: disable=no-member
+        camera = cv2.VideoCapture(dev_port)  # pylint: disable=no-member
         if not camera.isOpened():
             # non_working_ports.append(dev_port)
             LOGGER.info("Port %s is not working.", dev_port)
