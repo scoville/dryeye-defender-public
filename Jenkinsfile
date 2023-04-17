@@ -62,10 +62,10 @@ pipeline {
         sh '''#!/usr/bin/env bash
           set -Eeux
           python3 setup.py build
-          }
         '''
       }
     }
+
   }
 
   post {
