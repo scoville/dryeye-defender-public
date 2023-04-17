@@ -20,3 +20,4 @@ include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001
    ['submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml', 'assets/vino_preprocess/lmks.xml'],
    ['images/blink.png', 'images/blink.png']
 ]
+silent_level = 1
