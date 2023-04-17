@@ -62,6 +62,7 @@ pipeline {
         sh '''#!/usr/bin/env bash
           set -Eeux
           python3 setup.py build
+          mkdir -p deb_build/opt/eyeblinkgui
           cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyeblinkgui
           find deb_build/opt/eyeblinkgui -type f -exec chmod 644 -- {} +
           find deb_build/opt/eyeblinkgui -type d -exec chmod 755 -- {} +
