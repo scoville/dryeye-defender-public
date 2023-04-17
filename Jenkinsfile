@@ -64,6 +64,25 @@ pipeline {
           python3 setup.py build
         '''
       }
+      steps {
+        sh '''#!/usr/bin/env bash
+          set -Eeux
+          cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyeblinkgui
+          find deb_build/opt/eyeblinkgui -type f -exec chmod 644 -- {} +
+          find deb_build/opt/eyeblinkgui -type d -exec chmod 755 -- {} +
+          find deb_build/usr/share -type f -exec chmod 644 -- {} +
+
+          chmod +x deb_build/opt/eyeblinkgui/eyeblinkgui
+          chmod +x deb_build/usr/share/application/eyeblinkgui.desktop
+
+        '''
+      }
+      steps{
+        sh '''#!/usr/bin/env bash
+          set -Eeux
+          sudo dpkg-deb --build --root-owner-group deb_build
+        '''
+      }
     }
   }
 
