@@ -69,7 +69,7 @@ pipeline {
           find deb_build/usr/share -type f -exec chmod 644 -- {} +
 
           chmod +x deb_build/opt/eyeblinkgui/eyeblinkgui
-          chmod +x deb_build/usr/share/application/eyeblinkgui.desktop
+          chmod +x deb_build/usr/share/applications/eyeblinkgui.desktop
 
           sudo dpkg-deb --build --root-owner-group deb_build
         '''
