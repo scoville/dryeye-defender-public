@@ -30,7 +30,8 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
 
 #### Quickstart
 
-`docker-compose up` will launch the GUI, performing all the below operations
+`git submodule update --init --remote && docker-compose up` 
+Will launch the GUI, performing all the below operations, and update submodule
 
 #### Step-by-step 
 
@@ -43,7 +44,6 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
    1. or `docker-compose run --rm eyeblink bash`
 
 3. Build latest model: 
-
 ```
 cd submodules/eyeblink-detection/ && \
 python scripts/optimizer/export_to_openvino.py && \
