@@ -71,7 +71,7 @@ pipeline {
           chmod +x deb_build/opt/eyeblinkgui/eyeblinkgui
           chmod +x deb_build/usr/share/applications/eyeblinkgui.desktop
 
-          sudo dpkg-deb --build --root-owner-group deb_build
+          dpkg-deb --build --root-owner-group deb_build
         '''
       }
     }
