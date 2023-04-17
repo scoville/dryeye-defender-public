@@ -1,0 +1,6 @@
+Package: eyeblinkgui
+Source: eyeblinkgui
+Version: 1.0
+Architecture: all
+Maintainer: Scoville
+Description: Prototype for eye health
