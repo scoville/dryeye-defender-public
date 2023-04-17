@@ -62,10 +62,12 @@ pipeline {
         sh '''#!/usr/bin/env bash
           set -Eeux
           python3 setup.py build
+          if [ ! -f build/exe.linux-x86_64-3.8/eyeblinkgui ]; then
+            echo "Build failed"
+            exit 1
         '''
       }
     }
-
   }
 
   post {
