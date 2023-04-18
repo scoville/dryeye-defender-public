@@ -75,6 +75,35 @@ pipeline {
         '''
       }
     }
+    stage('Release') {
+      when {
+        buildingTag()
+      }
+      environment {
+        VERSION = '1.0'//replace in config files the version with this env variable
+      }
+      steps {
+        sh """#!/usr/bin/env bash
+          set -Eeuxo pipefail
+          python3 setup.py build
+          mkdir -p deb_build/opt/eyeblinkgui
+          cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyeblinkgui
+          find deb_build/opt/eyeblinkgui -type f -exec chmod 644 -- {} +
+          find deb_build/opt/eyeblinkgui -type d -exec chmod 755 -- {} +
+          find deb_build/usr/share -type f -exec chmod 644 -- {} +
+
+          chmod +x deb_build/opt/eyeblinkgui/eyeblinkgui
+          chmod +x deb_build/usr/share/applications/eyeblinkgui.desktop
+
+          dpkg-deb --build --root-owner-group deb_build
+        """
+        script {
+          githubUtils.createRelease([
+            "tobuild.deb"
+            ])
+        }
+      }
+    }
   }
 
   post {
