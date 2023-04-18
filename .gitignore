@@ -65,3 +65,5 @@ __pycache__/**
 build
 assets/
 .venv*
+deb_build/opt/
+deb_build.deb
