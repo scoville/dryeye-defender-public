@@ -85,7 +85,7 @@ pipeline {
         buildingTag()
       }
       environment {
-        VERSION = env.TAG_NAME
+        VERSION = $tag_name
       }
       steps {
         sh """#!/usr/bin/env bash
