@@ -61,16 +61,26 @@ pipeline {
       steps {
         sh '''#!/usr/bin/env bash
           set -Eeux
-          python3 setup.py build
-          mkdir -p deb_build/opt/eyeblinkgui
-          cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyeblinkgui
-          find deb_build/opt/eyeblinkgui -type f -exec chmod 644 -- {} +
-          find deb_build/opt/eyeblinkgui -type d -exec chmod 755 -- {} +
+          # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
+          python3 setup.py build 
+
+          # create the folder structure for the deb package
+          # all the files for the program will be in /opt/eyehealth, so easy handle of dependencies
+          mkdir -p deb_build/opt/eyehealth 
+
+          # we copy the files from the build folder to the deb package folder before deb creation
+          cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyehealth
+
+          # we change the permissions of the files and folders because files will keep permissions after packaging
+          find deb_build/opt/eyehealth -type f -exec chmod 644 -- {} +
+          find deb_build/opt/eyehealth -type d -exec chmod 755 -- {} +
           find deb_build/usr/share -type f -exec chmod 644 -- {} +
 
-          chmod +x deb_build/opt/eyeblinkgui/eyeblinkgui
-          chmod +x deb_build/usr/share/applications/eyeblinkgui.desktop
+          # we make the binary and desktop file executable
+          chmod +x deb_build/opt/eyehealth/eyehealth
+          chmod +x deb_build/usr/share/applications/eyehealth.desktop
 
+          # build the deb package with the official tool
           dpkg-deb --build --root-owner-group deb_build
         '''
       }
@@ -89,7 +99,7 @@ pipeline {
           python3 setup.py build 
 
           # create the folder structure for the deb package
-          # all the files for the program will be in /opt/eyeblinkgui, so easy handle of dependencies
+          # all the files for the program will be in /opt/eyehealth, so easy handle of dependencies
           mkdir -p deb_build/opt/eyehealth 
 
           # we copy the files from the build folder to the deb package folder before deb creation
