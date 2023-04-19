@@ -23,7 +23,9 @@ def find_data_file(filename: str) -> str:
     else:
         # The application is not frozen (python mode)
         # where we store your data files:
-        datadir = os.path.dirname("submodules/eyeblink-detection/assets/")
+        datadir = os.path.join(os.path.dirname(__file__),
+                               "../../submodules/eyeblink-detection/assets/")
+
     return os.path.join(datadir, filename)
 
 
