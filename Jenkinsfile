@@ -119,7 +119,7 @@ pipeline {
         """
         script {
           githubUtils.createRelease([
-            "tobuild.deb"
+            "deb_build.deb"
             ])
         }
       }
