@@ -3,4 +3,3 @@ opencv-python~=4.7
 pyside6~=6.4.2
 openvino~=2022.3.0
 pillow~=9.5
--e ./submodules/eyeblink-detection
