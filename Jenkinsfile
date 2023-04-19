@@ -57,6 +57,50 @@ pipeline {
         '''
       }
     }
+    stage('Build') {
+      steps {
+        sh '''#!/usr/bin/env bash
+          set -Eeux
+          # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
+          python3 setup.py build 
+
+          # create the folder structure for the deb package
+          # all the files for the program will be in /opt/eyehealth, so easy handle of dependencies
+          mkdir -p deb_build/opt/eyehealth 
+
+          # we copy the files from the build folder to the deb package folder before deb creation
+          cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyehealth
+
+          # we change the permissions of the files and folders because files will keep permissions after packaging
+          find deb_build/opt/eyehealth -type f -exec chmod 644 -- {} +
+          find deb_build/opt/eyehealth -type d -exec chmod 755 -- {} +
+
+          # build the deb package with the official tool
+          dpkg-deb --build --root-owner-group deb_build
+        '''
+      }
+    }
+    stage('Release') {
+      when {
+        buildingTag()
+      }
+      environment {
+        VERSION = "$tag_name"
+      }
+      steps {
+        sh """#!/usr/bin/env bash
+          set -Eeuxo pipefail
+
+          # rename deb file
+          mv deb_build.deb eyehealth-${VERSION}.deb
+        """
+        script {
+          githubUtils.createRelease([
+            "eyehealth-${VERSION}.deb"
+            ])
+        }
+      }
+    }
   }
 
   post {
