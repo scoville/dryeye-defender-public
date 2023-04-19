@@ -4,16 +4,16 @@
 Type=Application
 
 # The application name.
-Name=eyeblinkgui
+Name=Eye health
 
 # Tooltip comment to show in menus.
 Comment=Detect blinks
 
 # The path (folder) in which the executable is run
-Path=/opt/eyeblinkgui
+Path=/opt/eyehealth
 
 # The executable (can include arguments)
-Exec=/opt/eyeblinkgui/eyeblinkgui
+Exec=/opt/eyehealth/eyehealth
 
 # The icon for the entry, using the name from `hicolor/scalable` without the extension.
 # You can also use a full path to a file in /opt.
