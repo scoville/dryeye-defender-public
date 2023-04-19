@@ -1,6 +1,8 @@
 """Utils functions"""
 
 import logging
+import os
+import sys
 from typing import List
 
 import cv2
@@ -8,14 +10,36 @@ import cv2
 LOGGER = logging.getLogger(__name__)
 
 
+def find_data_file(filename: str) -> str:
+    """Search where the file is, depending if the app is compiled(frozen) or not
+
+    :param filename: name of the file to find
+    :return: path to the file
+    """
+    if getattr(sys, "frozen", False):
+        # The application is frozen(binary file)
+        # datadir = os.path.dirname("/usr/share/eyeblinkgui/")
+        datadir = os.path.join(os.path.dirname(sys.executable), "assets/")
+    else:
+        # The application is not frozen (python mode)
+        # where we store your data files:
+        datadir = os.path.join(os.path.dirname(__file__),
+                               "../../submodules/eyeblink-detection/assets/")
+
+    return os.path.join(datadir, filename)
+
+
 def get_cap_indexes() -> List[str]:
-    """Test the ports and returns a tuple with the available ports and the ones that are working."""
+    """Test the ports and returns a tuple with the available ports and the ones that are working.
+
+    :return: List of indexes that are available for reading, in str format
+    """
     # non_working_ports = []
     dev_port = 0
     working_ports: List[str] = []
     # available_ports = []
     for dev_port in range(6):  # if there are more than 5 non working ports stop the testing.
-        camera = cv2.VideoCapture(dev_port)
+        camera = cv2.VideoCapture(dev_port)  # pylint: disable=no-member
         if not camera.isOpened():
             # non_working_ports.append(dev_port)
             LOGGER.info("Port %s is not working.", dev_port)

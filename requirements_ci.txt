@@ -8,5 +8,5 @@ pylint-quotes>=0.2.3
 pytest>=4.4.0
 pytest-timeout>=1.4.1
 pytest-xdist>=1.27.0
-openvino-dev==2022.3.0  # needed to use `mo` command line tool to export models  
+openvino-dev~=2022.3.0  # needed to use `mo` command line tool to export models  
 stubs>=1.0.0

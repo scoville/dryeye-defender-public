@@ -9,6 +9,7 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
 from PySide6.QtGui import QPixmap
+from eyeblink_gui.utils.utils import find_data_file
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,9 +30,10 @@ class EyeblinkModelThread(QThread):
         QThread.__init__(self, parent)
 
         LOGGER.info("init thread")
+
         self.model_api = E2EOpenVinoModelAPI(
-            "submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml",
-            "submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml")
+            find_data_file("face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml"),
+            find_data_file("vino_preprocess/lmks.xml"))
 
         self.cap = None
         self.debug = debug
@@ -44,7 +46,7 @@ class EyeblinkModelThread(QThread):
         """
         if self.cap is not None:
             self.cap.release()
-        self.cap = cv2.VideoCapture(input_device)
+        self.cap = cv2.VideoCapture(input_device)  # pylint: disable=no-member
 
     def run(self) -> None:
         """Run the thread, compute model and signal the image and output"""
@@ -58,6 +60,7 @@ class EyeblinkModelThread(QThread):
         self.update_label_output.emit(blink_value)
         if self.debug:
             # assert annotated_img, f"The image was invalid {annotated_img }"
-            annotated_img = cv2.cvtColor(annotated_img, cv2.COLOR_BGR2RGB)
+            annotated_img = cv2.cvtColor(  # pylint: disable=no-member
+                annotated_img, cv2.COLOR_BGR2RGB)  # pylint: disable=no-member
             annotated_img = Image.fromarray(annotated_img).convert("RGB")
             self.update_debug_img.emit(QPixmap.fromImage(ImageQt(annotated_img)))
