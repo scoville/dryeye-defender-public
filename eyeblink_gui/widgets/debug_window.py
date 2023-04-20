@@ -1,10 +1,12 @@
 """Class for debug window"""
 import logging
 
+from PySide6.QtCharts import QChartView
 from PySide6.QtCore import Slot
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
+from eyeblink_gui.widgets.ear_graph import EarGraph
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 LOGGER = logging.getLogger(__name__)
@@ -23,11 +25,15 @@ class DebugWindow(QWidget):
         # self.setWindowTitle("Debug window")
         debug_layout = QVBoxLayout(self)
         logging.info("init debug window")
-        self.setGeometry(0, 0, 800, 500)
+        self.setGeometry(0, 0, 800, 1000)
         thread.update_debug_img.connect(self.update_img)
         # Create a label for the display camera
         self.label = QLabel()
         self.label.setFixedSize(640, 480)
+        self.chart_view = QChartView(EarGraph(thread=thread))
+        self.chart_view.setRenderHint(QPainter.Antialiasing)
+
+        debug_layout.addWidget(self.chart_view)
         debug_layout.addWidget(self.label)
         self.setLayout(debug_layout)
 
