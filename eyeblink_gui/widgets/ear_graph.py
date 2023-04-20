@@ -1,8 +1,9 @@
 """Contains the QChart object to display the ear values over time"""
 import logging
+from typing import Optional
 
 from PySide6.QtCharts import QChart, QSplineSeries, QValueAxis
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import QObject, Qt, Slot
 from PySide6.QtGui import QPen
 
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
@@ -13,12 +14,13 @@ LOGGER = logging.getLogger(__name__)
 class EarGraph(QChart):
     """Class for the graph displaying the ear values over time"""
 
-    def __init__(self, thread: EyeblinkModelThread, parent=None) -> None:
+    def __init__(self, thread: EyeblinkModelThread, parent: Optional[QObject] = None) -> None:
         """Create the graph with the two series for left and rigth eye
 
         :param thread: thread for connecting to signal
         """
-        super().__init__(QChart.ChartType.ChartTypeCartesian, parent, Qt.WindowFlags())
+        super().__init__(QChart.ChartType.ChartTypeCartesian, parent,
+                         Qt.WindowFlags())  # type:ignore[attr-defined]
 
         # `update graph` is called each time thread emit update ear values signal
         thread.update_ear_values.connect(self.update_graph)
