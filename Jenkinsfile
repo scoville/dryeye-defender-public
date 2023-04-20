@@ -75,6 +75,9 @@ pipeline {
           find deb_build/opt/eyehealth -type f -exec chmod 644 -- {} +
           find deb_build/opt/eyehealth -type d -exec chmod 755 -- {} +
 
+          # we make the binary executable (not done by cxfreeze)
+          chmod +x deb_build/opt/eyehealth/eyehealth
+
           # build the deb package with the official tool
           dpkg-deb --build --root-owner-group deb_build
         '''
