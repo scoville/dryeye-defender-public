@@ -1,7 +1,7 @@
 """Class for the thread computing the model"""
 import logging
 import time
-from typing import Optional, Tuple
+from typing import Optional
 
 import cv2
 from blinkdetector.api.model_e2e_openvino_api import E2EOpenVinoModelAPI
@@ -56,7 +56,8 @@ class EyeblinkModelThread(QThread):
             raise IOError("No output from camera")
 
         time_start = time.time()
-        blink_value, annotated_img, left_ear, rigth_ear = self.model_api.update(img, debug=self.debug)
+        blink_value, annotated_img, left_ear, rigth_ear = self.model_api.update(
+                                                            img, debug=self.debug)
         LOGGER.info("time to compute frame: %s", str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
         if self.debug:

@@ -1,6 +1,5 @@
 """Contains the QChart object to display the ear values over time"""
 import logging
-import time
 
 from PySide6.QtCharts import QChart, QSplineSeries, QValueAxis
 from PySide6.QtCore import Qt, Slot
@@ -12,12 +11,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 class EarGraph(QChart):
-    def __init__(self, thread: EyeblinkModelThread, parent=None):
+    """Class for the graph displaying the ear values over time"""
+
+    def __init__(self, thread: EyeblinkModelThread, parent=None) -> None:
         """Create the graph with the two series for left and rigth eye
 
         :param thread: thread for connecting to signal
         """
-        super().__init__(QChart.ChartTypeCartesian, parent, Qt.WindowFlags())
+        super().__init__(QChart.ChartType.ChartTypeCartesian, parent, Qt.WindowFlags())
 
         # `update graph` is called each time thread emit update ear values signal
         thread.update_ear_values.connect(self.update_graph)
@@ -26,8 +27,8 @@ class EarGraph(QChart):
         self.series_left = QSplineSeries(self)
         # serie for rigth eye
         self.series_rigth = QSplineSeries(self)
-        self.axisX = QValueAxis()
-        self.axisY = QValueAxis()
+        self.axis_x = QValueAxis()
+        self.axis_y = QValueAxis()
         self.current_x = 9.5
 
         # colors of the graph lines
@@ -44,18 +45,18 @@ class EarGraph(QChart):
 
         self.addSeries(self.series_left)
         self.addSeries(self.series_rigth)
-        self.addAxis(self.axisX, Qt.AlignBottom)
-        self.addAxis(self.axisY, Qt.AlignLeft)
+        self.addAxis(self.axis_x, Qt.AlignBottom)
+        self.addAxis(self.axis_y, Qt.AlignLeft)
 
-        self.series_left.attachAxis(self.axisX)
-        self.series_left.attachAxis(self.axisY)
-        self.series_rigth.attachAxis(self.axisX)
-        self.series_rigth.attachAxis(self.axisY)
-        self.axisX.setTickCount(10)
+        self.series_left.attachAxis(self.axis_x)
+        self.series_left.attachAxis(self.axis_y)
+        self.series_rigth.attachAxis(self.axis_x)
+        self.series_rigth.attachAxis(self.axis_y)
+        self.axis_x.setTickCount(10)
         # we put a range not center to get the last values on the rigth
-        self.axisX.setRange(0, 10)
+        self.axis_x.setRange(0, 10)
         # ear values are mainly between 0 and 1
-        self.axisY.setRange(0, 1)
+        self.axis_y.setRange(0, 1)
 
     @Slot()
     def update_graph(self, left_ear, rigth_ear):
@@ -64,8 +65,8 @@ class EarGraph(QChart):
         :param left_ear: left ear value
         :param rigth_ear: rigth ear value
         """
-        x_scroll = (self.plotArea().width() / self.axisX.tickCount())/20
-        new_x_diff = ((self.axisX.max() - self.axisX.min()) / self.axisX.tickCount())/20
+        x_scroll = (self.plotArea().width() / self.axis_x.tickCount())/20
+        new_x_diff = ((self.axis_x.max() - self.axis_x.min()) / self.axis_x.tickCount())/20
         self.current_x += new_x_diff
         self.series_left.append(self.current_x, left_ear)
         self.series_rigth.append(self.current_x, rigth_ear)
