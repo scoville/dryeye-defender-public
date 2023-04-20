@@ -32,9 +32,9 @@ class EarGraph(QChart):
         self.current_x = 9.5
 
         # colors of the graph lines
-        green = QPen(Qt.green)
+        green = QPen(Qt.GlobalColor.green)
         green.setWidth(3)
-        blue = QPen(Qt.blue)
+        blue = QPen(Qt.GlobalColor.blue)
         blue.setWidth(3)
         self.series_left.setPen(green)
         self.series_left.append(self.current_x, 0)
@@ -45,8 +45,8 @@ class EarGraph(QChart):
 
         self.addSeries(self.series_left)
         self.addSeries(self.series_rigth)
-        self.addAxis(self.axis_x, Qt.AlignBottom)
-        self.addAxis(self.axis_y, Qt.AlignLeft)
+        self.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
+        self.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
 
         self.series_left.attachAxis(self.axis_x)
         self.series_left.attachAxis(self.axis_y)
@@ -59,7 +59,7 @@ class EarGraph(QChart):
         self.axis_y.setRange(0, 1)
 
     @Slot()
-    def update_graph(self, left_ear, rigth_ear):
+    def update_graph(self, left_ear: float, rigth_ear: float) -> None:
         """Update the graph with new ear values
 
         :param left_ear: left ear value
