@@ -20,7 +20,7 @@ class EyeblinkModelThread(QThread):
     """
     update_label_output = Signal(int)
     update_debug_img = Signal(QPixmap)
-    update_ear_values = Signal(float, float, float)
+    update_ear_values = Signal(float, float)
 
     def __init__(self,  parent: Optional[QObject] = None, debug: bool = False) -> None:
         """Initialized the model and class variables,
@@ -66,4 +66,4 @@ class EyeblinkModelThread(QThread):
                 annotated_img, cv2.COLOR_BGR2RGB)  # pylint: disable=no-member
             annotated_img = Image.fromarray(annotated_img).convert("RGB")
             self.update_debug_img.emit(QPixmap.fromImage(ImageQt(annotated_img)))
-            self.update_ear_values.emit(left_ear, rigth_ear, time.time())
+            self.update_ear_values.emit(left_ear, rigth_ear)
