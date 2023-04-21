@@ -14,13 +14,12 @@ LOGGER = logging.getLogger(__name__)
 class EarGraph(QChart):
     """Class for the graph displaying the ear values over time"""
 
-    def __init__(self, thread: EyeblinkModelThread, parent: Optional[QObject] = None) -> None:
+    def __init__(self, thread: EyeblinkModelThread) -> None:
         """Create the graph with the two series for left and rigth eye
 
         :param thread: thread for connecting to signal
         """
-        super().__init__(QChart.ChartType.ChartTypeCartesian, parent,
-                         Qt.WindowFlags())  # type:ignore[attr-defined]
+        super().__init__()
 
         # `update graph` is called each time thread emit update ear values signal
         thread.update_ear_values.connect(self.update_graph)
