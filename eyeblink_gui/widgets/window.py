@@ -43,21 +43,20 @@ class Window(QWidget):
         self.icon = QIcon("images/blink.png")
         if DEBUG:
             self.compute_button = QPushButton(("Compute one frame"))
-            self.compute_button.clicked.connect(self.start_thread)  # type: ignore[attr-defined]
+            self.compute_button.clicked.connect(self.start_thread)
             self.label_output = QLabel("0")
             self.debug_window_button = QPushButton("Open debug window")
-            self.debug_window_button.clicked.connect(  # type: ignore[attr-defined]
-                self.open_debug_window)
+            self.debug_window_button.clicked.connect(self.open_debug_window)
             window_layout.addWidget(self.compute_button, 0, 0, 1, 1)
             window_layout.addWidget(self.label_output, 0, 1, 1, 1)
             window_layout.addWidget(self.debug_window_button, 0, 2, 1, 1)
 
         self.eye_th = EyeblinkModelThread(self, DEBUG)
-        self.eye_th.finished.connect(self.thread_finished)  # type: ignore[attr-defined]
+        self.eye_th.finished.connect(self.thread_finished)
         self.eye_th.update_label_output.connect(self.output_slot)
 
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.start_thread)  # type: ignore[attr-defined]
+        self.timer.timeout.connect(self.start_thread)
         self.timer.setInterval(DEFAULT_INFERENCE_INTERVAL_MS)
 
         if DEBUG:
@@ -76,7 +75,7 @@ class Window(QWidget):
 
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
-        self.get_stats.clicked.connect(  # type: ignore[attr-defined]
+        self.get_stats.clicked.connect(
             lambda: self.blink_graph.update_graph(self.eye_th.model_api.blink_history))
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
@@ -106,7 +105,7 @@ class Window(QWidget):
         menu = QMenu()
         self.toggle_tray = menu.addAction("Enable")
         quit_tray = menu.addAction("Quit")
-        quit_tray.triggered.connect(sys.exit)  # type: ignore[attr-defined]
+        quit_tray.triggered.connect(sys.exit)
         # self.toggle_tray.triggered.connect(self.set_timer)
 
         tray = QSystemTrayIcon(self.icon)
@@ -129,10 +128,8 @@ class Window(QWidget):
         self.frequency_slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
         self.frequency_slider.setValue(DEFAULT_INFERENCE_INTERVAL_MS)
         self.frequency_spin_box.setValue(DEFAULT_INFERENCE_INTERVAL_MS)
-        self.frequency_slider.valueChanged.connect(  # type: ignore[attr-defined]
-            self.set_timer_interval)
-        self.frequency_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
-            self.sync_slider)
+        self.frequency_slider.valueChanged.connect(self.set_timer_interval)
+        self.frequency_spin_box.valueChanged.connect(self.sync_slider)
 
     def create_toggle_settings(self) -> None:
         """Create toggle widget for toggle settings"""
@@ -143,10 +140,9 @@ class Window(QWidget):
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
-        self.toggle_button.clicked.connect(self.set_timer)  # type: ignore[attr-defined]
-        self.toggle_tray.triggered.connect(  # type: ignore[attr-defined]
-            self.toggle_button.nextCheckState)
-        self.toggle_tray.triggered.connect(self.set_timer)  # type: ignore[attr-defined]
+        self.toggle_button.clicked.connect(self.set_timer)
+        self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
+        self.toggle_tray.triggered.connect(self.set_timer)
 
     def create_alert_settings(self) -> None:
         """Create the alert button and label"""
@@ -154,7 +150,7 @@ class Window(QWidget):
         self.alert_mode_button = QPushButton()
         self.alert_mode_button.setText(self.alert_mode)
         # togalert_mode_buttonEnabled(True)
-        self.alert_mode_button.clicked.connect(self.switch_mode)  # type: ignore[attr-defined]
+        self.alert_mode_button.clicked.connect(self.switch_mode)
         if not self.tray_available:
             self.alert_mode_button.setEnabled(False)
 
@@ -163,8 +159,7 @@ class Window(QWidget):
         self.duration_lack_spin_box = QSpinBox()
         self.duration_lack_spin_box.setRange(5, 60)
         self.duration_lack_spin_box.setValue(self.duration_lack)
-        self.duration_lack_spin_box.valueChanged.connect(  # type: ignore[attr-defined]
-            self.update_duration_lack)
+        self.duration_lack_spin_box.valueChanged.connect(self.update_duration_lack)
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
 
     def create_select_cam_settings(self) -> None:
@@ -179,7 +174,7 @@ class Window(QWidget):
         cap_indexes = get_cap_indexes()
         self.select_cam.addItems(cap_indexes)
         self.eye_th.init_cap(int(cap_indexes[0]))  # default to first camera index detected
-        self.select_cam.activated.connect(  # type: ignore[attr-defined]
+        self.select_cam.activated.connect(
             lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
 
     def create_settings(self) -> QGroupBox:
