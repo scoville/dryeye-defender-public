@@ -1,9 +1,8 @@
 """Contains the QChart object to display the ear values over time"""
 import logging
-from typing import Optional
 
 from PySide6.QtCharts import QChart, QSplineSeries, QValueAxis
-from PySide6.QtCore import QObject, Qt, Slot
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QPen
 
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread

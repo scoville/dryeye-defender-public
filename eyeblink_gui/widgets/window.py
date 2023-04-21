@@ -92,7 +92,7 @@ class Window(QWidget):
         blink_messagebox.setInformativeText("Blink now to close the window or click 'Dismiss' to "
                                             f"dismiss for {POPUP_DISMISS_SECONDS_COOLDOWN_S} "
                                             "seconds")
-        blink_messagebox.setButtonText(QMessageBox.Ok, "Dismiss")
+        blink_messagebox.setButtonText(QMessageBox.StandardButton.Ok, "Dismiss")
         self.last_popup_dismissal_time = time.time() - POPUP_DISMISS_SECONDS_COOLDOWN_S
         return blink_messagebox
 
