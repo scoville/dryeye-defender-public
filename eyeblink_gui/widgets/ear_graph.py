@@ -40,10 +40,10 @@ class EarGraph(QChart):
         blue.setWidth(3)
         self.series_left.setPen(green)
         self.series_left.append(self.current_x, 0)
-        self.series_left.setName("Left ear")
+        self.series_left.setName("Left Eye EAR")
         self.series_rigth.setPen(blue)
         self.series_rigth.append(self.current_x, 0)
-        self.series_rigth.setName("Rigth ear")
+        self.series_rigth.setName("Right Eye EAR")
 
         self.addSeries(self.series_left)
         self.addSeries(self.series_rigth)
