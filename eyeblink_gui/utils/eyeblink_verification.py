@@ -1,12 +1,14 @@
 """Utils function"""
 import logging
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 LOGGER = logging.getLogger(__name__)
 
 
-def lack_of_blink_detection(blink_history: List[Tuple[float, int]], duration_lack: int) -> bool:
+def lack_of_blink_detection(
+        blink_history: List[Tuple[float, int, Optional[float], Optional[float]]],
+        duration_lack: int) -> bool:
     """Check if there is a lack of blink from the history
 
     :param blink_history: List of blink value(1 if detected blink, else -1) associated with time
@@ -16,7 +18,7 @@ def lack_of_blink_detection(blink_history: List[Tuple[float, int]], duration_lac
     """
     current_time = time.time()
 
-    for time_code, blink_value in reversed(blink_history):
+    for time_code, blink_value, _, _ in reversed(blink_history):
         # search for the last detected blink
         if blink_value == 1:  # blink detected
             since_last_blink_duration = current_time - time_code  # how long ago was the last blink

@@ -20,6 +20,7 @@ class EyeblinkModelThread(QThread):
     """
     update_label_output = Signal(int)
     update_debug_img = Signal(QPixmap)
+    update_ear_values = Signal(float, float)
 
     def __init__(self,  parent: Optional[QObject] = None, debug: bool = False) -> None:
         """Initialized the model and class variables,
@@ -55,7 +56,8 @@ class EyeblinkModelThread(QThread):
             raise IOError("No output from camera")
 
         time_start = time.time()
-        blink_value, annotated_img = self.model_api.update(img, debug=self.debug)
+        blink_value, annotated_img, left_ear, rigth_ear = self.model_api.update(
+                                                            img, debug=self.debug)
         LOGGER.info("time to compute frame: %s", str(time.time()-time_start))
         self.update_label_output.emit(blink_value)
         if self.debug:
@@ -64,3 +66,4 @@ class EyeblinkModelThread(QThread):
                 annotated_img, cv2.COLOR_BGR2RGB)  # pylint: disable=no-member
             annotated_img = Image.fromarray(annotated_img).convert("RGB")
             self.update_debug_img.emit(QPixmap.fromImage(ImageQt(annotated_img)))
+            self.update_ear_values.emit(left_ear, rigth_ear)

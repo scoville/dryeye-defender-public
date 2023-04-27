@@ -14,21 +14,21 @@ def get_blink_history() -> List:
     """
     current_time = time.time()
     prediction_array = [
-        [current_time - 0, -1],
-        [current_time - 1, -1],
-        [current_time - 2, -1],
-        [current_time - 3, -1],
-        [current_time - 4, -1],
-        [current_time - 5, -1],
-        [current_time - 6, 1],
-        [current_time - 7, -1],
-        [current_time - 8, -1],
-        [current_time - 9, -1],
-        [current_time - 10, -1],
-        [current_time - 11, -1],
-        [current_time - 12, -1],
-        [current_time - 13, -1],
-        [current_time - 14, -1],
+        [current_time - 0, -1, None, None],
+        [current_time - 1, -1, None, None],
+        [current_time - 2, -1, None, None],
+        [current_time - 3, -1, None, None],
+        [current_time - 4, -1, None, None],
+        [current_time - 5, -1, None, None],
+        [current_time - 6, 1, None, None],
+        [current_time - 7, -1, None, None],
+        [current_time - 8, -1, None, None],
+        [current_time - 9, -1, None, None],
+        [current_time - 10, -1, None, None],
+        [current_time - 11, -1, None, None],
+        [current_time - 12, -1, None, None],
+        [current_time - 13, -1, None, None],
+        [current_time - 14, -1, None, None],
     ]
     return prediction_array
 
