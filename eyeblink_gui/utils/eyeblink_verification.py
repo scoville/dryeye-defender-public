@@ -18,7 +18,7 @@ def lack_of_blink_detection(
     """
     current_time = time.time()
 
-    for time_code, blink_value in reversed(blink_history):
+    for time_code, blink_value _, _ in reversed(blink_history):
         # search for the last detected blink
         if blink_value == 1:  # blink detected
             since_last_blink_duration = current_time - time_code  # how long ago was the last blink
