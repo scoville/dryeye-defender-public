@@ -31,7 +31,7 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
 
 #### Quickstart
 
-`git submodule update --init --remote && docker-compose up` 
+`git submodule update --init && docker-compose up` 
 Will launch the GUI, performing all the below operations, and update submodule
 
 #### Step-by-step
