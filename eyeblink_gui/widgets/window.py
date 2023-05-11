@@ -15,6 +15,7 @@ from eyeblink_gui.utils.utils import get_cap_indexes
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
 from eyeblink_gui.widgets.debug_window import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
+from eyeblink_gui.widgets.animated_blink_reminder import AnimatedBlinkReminder
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
@@ -71,7 +72,7 @@ class Window(QWidget):
             self.tray = self.create_tray()
         else:
             self.alert_mode = "popup"
-        self.blink_messagebox = self.create_messagebox()
+        self.blink_reminder = self.create_blink_reminder()
 
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
@@ -81,20 +82,22 @@ class Window(QWidget):
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
 
-    def create_messagebox(self) -> QMessageBox:
-        """Initialize messagebox for later usage
+    def create_blink_reminder(self) -> QMessageBox:
+        """Initialize blink reminder for later usage
 
-        :return: return the messagebox object
+        :return: return the AnimatedBlinkReminder object
         """
-        blink_messagebox = QMessageBox()
-        blink_messagebox.setIcon(QMessageBox.Icon.Information)
-        blink_messagebox.setText(f"You didn't blink in the last {self.duration_lack} seconds")
-        blink_messagebox.setInformativeText("Blink now to close the window or click 'Dismiss' to "
-                                            f"dismiss for {ALERT_SECONDS_COOLDOWN} "
-                                            "seconds")
-        blink_messagebox.setButtonText(QMessageBox.StandardButton.Ok, "Dismiss")
+        blink_reminder = AnimatedBlinkReminder(
+            dismiss_callback=self.reset_last_end_of_alert_time,
+            duration_lack=self.duration_lack,
+            alert_seconds_cooldown=ALERT_SECONDS_COOLDOWN
+        )
         self.last_end_of_alert_time = time.time() - ALERT_SECONDS_COOLDOWN
-        return blink_messagebox
+        return blink_reminder
+
+    def reset_last_end_of_alert_time(self) -> None:
+        """Reset the last time the alert ended"""
+        self.last_end_of_alert_time = time.time()
 
     def create_tray(self) -> QSystemTrayIcon:
         """Initialize system tray
@@ -241,15 +244,8 @@ class Window(QWidget):
             if (time.time() - self.last_end_of_alert_time) > ALERT_SECONDS_COOLDOWN:
                 LOGGER.info("Lack of blink detected")
                 if self.alert_mode == "popup":
-                    self.blink_messagebox.setText(
-                        f"You didn't blink in the last {self.duration_lack} seconds")
-                    ret = self.blink_messagebox.exec()
-                    if ret in (QMessageBox.StandardButton.Ok, -1):
-                        self.last_end_of_alert_time = time.time()
-                    else:
-                        raise NotImplementedError("Only Ok has been implemented for this button "
-                                                  f"but {ret} was returned")
-
+                    self.blink_reminder.update_duration_lack(self.duration_lack)
+                    self.blink_reminder.show()
                 else:
                     self.tray.showMessage(
                         f"You didn't blink in the last {self.duration_lack} seconds",
@@ -267,7 +263,7 @@ class Window(QWidget):
             if DEBUG:
                 self.label_output.setText("Blink detected")
             if self.alert_mode == "popup":
-                self.blink_messagebox.close()
+                self.blink_reminder.close()
         elif DEBUG:
             self.label_output.setText("No blink detected")
 
