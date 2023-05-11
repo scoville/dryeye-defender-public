@@ -89,6 +89,10 @@ class AnimatedBlinkReminder(QWidget):
             self.show()
             self.center_window()
 
+            # Make sure the window is on top of other applications
+            self.raise_()  # for MacOS
+            self.activateWindow();  # for Windows
+
     def center_window(self):
         """Center the window on the screen"""
         center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
