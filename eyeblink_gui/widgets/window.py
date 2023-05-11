@@ -245,7 +245,7 @@ class Window(QWidget):
                 LOGGER.info("Lack of blink detected")
                 if self.alert_mode == "popup":
                     self.blink_reminder.update_duration_lack(self.duration_lack)
-                    self.blink_reminder.show()
+                    self.blink_reminder.show_reminder()
                 else:
                     self.tray.showMessage(
                         f"You didn't blink in the last {self.duration_lack} seconds",

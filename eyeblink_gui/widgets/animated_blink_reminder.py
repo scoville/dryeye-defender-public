@@ -33,7 +33,6 @@ class AnimatedBlinkReminder(QWidget):
         self.gif_label = QLabel("Blinking Gif")
         self.gif_label.setMovie(self.movie)
         self.gif_label.setFixedWidth(width)
-        self.movie.start()
 
         self.layout.addWidget(self.gif_label)
 
@@ -73,3 +72,9 @@ class AnimatedBlinkReminder(QWidget):
         self.text_label.setText(
             f"You didn't blink in the last {duration_lack} seconds"
         )
+    
+    def show_reminder(self):
+        if not self.isVisible():
+            self.movie.jumpToFrame(0)
+            self.movie.start()
+            self.show()
