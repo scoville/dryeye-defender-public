@@ -11,10 +11,10 @@ class AnimatedBlinkReminder(QWidget):
 
     def __init__(
             self,
-            dismiss_callback,
-            duration_lack,
-            alert_seconds_cooldown,
-            width=320,
+            dismiss_callback: callable,
+            duration_lack: int,
+            alert_seconds_cooldown: int,
+            width: int = 320,
     ) -> None:
         """Initialize all variable and create the layout of the window
         :param dismiss_callback: callback to call when the user clicks the dismiss button
@@ -25,8 +25,8 @@ class AnimatedBlinkReminder(QWidget):
         """
         super().__init__()
 
-        self.layout: QVBoxLayout = QVBoxLayout()
-        self.setLayout(self.layout)
+        layout = QVBoxLayout()
+        self.setLayout(layout)
 
         # Set up the movie
         path = "images/blink_animated.gif"
@@ -38,7 +38,7 @@ class AnimatedBlinkReminder(QWidget):
         self.gif_label.setMovie(self.movie)
         self.gif_label.setFixedWidth(width)
 
-        self.layout.addWidget(self.gif_label)
+        layout.addWidget(self.gif_label)
 
         # Set up the text
         self.text_label = QLabel("Text")
@@ -46,10 +46,10 @@ class AnimatedBlinkReminder(QWidget):
             f"You didn't blink in the last {duration_lack} seconds"
         )
         self.text_label.setFixedWidth(width)
-        self.text_label.setAlignment(Qt.AlignCenter)
+        self.text_label.setAlignment(Qt.AlignCenter)  # type: ignore[attr-defined]
         self.text_label.setWordWrap(True)
         self.text_label.setStyleSheet("font-weight: bold;")
-        self.layout.addWidget(self.text_label)
+        layout.addWidget(self.text_label)
 
         self.informative_text_label = QLabel("Informative Text")
         self.informative_text_label.setText(
@@ -57,9 +57,9 @@ class AnimatedBlinkReminder(QWidget):
             f"dismiss for {alert_seconds_cooldown} seconds"
         )
         self.informative_text_label.setFixedWidth(width)
-        self.informative_text_label.setAlignment(Qt.AlignCenter)
+        self.informative_text_label.setAlignment(Qt.AlignCenter)  # type: ignore[attr-defined]
         self.informative_text_label.setWordWrap(True)
-        self.layout.addWidget(self.informative_text_label)
+        layout.addWidget(self.informative_text_label)
 
         # Set up the button
         self.button = QPushButton("Dismiss")
@@ -70,9 +70,9 @@ class AnimatedBlinkReminder(QWidget):
                 self.close()
             )
         )
-        self.layout.addWidget(self.button)
+        layout.addWidget(self.button)
 
-    def update_duration_lack(self, duration_lack) -> None:
+    def update_duration_lack(self, duration_lack: int) -> None:
         """Update the text label with the new duration lack
 
         :param duration_lack: duration in seconds without blinks before the popup appears
@@ -91,7 +91,7 @@ class AnimatedBlinkReminder(QWidget):
 
             # Make sure the window is on top of other applications
             self.raise_()  # for MacOS
-            self.activateWindow();  # for Windows
+            self.activateWindow()  # for Windows
 
     def center_window(self) -> None:
         """Center the window on the screen"""
