@@ -2,8 +2,8 @@
 import os
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QMovie
-from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout
+from PySide6.QtGui import QMovie, QScreen
+from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QApplication
 
 
 class AnimatedBlinkReminder(QWidget):
@@ -78,3 +78,10 @@ class AnimatedBlinkReminder(QWidget):
             self.movie.jumpToFrame(0)
             self.movie.start()
             self.show()
+            self.center_window()
+    
+    def center_window(self):
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.frameGeometry()
+        geo.moveCenter(center)
+        self.move(geo.topLeft())
