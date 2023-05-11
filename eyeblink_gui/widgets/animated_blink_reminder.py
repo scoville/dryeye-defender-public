@@ -71,16 +71,16 @@ class AnimatedBlinkReminder(QWidget):
             )
         )
         self.layout.addWidget(self.button)
-    
+
     def update_duration_lack(self, duration_lack):
         """Update the text label with the new duration lack
-        
+
         :param duration_lack: duration in seconds without blinks before the popup appears
         """
         self.text_label.setText(
             f"You didn't blink in the last {duration_lack} seconds"
         )
-    
+
     def show_reminder(self):
         """Show the reminder and start the gif. Don't show if already visible"""
         if not self.isVisible():
@@ -88,7 +88,7 @@ class AnimatedBlinkReminder(QWidget):
             self.movie.start()
             self.show()
             self.center_window()
-    
+
     def center_window(self):
         """Center the window on the screen"""
         center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
