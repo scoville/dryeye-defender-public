@@ -17,7 +17,11 @@ class AnimatedBlinkReminder(QWidget):
             width=320,
     ):
         """Initialize all variable and create the layout of the window
-        :param parent: parent of the widget, defaults to None
+        :param dismiss_callback: callback to call when the user clicks the dismiss button
+        :param duration_lack: duration in seconds without blinks before the popup appears
+        :param alert_seconds_cooldown: duration in seconds before the popup can appear again
+        if the user dismisses it
+        :param width: width of the window, default is set to the width of the gif (320px)
         """
         super().__init__()
 
@@ -69,11 +73,16 @@ class AnimatedBlinkReminder(QWidget):
         self.layout.addWidget(self.button)
     
     def update_duration_lack(self, duration_lack):
+        """Update the text label with the new duration lack
+        
+        :param duration_lack: duration in seconds without blinks before the popup appears
+        """
         self.text_label.setText(
             f"You didn't blink in the last {duration_lack} seconds"
         )
     
     def show_reminder(self):
+        """Show the reminder and start the gif. Don't show if already visible"""
         if not self.isVisible():
             self.movie.jumpToFrame(0)
             self.movie.start()
@@ -81,6 +90,7 @@ class AnimatedBlinkReminder(QWidget):
             self.center_window()
     
     def center_window(self):
+        """Center the window on the screen"""
         center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
         geo = self.frameGeometry()
         geo.moveCenter(center)
