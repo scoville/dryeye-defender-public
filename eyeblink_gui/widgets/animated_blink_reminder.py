@@ -1,5 +1,6 @@
 """Class for the animated blink reminder widget"""
 import os
+from typing import Callable
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMovie, QScreen
@@ -11,7 +12,7 @@ class AnimatedBlinkReminder(QWidget):
 
     def __init__(
             self,
-            dismiss_callback: callable,
+            dismiss_callback: Callable[[], None],
             duration_lack: int,
             alert_seconds_cooldown: int,
             width: int = 320,
