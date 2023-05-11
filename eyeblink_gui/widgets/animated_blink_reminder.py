@@ -15,7 +15,7 @@ class AnimatedBlinkReminder(QWidget):
             duration_lack,
             alert_seconds_cooldown,
             width=320,
-    ):
+    ) -> None:
         """Initialize all variable and create the layout of the window
         :param dismiss_callback: callback to call when the user clicks the dismiss button
         :param duration_lack: duration in seconds without blinks before the popup appears
@@ -25,7 +25,7 @@ class AnimatedBlinkReminder(QWidget):
         """
         super().__init__()
 
-        self.layout = QVBoxLayout()
+        self.layout: QVBoxLayout = QVBoxLayout()
         self.setLayout(self.layout)
 
         # Set up the movie
@@ -72,7 +72,7 @@ class AnimatedBlinkReminder(QWidget):
         )
         self.layout.addWidget(self.button)
 
-    def update_duration_lack(self, duration_lack):
+    def update_duration_lack(self, duration_lack) -> None:
         """Update the text label with the new duration lack
 
         :param duration_lack: duration in seconds without blinks before the popup appears
@@ -81,7 +81,7 @@ class AnimatedBlinkReminder(QWidget):
             f"You didn't blink in the last {duration_lack} seconds"
         )
 
-    def show_reminder(self):
+    def show_reminder(self) -> None:
         """Show the reminder and start the gif. Don't show if already visible"""
         if not self.isVisible():
             self.movie.jumpToFrame(0)
@@ -93,7 +93,7 @@ class AnimatedBlinkReminder(QWidget):
             self.raise_()  # for MacOS
             self.activateWindow();  # for Windows
 
-    def center_window(self):
+    def center_window(self) -> None:
         """Center the window on the screen"""
         center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
         geo = self.frameGeometry()

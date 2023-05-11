@@ -82,7 +82,7 @@ class Window(QWidget):
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
 
-    def create_blink_reminder(self) -> QMessageBox:
+    def create_blink_reminder(self) -> AnimatedBlinkReminder:
         """Initialize blink reminder for later usage
 
         :return: return the AnimatedBlinkReminder object
