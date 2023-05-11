@@ -263,7 +263,9 @@ class Window(QWidget):
             if DEBUG:
                 self.label_output.setText("Blink detected")
             if self.alert_mode == "popup":
-                self.blink_reminder.close()
+                if self.blink_reminder.isVisible():
+                    self.blink_reminder.close()
+                    self.reset_last_end_of_alert_time()
         elif DEBUG:
             self.label_output.setText("No blink detected")
 
