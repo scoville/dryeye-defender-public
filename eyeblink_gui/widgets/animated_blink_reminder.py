@@ -1,5 +1,6 @@
 """Class for the animated blink reminder widget"""
 import os
+from pathlib import Path
 from typing import Callable
 
 from PySide6.QtCore import Qt
@@ -31,9 +32,9 @@ class AnimatedBlinkReminder(QWidget):
 
         # Set up the movie
         path = "images/blink_animated.gif"
-        assert os.path.exists(path)
+        assert os.path.exists(path), f"Could not find {path} at {Path(path).resolve()}"
         self.movie = QMovie(path)
-        assert self.movie.isValid(), f"{path} file invalid "
+        assert self.movie.isValid(), f"{path} file invalid"
 
         self.gif_label = QLabel("Blinking Gif")
         self.gif_label.setMovie(self.movie)
