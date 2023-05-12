@@ -26,7 +26,7 @@ class EarGraph(QChart):
         # serie for left eye
         self.series_left = QSplineSeries(self)
         # serie for rigth eye
-        self.series_rigth = QSplineSeries(self)
+        self.series_right = QSplineSeries(self)
         self.axis_x = QValueAxis()
         self.axis_y = QValueAxis()
         self.current_x = 9.5
@@ -39,19 +39,19 @@ class EarGraph(QChart):
         self.series_left.setPen(green)
         self.series_left.append(self.current_x, 0)
         self.series_left.setName("Left Eye EAR")
-        self.series_rigth.setPen(blue)
-        self.series_rigth.append(self.current_x, 0)
-        self.series_rigth.setName("Right Eye EAR")
+        self.series_right.setPen(blue)
+        self.series_right.append(self.current_x, 0)
+        self.series_right.setName("Right Eye EAR")
 
         self.addSeries(self.series_left)
-        self.addSeries(self.series_rigth)
+        self.addSeries(self.series_right)
         self.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
         self.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
 
         self.series_left.attachAxis(self.axis_x)
         self.series_left.attachAxis(self.axis_y)
-        self.series_rigth.attachAxis(self.axis_x)
-        self.series_rigth.attachAxis(self.axis_y)
+        self.series_right.attachAxis(self.axis_x)
+        self.series_right.attachAxis(self.axis_y)
         self.axis_x.setTickCount(10)
         # we put a range not center to get the last values on the rigth
         self.axis_x.setRange(0, 10)
@@ -69,6 +69,6 @@ class EarGraph(QChart):
         new_x_diff = ((self.axis_x.max() - self.axis_x.min()) / self.axis_x.tickCount())/20
         self.current_x += new_x_diff
         self.series_left.append(self.current_x, left_ear)
-        self.series_rigth.append(self.current_x, rigth_ear)
+        self.series_right.append(self.current_x, rigth_ear)
 
         self.scroll(x_scroll, 0)
