@@ -160,7 +160,7 @@ class Window(QWidget):
     def create_duration_settings(self) -> None:
         """Create duration for settings button and label"""
         self.duration_lack_spin_box = QSpinBox()
-        self.duration_lack_spin_box.setRange(5, 60)
+        self.duration_lack_spin_box.setRange(1, 60)
         self.duration_lack_spin_box.setValue(self.duration_lack)
         self.duration_lack_spin_box.valueChanged.connect(self.update_duration_lack)
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
