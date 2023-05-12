@@ -68,20 +68,13 @@ class EarGraph(QChart):
         x_scroll = (self.plotArea().width() / self.axis_x.tickCount())/20
         new_x_diff = ((self.axis_x.max() - self.axis_x.min()) / self.axis_x.tickCount())/20
         self.current_x += new_x_diff
-        print("current_x: ", self.current_x)
-        print("left ear", left_ear)
         self.series_left.append(self.current_x, left_ear)
         self.series_right.append(self.current_x, right_ear)
-        print("series_left: ", self.series_left)
         self.scroll(x_scroll, 0)
-
         x_min = self.current_x - (self.axis_x.max() - self.axis_x.min())
-
-        print("x_min", x_min)
         # Remove points before the x_min value from the left series
         for point in reversed(self.series_left.points()):
             if point.x() < x_min:
-                print("removing", point.x())
                 self.series_left.remove(point)
         # Remove points before the x_min value from the right series
         for point in reversed(self.series_right.points()):
