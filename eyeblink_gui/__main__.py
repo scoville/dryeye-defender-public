@@ -1,4 +1,5 @@
 """Main qt file, containing code for the qt window etc"""
+import signal
 import logging
 import os
 import sys
@@ -10,6 +11,32 @@ from eyeblink_gui.widgets.window import Window
 from eyeblink_gui.utils.utils import find_data_file
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+
+LOGGER = logging.getLogger(__name__)
+
+
+class Application(QApplication):
+    """The entire application encapsulated in this class"""
+
+    def __init__(self, argv) -> None:
+        """Initialise the application
+        :param argv: sys.argv
+        """
+        super().__init__(argv)
+        # Connect the SIGINT signal to a slot
+        signal.signal(signal.SIGINT, self.handle_sigint)
+        # Create and show the main window
+        self.main_window = MainWindow()
+        self.main_window.show()
+
+    def handle_sigint(self, signal_arg, frame) -> None:  # pylint: disable = unused-argument
+        """Perform any cleanup or save operations here
+        before exiting the application due to a SIGINT/keyboard interrupt
+        """
+        LOGGER.info("SIGINT received. Shutting down gracefully.")
+        self.quit()
+        # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
+        # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
 
 
 class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
@@ -28,10 +55,6 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
 
 
 if __name__ == "__main__":
-    app = QApplication()
-    # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
-
-    # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
-    main_window = MainWindow()
-    main_window.show()
+    app = Application(sys.argv)
+    # Start the application event loop
     sys.exit(app.exec())
