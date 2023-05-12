@@ -6,7 +6,7 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from eyeblink_gui.widgets.ear_graph import EarGraph
+from eyeblink_gui.widgets.debug_window.ear_graph import EarGraph
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 LOGGER = logging.getLogger(__name__)

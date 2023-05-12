@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
 
 from eyeblink_gui.utils.utils import get_cap_indexes
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
-from eyeblink_gui.widgets.debug_window import DebugWindow
+from eyeblink_gui.widgets.debug_window.main import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 DEBUG = True
