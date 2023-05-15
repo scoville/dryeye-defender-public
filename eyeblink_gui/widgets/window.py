@@ -188,7 +188,7 @@ class Window(QWidget):
         """Create select blink reminder gif and label blink reminder gif"""
         self.select_blink_reminder_gif_label = QLabel("Choose blink reminder gif (popup mode only)")
         self.select_blink_reminder_gif = QComboBox()
-        self.select_blink_reminder_gif.addItems(self.blink_reminder_gifs.keys())
+        self.select_blink_reminder_gif.addItems(list(self.blink_reminder_gifs.keys()))
         self.select_blink_reminder_gif.activated.connect(
             lambda: self.blink_reminder.setup_movie(
                 self.blink_reminder_gifs[self.select_blink_reminder_gif.currentText()]

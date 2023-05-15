@@ -19,6 +19,7 @@ class AnimatedBlinkReminder(QWidget):
             alert_seconds_cooldown: int,
             width: int = 320,
     ) -> None:
+       # pylint: disable=too-many-arguments
         """Initialize all variable and create the layout of the window
         :param movie_path: path to the gif
         :param dismiss_callback: callback to call when the user clicks the dismiss button
@@ -98,7 +99,7 @@ class AnimatedBlinkReminder(QWidget):
         geo = self.frameGeometry()
         geo.moveCenter(center)
         self.move(geo.topLeft())
-    
+
     def setup_movie(self, path: str) -> None:
         """Set up the movie with the given path
 
