@@ -48,7 +48,7 @@ class AnimatedBlinkReminder(QWidget):
             f"You didn't blink in the last {duration_lack} seconds"
         )
         self.text_label.setFixedWidth(width)
-        self.text_label.setAlignment(Qt.AlignCenter)  # type: ignore[attr-defined]
+        self.text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.text_label.setWordWrap(True)
         self.text_label.setStyleSheet("font-weight: bold;")
         layout.addWidget(self.text_label)
@@ -59,7 +59,7 @@ class AnimatedBlinkReminder(QWidget):
             f"dismiss for {alert_seconds_cooldown} seconds"
         )
         self.informative_text_label.setFixedWidth(width)
-        self.informative_text_label.setAlignment(Qt.AlignCenter)  # type: ignore[attr-defined]
+        self.informative_text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.informative_text_label.setWordWrap(True)
         layout.addWidget(self.informative_text_label)
 
