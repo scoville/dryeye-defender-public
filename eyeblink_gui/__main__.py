@@ -1,14 +1,15 @@
 """Main qt file, containing code for the qt window etc"""
-import signal
 import logging
 import os
+import signal
 import sys
+from typing import Any, Tuple, Sequence
 
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from eyeblink_gui.widgets.window import Window
 from eyeblink_gui.utils.utils import find_data_file
+from eyeblink_gui.widgets.window import Window
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
@@ -18,18 +19,18 @@ LOGGER = logging.getLogger(__name__)
 class Application(QApplication):
     """The entire application encapsulated in this class"""
 
-    def __init__(self, argv) -> None:
+    def __init__(self, argv: Sequence[str]) -> None:
         """Initialise the application
         :param argv: sys.argv
         """
         super().__init__(argv)
         # Connect the SIGINT signal to a slot
-        signal.signal(signal.SIGINT, self.handle_sigint)
+        signal.signal(signal.SIGINT, self.handle_sigint)  # type: ignore
         # Create and show the main window
         self.main_window = MainWindow()
         self.main_window.show()
 
-    def handle_sigint(self, signal_arg, frame) -> None:  # pylint: disable = unused-argument
+    def handle_sigint(self, *_: Tuple[Any, ...]) -> None:
         """Perform any cleanup or save operations here
         before exiting the application due to a SIGINT/keyboard interrupt
         """

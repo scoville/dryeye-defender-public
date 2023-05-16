@@ -1,12 +1,11 @@
 """Contains the QChart object to display the ear values over time"""
 import logging
 import time
+from collections import deque
 
 import pyqtgraph as pg
 from PySide6.QtCore import Slot
-from PySide6.QtWidgets import QWidget, QVBoxLayout
-
-from collections import deque
+from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
@@ -31,14 +30,14 @@ class EarGraph(QWidget):
         self.graphWidget.setBackground("#31313a")  # Set the background color of the graph
 
         # Set the axis labels
-        self.graphWidget.setLabel('left', 'X')
-        self.graphWidget.setLabel('bottom', 'EAR ratiovalues')
+        self.graphWidget.setLabel("left", "EAR ratiovalues")
+        self.graphWidget.setLabel("bottom", "x")
 
         # Set the axis font size
         axis_font = pg.QtGui.QFont()
         axis_font.setPointSize(10)
-        self.graphWidget.getAxis('left').tickFont = axis_font
-        self.graphWidget.getAxis('bottom').tickFont = axis_font
+        self.graphWidget.getAxis("left").tickFont = axis_font
+        self.graphWidget.getAxis("bottom").tickFont = axis_font
 
         layout = QVBoxLayout()
 
