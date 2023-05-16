@@ -178,7 +178,7 @@ class Window(QWidget):
         if not cap_indexes:
             LOGGER.error("No cameras could be found")
             self.toggle_button.setEnabled(False)
-            self.alert_no_cam()
+            cap_indexes = self.alert_no_cam()
         self.select_cam.addItems(cap_indexes)
         self.eye_th.init_cap(int(cap_indexes[0]))  # default to first camera index detected
         self.select_cam.activated.connect(
@@ -224,7 +224,9 @@ class Window(QWidget):
         return group_box
 
     def alert_no_cam(self) -> None:  # pylint: disable=no-self-use
-        """Alert the user with a window popup that there is no webcam connected"""
+        """Alert the user with a window popup that there is no webcam connected
+        
+        :return: return available video capture ports after alerting the user"""
         no_cam_messagebox = QMessageBox()
         no_cam_messagebox.setIcon(QMessageBox.Icon.Warning)
         no_cam_messagebox.setText("No webcam has been detected")
@@ -235,6 +237,7 @@ class Window(QWidget):
             LOGGER.error("No cameras could be found")
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
+            return get_cap_indexes()
 
     @Slot()
     def start_thread(self) -> None:
