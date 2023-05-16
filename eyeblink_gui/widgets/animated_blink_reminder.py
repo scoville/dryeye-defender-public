@@ -123,7 +123,7 @@ class AnimatedBlinkReminder(QWidget):
 
     def force_focus(self) -> None:
         """Force focus on the window, so that it appears on top of all other windows"""
-        self.raise_()
+        self.raise_()  # Raises widget to top of parent widget's stack
         if os.name == "nt":  # Windows
             fg_window = win32gui.GetForegroundWindow()
             fg_thread_id = win32process.GetWindowThreadProcessId(fg_window)[0]
@@ -132,4 +132,4 @@ class AnimatedBlinkReminder(QWidget):
                 win32process.AttachThreadInput(fg_thread_id, current_thread_id, True)
                 win32gui.SetForegroundWindow(self.winId())
                 win32process.AttachThreadInput(fg_thread_id, win32api.GetCurrentThreadId(), False)
-        self.activateWindow()
+        self.activateWindow()  # Sets the top widget in the stack to be the active window
