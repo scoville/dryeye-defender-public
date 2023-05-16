@@ -29,6 +29,7 @@ RUN apt-get autoclean && \
     && apt-get clean
 
 # Install packages, including CI requirements to overwrite poor package management by retinaface
+COPY requirements.txt .
 COPY requirements_ci.txt .
 RUN pip install -r requirements_ci.txt
 
