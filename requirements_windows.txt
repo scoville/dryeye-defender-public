@@ -1,0 +1,2 @@
+-r requirements_test.txt
+pywin32==306

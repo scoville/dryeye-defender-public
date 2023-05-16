@@ -1,0 +1,2 @@
+-r requirements_test.txt
+opencv-python-headless==4.7
