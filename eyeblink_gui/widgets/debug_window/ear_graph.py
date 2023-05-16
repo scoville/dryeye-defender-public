@@ -1,16 +1,19 @@
 """Contains the QChart object to display the ear values over time"""
 import logging
+import time
 
-from PySide6.QtCharts import QChart, QSplineSeries, QValueAxis
-from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QPen
+import pyqtgraph as pg
+from PySide6.QtCore import Slot
+from PySide6.QtWidgets import QWidget, QVBoxLayout
+
+from collections import deque
 
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 LOGGER = logging.getLogger(__name__)
 
 
-class EarGraph(QChart):
+class EarGraph(QWidget):
     """Class for the graph displaying the ear values over time"""
 
     def __init__(self, thread: EyeblinkModelThread) -> None:
@@ -20,43 +23,39 @@ class EarGraph(QChart):
         """
         super().__init__()
 
-        # `update graph` is called each time thread emit update ear values signal
+        # `update graph` is called each time thread emits the `update ear values` signal
         thread.update_ear_values.connect(self.update_graph)
 
-        # series for left eye
-        self.series_left = QSplineSeries(self)
-        # series for right eye
-        self.series_right = QSplineSeries(self)
-        self.axis_x = QValueAxis()
-        self.axis_y = QValueAxis()
-        self.current_x = 9.5
+        # Create the graph widget
+        self.graphWidget = pg.PlotWidget()
+        self.graphWidget.setBackground("#31313a")  # Set the background color of the graph
 
-        # colors of the graph lines
-        green = QPen(Qt.GlobalColor.green)
-        green.setWidth(3)
-        blue = QPen(Qt.GlobalColor.blue)
-        blue.setWidth(3)
-        self.series_left.setPen(green)
-        self.series_left.append(self.current_x, 0)
-        self.series_left.setName("Left Eye EAR")
-        self.series_right.setPen(blue)
-        self.series_right.append(self.current_x, 0)
-        self.series_right.setName("Right Eye EAR")
+        # Set the axis labels
+        self.graphWidget.setLabel('left', 'X')
+        self.graphWidget.setLabel('bottom', 'EAR ratiovalues')
 
-        self.addSeries(self.series_left)
-        self.addSeries(self.series_right)
-        self.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
-        self.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
+        # Set the axis font size
+        axis_font = pg.QtGui.QFont()
+        axis_font.setPointSize(10)
+        self.graphWidget.getAxis('left').tickFont = axis_font
+        self.graphWidget.getAxis('bottom').tickFont = axis_font
 
-        self.series_left.attachAxis(self.axis_x)
-        self.series_left.attachAxis(self.axis_y)
-        self.series_right.attachAxis(self.axis_x)
-        self.series_right.attachAxis(self.axis_y)
-        self.axis_x.setTickCount(10)
-        # we put a range not center to get the last values on the right
-        self.axis_x.setRange(0, 10)
-        # ear values are mainly between 0 and 1
-        self.axis_y.setRange(0, 1)
+        layout = QVBoxLayout()
+
+        self.x_axis = deque(range(100), maxlen=100)
+        self.y_left = deque([0.0 for _ in range(100)], maxlen=100)
+        self.y_right = deque([0.0 for _ in range(100)], maxlen=100)
+
+        pen_left = pg.mkPen(color="#e60049")
+        pen_right = pg.mkPen(color="#50e991")
+        self.data_line_left = self.graphWidget.plot(self.x_axis, self.y_left, pen=pen_left)
+        self.data_line_right = self.graphWidget.plot(self.x_axis, self.y_right, pen=pen_right)
+
+        self.graphWidget.setXRange(0, 100)
+        self.graphWidget.setYRange(0, 0.7)
+
+        layout.addWidget(self.graphWidget)
+        self.setLayout(layout)
 
     @Slot()
     def update_graph(self, left_ear: float, right_ear: float) -> None:
@@ -65,18 +64,16 @@ class EarGraph(QChart):
         :param left_ear: left ear value
         :param right_ear: right ear value
         """
-        x_scroll = (self.plotArea().width() / self.axis_x.tickCount())/20
-        new_x_diff = ((self.axis_x.max() - self.axis_x.min()) / self.axis_x.tickCount())/20
-        self.current_x += new_x_diff
-        self.series_left.append(self.current_x, left_ear)
-        self.series_right.append(self.current_x, right_ear)
-        self.scroll(x_scroll, 0)
-        x_min = self.current_x - (self.axis_x.max() - self.axis_x.min())
-        # Remove points before the x_min value from the left series
-        for point in reversed(self.series_left.points()):
-            if point.x() < x_min:
-                self.series_left.remove(point)
-        # Remove points before the x_min value from the right series
-        for point in reversed(self.series_right.points()):
-            if point.x() < x_min:
-                self.series_right.remove(point)
+        b_time = time.time()
+        # self.x_axis = self.x_axis[1:]  # Remove the first y element.
+        # self.x_axis.append(self.x_axis[-1] + 1)  # Add a new value 1 higher than the last.
+        # self.x_axis.append(self.x_axis[-1] + 1)
+
+        # self.y = self.y[1:]  # Remove the first
+        self.y_left.append(left_ear)  # Add a new random value.
+        self.y_right.append(right_ear)  # Add a new random value.
+
+        self.data_line_left.setData(self.x_axis, self.y_left)  # Update the data.
+        self.data_line_right.setData(self.x_axis, self.y_right)  # Update the data.
+
+        LOGGER.info("update graph time: %s", time.time() - b_time)
