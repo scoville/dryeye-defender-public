@@ -7,7 +7,11 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QMovie, QScreen
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QApplication
 
-from eyeblink_gui.utils.utils import is_windows
+if os.name == "nt":  # Windows
+    import win32gui  # pylint: disable=import-error
+    import win32con  # pylint: disable=import-error
+    import win32process  # pylint: disable=import-error
+    import win32api  # pylint: disable=import-error
 
 
 class AnimatedBlinkReminder(QWidget):
@@ -74,10 +78,14 @@ class AnimatedBlinkReminder(QWidget):
         )
         layout.addWidget(self.button)
 
-        # Prepare for forcing focus on Windows
-        if is_windows():
-            import win32gui, win32con, win32process, win32api
-            win32gui.SystemParametersInfo(win32con.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE)
+        # Prepare force focus on Windows
+        if os.name == "nt":  # Windows
+            win32gui.SystemParametersInfo(
+                win32con.SPI_SETFOREGROUNDLOCKTIMEOUT,
+                0,
+                win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE
+            )
+
 
     def update_duration_lack(self, duration_lack: int) -> None:
         """Update the text label with the new duration lack
@@ -96,7 +104,6 @@ class AnimatedBlinkReminder(QWidget):
             self.show()
             self.center_window()
             self.force_focus()
-            
 
     def center_window(self) -> None:
         """Center the window on the screen"""
@@ -118,7 +125,7 @@ class AnimatedBlinkReminder(QWidget):
     def force_focus(self) -> None:
         """Force focus on the window, so that it appears on top of all other windows"""
         self.raise_()
-        if is_windows():
+        if os.name == "nt":  # Windows
             fg_window = win32gui.GetForegroundWindow()
             fg_thread_id = win32process.GetWindowThreadProcessId(fg_window)[0]
             current_thread_id = win32api.GetCurrentThreadId()
