@@ -14,7 +14,7 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
    1. `git submodule update --init`
 
 3. Install `requirement.txt`
-    1. `python -m pip install -r requirements.txt`
+    1. `python -m pip install -r requirements.txt` (first uncomment requirements based on your OS)
     1. for linting and ci libraries : `python -m pip install -r requirements_ci.txt`
 
 4. Install other repo with pip
