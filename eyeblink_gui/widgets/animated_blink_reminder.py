@@ -2,11 +2,12 @@
 import os
 from pathlib import Path
 from typing import Callable
-import win32gui, win32con, win32process, win32api
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMovie, QScreen
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QApplication
+
+from eyeblink_gui.utils.utils import is_windows
 
 
 class AnimatedBlinkReminder(QWidget):
@@ -73,10 +74,10 @@ class AnimatedBlinkReminder(QWidget):
         )
         layout.addWidget(self.button)
 
-        self.windows = False
-        if os.name == "nt":
+        # Prepare for forcing focus on Windows
+        if is_windows():
+            import win32gui, win32con, win32process, win32api
             win32gui.SystemParametersInfo(win32con.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE)
-            self.windows = True
 
     def update_duration_lack(self, duration_lack: int) -> None:
         """Update the text label with the new duration lack
@@ -114,14 +115,15 @@ class AnimatedBlinkReminder(QWidget):
         assert self.movie.isValid(), f"{path} file invalid"
         self.gif_label.setMovie(self.movie)
 
-    def force_focus(self):
-        self.raise_()  # for MacOS
-        if self.windows:
-            fgwin = win32gui.GetForegroundWindow()
-            fg = win32process.GetWindowThreadProcessId(fgwin)[0]
-            current = win32api.GetCurrentThreadId()
-            if current != fg:
-                win32process.AttachThreadInput(fg, current, True)
+    def force_focus(self) -> None:
+        """Force focus on the window, so that it appears on top of all other windows"""
+        self.raise_()
+        if is_windows():
+            fg_window = win32gui.GetForegroundWindow()
+            fg_thread_id = win32process.GetWindowThreadProcessId(fg_window)[0]
+            current_thread_id = win32api.GetCurrentThreadId()
+            if current_thread_id != fg_thread_id:
+                win32process.AttachThreadInput(fg_thread_id, current_thread_id, True)
                 win32gui.SetForegroundWindow(self.winId())
-                win32process.AttachThreadInput(fg, win32api.GetCurrentThreadId(), False)
-            self.activateWindow()
+                win32process.AttachThreadInput(fg_thread_id, win32api.GetCurrentThreadId(), False)
+        self.activateWindow()

@@ -54,3 +54,11 @@ def get_cap_indexes() -> List[str]:
                 LOGGER.info("Port %s for camera ( %s x %s) is present but does not reads.")
                 # available_ports.append(dev_port)
     return working_ports
+
+
+def is_windows() -> bool:
+    """Check if the OS is Windows
+
+    :return: True if the OS is Windows
+    """
+    return os.name == "nt"
