@@ -225,7 +225,7 @@ class Window(QWidget):
 
     def alert_no_cam(self) -> List[str]:  # pylint: disable=no-self-use
         """Alert the user with a window popup that there is no webcam connected
-        
+
         :return: return available video capture ports after alerting the user
         """
         no_cam_messagebox = QMessageBox()
