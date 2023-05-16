@@ -31,8 +31,6 @@ class DebugWindow(QWidget):
         self.label = QLabel()
         self.label.setFixedSize(640, 480)
         self.chart_view = EarGraph(thread=thread)
-        # self.chart_view = QChartView(EarGraph(thread=thread))
-        # self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         debug_layout.addWidget(self.chart_view)
         debug_layout.addWidget(self.label)

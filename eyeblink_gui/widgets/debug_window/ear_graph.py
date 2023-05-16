@@ -64,13 +64,8 @@ class EarGraph(QWidget):
         :param right_ear: right ear value
         """
         b_time = time.time()
-        # self.x_axis = self.x_axis[1:]  # Remove the first y element.
-        # self.x_axis.append(self.x_axis[-1] + 1)  # Add a new value 1 higher than the last.
-        # self.x_axis.append(self.x_axis[-1] + 1)
-
-        # self.y = self.y[1:]  # Remove the first
-        self.y_left.append(left_ear)  # Add a new random value.
-        self.y_right.append(right_ear)  # Add a new random value.
+        self.y_left.append(left_ear)
+        self.y_right.append(right_ear)
 
         self.data_line_left.setData(self.x_axis, self.y_left)  # Update the data.
         self.data_line_right.setData(self.x_axis, self.y_right)  # Update the data.
