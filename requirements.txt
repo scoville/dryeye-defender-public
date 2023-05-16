@@ -5,3 +5,4 @@ pyside6~=6.4.2
 openvino~=2022.3.0
 pillow~=9.5
 types-pywin32==306.0.0.1
+pyqtgraph~=0.13.3

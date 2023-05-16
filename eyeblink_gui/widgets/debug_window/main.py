@@ -6,7 +6,7 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from eyeblink_gui.widgets.ear_graph import EarGraph
+from eyeblink_gui.widgets.debug_window.ear_graph import EarGraph
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 LOGGER = logging.getLogger(__name__)
@@ -30,8 +30,7 @@ class DebugWindow(QWidget):
         # Create a label for the display camera
         self.label = QLabel()
         self.label.setFixedSize(640, 480)
-        self.chart_view = QChartView(EarGraph(thread=thread))
-        self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
+        self.chart_view = EarGraph(thread=thread)
 
         debug_layout.addWidget(self.chart_view)
         debug_layout.addWidget(self.label)
