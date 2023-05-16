@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 from typing import Callable
+import win32gui, win32con, win32process, win32api
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMovie, QScreen
@@ -72,6 +73,11 @@ class AnimatedBlinkReminder(QWidget):
         )
         layout.addWidget(self.button)
 
+        self.windows = False
+        if os.name == "nt":
+            win32gui.SystemParametersInfo(win32con.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE)
+            self.windows = True
+
     def update_duration_lack(self, duration_lack: int) -> None:
         """Update the text label with the new duration lack
 
@@ -88,10 +94,8 @@ class AnimatedBlinkReminder(QWidget):
             self.movie.start()
             self.show()
             self.center_window()
-
-            # Make sure the window is on top of other applications
-            self.raise_()  # for MacOS
-            self.activateWindow()  # for Windows
+            self.force_focus()
+            
 
     def center_window(self) -> None:
         """Center the window on the screen"""
@@ -109,3 +113,15 @@ class AnimatedBlinkReminder(QWidget):
         self.movie = QMovie(path)
         assert self.movie.isValid(), f"{path} file invalid"
         self.gif_label.setMovie(self.movie)
+
+    def force_focus(self):
+        self.raise_()  # for MacOS
+        if self.windows:
+            fgwin = win32gui.GetForegroundWindow()
+            fg = win32process.GetWindowThreadProcessId(fgwin)[0]
+            current = win32api.GetCurrentThreadId()
+            if current != fg:
+                win32process.AttachThreadInput(fg, current, True)
+                win32gui.SetForegroundWindow(self.winId())
+                win32process.AttachThreadInput(fg, win32api.GetCurrentThreadId(), False)
+            self.activateWindow()
