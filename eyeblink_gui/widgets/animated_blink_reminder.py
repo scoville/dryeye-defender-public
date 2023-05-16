@@ -86,7 +86,6 @@ class AnimatedBlinkReminder(QWidget):
                 win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE
             )
 
-
     def update_duration_lack(self, duration_lack: int) -> None:
         """Update the text label with the new duration lack
 
