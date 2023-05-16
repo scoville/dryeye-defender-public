@@ -45,6 +45,7 @@ class EyeblinkModelThread(QThread):
 
         :param input_device: camera to choose, defaults to 0
         """
+        LOGGER.info("Selecting camera index: %s", input_device)
         if self.cap is not None:
             self.cap.release()
         self.cap = cv2.VideoCapture(input_device)  # pylint: disable=no-member

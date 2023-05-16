@@ -1,6 +1,7 @@
 # pylint: disable=attribute-defined-outside-init
 """Class for the main window widget"""
 import logging
+import os
 import sys
 import time
 from typing import Optional
@@ -13,7 +14,7 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
 
 from eyeblink_gui.utils.utils import get_cap_indexes
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
-from eyeblink_gui.widgets.debug_window import DebugWindow
+from eyeblink_gui.widgets.debug_window.main import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 from eyeblink_gui.widgets.animated_blink_reminder import AnimatedBlinkReminder
 
@@ -176,7 +177,9 @@ class Window(QWidget):
             self.alert_no_cam()
         cap_indexes = get_cap_indexes()
         self.select_cam.addItems(cap_indexes)
-        self.eye_th.init_cap(int(cap_indexes[0]))  # default to first camera index detected
+        selected_cap_index = int(cap_indexes[int(os.environ.get("DEFAULT_CAMERA_INDEX", 0))])
+        self.eye_th.init_cap(selected_cap_index)
+        # default to first camera index detected if DEFAULT_CAMERA_INDEX env var not specified
         self.select_cam.activated.connect(
             lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
 
