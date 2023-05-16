@@ -3,7 +3,7 @@
 import logging
 import sys
 import time
-from typing import Optional
+from typing import Optional, List
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
@@ -223,10 +223,11 @@ class Window(QWidget):
         group_box.setLayout(grid)
         return group_box
 
-    def alert_no_cam(self) -> None:  # pylint: disable=no-self-use
+    def alert_no_cam(self) -> List[str]:  # pylint: disable=no-self-use
         """Alert the user with a window popup that there is no webcam connected
         
-        :return: return available video capture ports after alerting the user"""
+        :return: return available video capture ports after alerting the user
+        """
         no_cam_messagebox = QMessageBox()
         no_cam_messagebox.setIcon(QMessageBox.Icon.Warning)
         no_cam_messagebox.setText("No webcam has been detected")
@@ -237,7 +238,7 @@ class Window(QWidget):
             LOGGER.error("No cameras could be found")
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
-            return get_cap_indexes()
+        return get_cap_indexes()
 
     @Slot()
     def start_thread(self) -> None:
