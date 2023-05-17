@@ -1,4 +1,4 @@
 [submodule "submodules/eyeblink-detection"]
 	path = submodules/eyeblink-detection
 	url = git@github.com:scoville/eyeblink-detection.git
-	branch = POC-2500_Bug-Keypoint-model-accuracy-poor-and-associated-unit-test-didnt-catch-it
+	branch = develop
