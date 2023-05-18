@@ -14,6 +14,4 @@ def test_application(qtbot):
     if not pytest_xvfb.xvfb_available():
         raise Exception("Tests need Xvfb to run.")
     widget = Window()
-    widget.show()
     qtbot.addWidget(widget)
-    sleep(5)
