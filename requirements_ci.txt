@@ -11,6 +11,7 @@ pytest-qt==4.2.0
 pytest-timeout>=1.4.1
 pytest-xdist>=1.27.0
 pytest-xvfb==2.0.0
+PyVirtualDisplay==3.0
 openvino-dev~=2022.3.0  # needed to use `mo` command line tool to export models  
 stubs>=1.0.0
 cx-Freeze>=6.14.9
