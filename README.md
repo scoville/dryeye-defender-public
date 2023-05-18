@@ -59,7 +59,7 @@ cd ../../
 
 #### Binary
 
-from the venv create before
+from the venv created before
 
 1. `pip install -e submodules/eyeblink-detection/` Only locally (not needed for docker)
 2. `python setup.py build`
