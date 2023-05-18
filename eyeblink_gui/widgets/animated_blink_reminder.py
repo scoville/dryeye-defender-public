@@ -13,12 +13,15 @@ class AnimatedBlinkReminder(QWidget):
 
     def __init__(
             self,
+            movie_path: str,
             dismiss_callback: Callable[[], None],
             duration_lack: int,
             alert_seconds_cooldown: int,
             width: int = 320,
     ) -> None:
+        # pylint: disable=too-many-arguments
         """Initialize all variable and create the layout of the window
+        :param movie_path: path to the gif
         :param dismiss_callback: callback to call when the user clicks the dismiss button
         :param duration_lack: duration in seconds without blinks before the popup appears
         :param alert_seconds_cooldown: duration in seconds before the popup can appear again
@@ -30,15 +33,10 @@ class AnimatedBlinkReminder(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        # Set up the movie
-        path = "images/blink_animated.gif"
-        assert os.path.exists(path), f"Could not find {path} at {Path(path).resolve()}"
-        self.movie = QMovie(path)
-        assert self.movie.isValid(), f"{path} file invalid"
-
         self.gif_label = QLabel("Blinking Gif")
-        self.gif_label.setMovie(self.movie)
         self.gif_label.setFixedWidth(width)
+
+        self.setup_movie(movie_path)
 
         layout.addWidget(self.gif_label)
 
@@ -101,3 +99,13 @@ class AnimatedBlinkReminder(QWidget):
         geo = self.frameGeometry()
         geo.moveCenter(center)
         self.move(geo.topLeft())
+
+    def setup_movie(self, path: str) -> None:
+        """Set up the movie with the given path
+
+        :param path: path to the gif
+        """
+        assert os.path.exists(path), f"Could not find {path} at {Path(path).resolve()}"
+        self.movie = QMovie(path)
+        assert self.movie.isValid(), f"{path} file invalid"
+        self.gif_label.setMovie(self.movie)

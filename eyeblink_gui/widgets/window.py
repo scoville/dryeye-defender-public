@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 import time
-from typing import Optional
+from typing import Optional, List
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
@@ -44,7 +44,7 @@ class Window(QWidget):
 
         self.icon = QIcon("images/blink.png")
         if DEBUG:
-            self.compute_button = QPushButton(("Compute one frame"))
+            self.compute_button = QPushButton("Compute one frame")
             self.compute_button.clicked.connect(self.start_thread)
             self.label_output = QLabel("0")
             self.debug_window_button = QPushButton("Open debug window")
@@ -88,7 +88,12 @@ class Window(QWidget):
 
         :return: return the AnimatedBlinkReminder object
         """
+        self.blink_reminder_gifs = {
+            "default": "images/blink_animated.gif",
+            "anime": "images/blink_animated_anime.gif"
+        }
         blink_reminder = AnimatedBlinkReminder(
+            movie_path=self.blink_reminder_gifs["default"],
             dismiss_callback=self.reset_last_end_of_alert_time,
             duration_lack=self.duration_lack,
             alert_seconds_cooldown=ALERT_SECONDS_COOLDOWN
@@ -137,7 +142,7 @@ class Window(QWidget):
 
     def create_toggle_settings(self) -> None:
         """Create toggle widget for toggle settings"""
-        self.toggle_label = QLabel(("Enable blinking detection:"))
+        self.toggle_label = QLabel("Enable blinking detection:")
         # self.toggle_label.adjustSize()
         self.toggle_button = QPushButton()
         self.toggle_button.setText("Enable")
@@ -150,7 +155,7 @@ class Window(QWidget):
 
     def create_alert_settings(self) -> None:
         """Create the alert button and label"""
-        self.alert_mode_label = QLabel(("Lack of blink alert (Window popup|OS notification)"))
+        self.alert_mode_label = QLabel("Lack of blink alert (Window popup|OS notification)")
         self.alert_mode_button = QPushButton()
         self.alert_mode_button.setText(self.alert_mode)
         # togalert_mode_buttonEnabled(True)
@@ -168,14 +173,13 @@ class Window(QWidget):
 
     def create_select_cam_settings(self) -> None:
         """Create select cam and label cam"""
-        self.select_cam_label = QLabel(("Choose which camera device to use"))
+        self.select_cam_label = QLabel("Choose which camera device to use")
         self.select_cam = QComboBox()
         cap_indexes = get_cap_indexes()
         if not cap_indexes:
             LOGGER.error("No cameras could be found")
             self.toggle_button.setEnabled(False)
-            self.alert_no_cam()
-        cap_indexes = get_cap_indexes()
+            cap_indexes = self.alert_no_cam()
         self.select_cam.addItems(cap_indexes)
         selected_cap_index = int(cap_indexes[int(os.environ.get("DEFAULT_CAMERA_INDEX", 0))])
         self.eye_th.init_cap(selected_cap_index)
@@ -183,14 +187,26 @@ class Window(QWidget):
         self.select_cam.activated.connect(
             lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
 
+    def create_select_blink_reminder_gif(self) -> None:
+        """Create select blink reminder gif and label blink reminder gif"""
+        self.select_blink_reminder_gif_label = QLabel("Choose blink reminder gif (popup mode only)")
+        self.select_blink_reminder_gif = QComboBox()
+        self.select_blink_reminder_gif.addItems(list(self.blink_reminder_gifs.keys()))
+        self.select_blink_reminder_gif.activated.connect(
+            lambda: self.blink_reminder.setup_movie(
+                self.blink_reminder_gifs[self.select_blink_reminder_gif.currentText()]
+            )
+        )
+
     def create_settings(self) -> QGroupBox:
         """Initialize all variable/object for the settings part of the program"""
-        group_box = QGroupBox(("&Settings"))
+        group_box = QGroupBox("&Settings")
         self.create_toggle_settings()
         self.create_alert_settings()
         self.create_frequency_slider()
         self.create_duration_settings()
         self.create_select_cam_settings()
+        self.create_select_blink_reminder_gif()
 
         grid = QGridLayout()
         grid.addWidget(self.toggle_label, 0, 0, 1, 1)
@@ -202,14 +218,19 @@ class Window(QWidget):
         grid.addWidget(self.duration_lack_spin_box, 2, 1, 1, 1)
         grid.addWidget(self.alert_mode_label, 3, 0, 1, 1)
         grid.addWidget(self.alert_mode_button, 3, 1, 1, 1)
-        grid.addWidget(self.select_cam_label, 4, 0, 1, 1)
-        grid.addWidget(self.select_cam, 4, 1, 1, 1)
+        grid.addWidget(self.select_blink_reminder_gif_label, 4, 0, 1, 1)
+        grid.addWidget(self.select_blink_reminder_gif, 4, 1, 1, 1)
+        grid.addWidget(self.select_cam_label, 5, 0, 1, 1)
+        grid.addWidget(self.select_cam, 5, 1, 1, 1)
         # vbox.addStretch(1)
         group_box.setLayout(grid)
         return group_box
 
-    def alert_no_cam(self) -> None:  # pylint: disable=no-self-use
-        """Alert the user with a window popup that there is no webcam connected"""
+    def alert_no_cam(self) -> List[str]:  # pylint: disable=no-self-use
+        """Alert the user with a window popup that there is no webcam connected
+
+        :return: return available video capture ports after alerting the user
+        """
         no_cam_messagebox = QMessageBox()
         no_cam_messagebox.setIcon(QMessageBox.Icon.Warning)
         no_cam_messagebox.setText("No webcam has been detected")
@@ -220,6 +241,7 @@ class Window(QWidget):
             LOGGER.error("No cameras could be found")
             self.toggle_button.setEnabled(False)
             self.alert_no_cam()
+        return get_cap_indexes()
 
     @Slot()
     def start_thread(self) -> None:
