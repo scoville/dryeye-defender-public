@@ -6,12 +6,11 @@ from time import sleep
 
 from pytestqt import qtbot
 import pytest_xvfb
-
-from eyeblink_gui.widgets.window import Window
-
+from PySide6.QtWidgets import QLabel
 
 def test_application(qtbot):
     if not pytest_xvfb.xvfb_available():
         raise Exception("Tests need Xvfb to run.")
-    #widget = Window()
-    #qtbot.addWidget(widget)
+    qlabel = QLabel()
+    qlabel.setText("Hello World")
+    qtbot.addWidget(qlabel)
