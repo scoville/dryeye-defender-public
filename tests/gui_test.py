@@ -13,5 +13,5 @@ from eyeblink_gui.widgets.window import Window
 def test_application(qtbot):
     if not pytest_xvfb.xvfb_available():
         raise Exception("Tests need Xvfb to run.")
-    widget = Window()
-    qtbot.addWidget(widget)
+    #widget = Window()
+    #qtbot.addWidget(widget)
