@@ -26,6 +26,10 @@ RUN apt-get autoclean && \
     x11-xserver-utils \
     libxkbcommon-x11-0 \
     x11-utils \
+    && apt-get clean
+
+# Install xvfb
+RUN apt-get install -y \
     xvfb \
     && apt-get clean
 
