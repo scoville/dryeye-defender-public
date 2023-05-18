@@ -150,8 +150,9 @@ class Window(QWidget):
         self.toggle_button.setChecked(False)
         # toggleButton.setEnabled(True)
         self.toggle_button.clicked.connect(self.set_timer)
-        self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
-        self.toggle_tray.triggered.connect(self.set_timer)
+        if self.tray_available:
+            self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
+            self.toggle_tray.triggered.connect(self.set_timer)
 
     def create_alert_settings(self) -> None:
         """Create the alert button and label"""
@@ -336,14 +337,16 @@ class Window(QWidget):
         button_state = self.toggle_button.isChecked()
         if button_state:
             self.toggle_button.setText("Disable")
-            self.toggle_tray.setText("Disable")
+            if self.tray_available:
+                self.toggle_tray.setText("Disable")
             # initialize with a blink, https://app.clickup.com/t/7508642/POC-2256
             self.eye_th.model_api.init_blink()  # pylint:disable=no-member
             self.timer.start()
             LOGGER.info("timer started")
         else:
             self.toggle_button.setText("Enable")
-            self.toggle_tray.setText("Enable")
+            if self.tray_available:
+                self.toggle_tray.setText("Enable")
             LOGGER.info("timer stop")
             self.timer.stop()
 
