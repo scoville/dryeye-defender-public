@@ -7,6 +7,12 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QMovie, QScreen
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QApplication
 
+if os.name == "nt":  # Windows
+    import win32gui  # pylint: disable=import-error
+    import win32con  # pylint: disable=import-error
+    import win32process  # pylint: disable=import-error
+    import win32api  # pylint: disable=import-error
+
 
 class AnimatedBlinkReminder(QWidget):
     """Widget that pops up to remind user to blink"""
@@ -72,6 +78,14 @@ class AnimatedBlinkReminder(QWidget):
         )
         layout.addWidget(self.button)
 
+        # Prepare force focus on Windows
+        if os.name == "nt":  # Windows
+            win32gui.SystemParametersInfo(
+                win32con.SPI_SETFOREGROUNDLOCKTIMEOUT,
+                0,
+                win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE
+            )
+
     def update_duration_lack(self, duration_lack: int) -> None:
         """Update the text label with the new duration lack
 
@@ -88,10 +102,7 @@ class AnimatedBlinkReminder(QWidget):
             self.movie.start()
             self.show()
             self.center_window()
-
-            # Make sure the window is on top of other applications
-            self.raise_()  # for MacOS
-            self.activateWindow()  # for Windows
+            self.force_focus()
 
     def center_window(self) -> None:
         """Center the window on the screen"""
@@ -109,3 +120,16 @@ class AnimatedBlinkReminder(QWidget):
         self.movie = QMovie(path)
         assert self.movie.isValid(), f"{path} file invalid"
         self.gif_label.setMovie(self.movie)
+
+    def force_focus(self) -> None:
+        """Force focus on the window, so that it appears on top of all other windows"""
+        self.raise_()  # Raises widget to top of parent widget's stack
+        if os.name == "nt":  # Windows
+            fg_window = win32gui.GetForegroundWindow()
+            fg_thread_id = win32process.GetWindowThreadProcessId(fg_window)[0]
+            current_thread_id = win32api.GetCurrentThreadId()
+            if current_thread_id != fg_thread_id:
+                win32process.AttachThreadInput(fg_thread_id, current_thread_id, True)
+                win32gui.SetForegroundWindow(self.winId())
+                win32process.AttachThreadInput(fg_thread_id, win32api.GetCurrentThreadId(), False)
+        self.activateWindow()  # Sets the top widget in the stack to be the active window
