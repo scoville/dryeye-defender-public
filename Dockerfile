@@ -28,7 +28,7 @@ RUN apt-get autoclean && \
     x11-utils \
     && apt-get clean
 
-# Install packages, including CI requirements to overwrite poor package management by retinaface
+# Install packages, including CI requirements to overwrite poor package management by other libraries
 COPY requirements.txt .
 COPY requirements_ci.txt .
 RUN pip install -r requirements_ci.txt
