@@ -31,7 +31,6 @@ RUN apt-get autoclean && \
 # Install xvfb
 RUN apt-get update && \
       apt-get -y install sudo
-RUN sudo apt-get -y --fix-missing update
 RUN apt-get install --fix-missing -y xvfb && apt-get clean
 
 # Install packages, including CI requirements to overwrite poor package management by other libraries
