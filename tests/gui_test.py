@@ -19,16 +19,17 @@ DUMMY_IMAGE_PATH = "tests/assets/dummy.jpg"
 EYEBLINK_MODEL_THREAD_TIMEOUT = 3000
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def ensure_xvfb() -> None:
     """Ensure that Xvfb is available."""
     if not pytest_xvfb.xvfb_available():
         raise Exception("Tests need Xvfb to run.")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def qapp() -> Generator[Application, None, None]:
-    """Override creating a QApplication for the tests with our custom application."""
+    """Override creating a QApplication for the tests with our custom application. The init_cap
+    and get_cap_indexes functions are mocked to use a dummy image instead of a camera"""
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap), \
          patch("eyeblink_gui.widgets.window.get_cap_indexes", new=lambda *args, **kwargs: [0]):
         yield Application([])
