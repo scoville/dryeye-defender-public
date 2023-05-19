@@ -20,8 +20,9 @@ EYEBLINK_MODEL_THREAD_TIMEOUT_MS = 3000
 
 
 class MockVideoCapture():
-    """Mock the VideoCapture class to use instead of cv2.VideoCapture. Reads from a dummy image."""
+    """Mock the VideoCapture class to use instead of cv2.VideoCapture. Reads from a dummy image"""
     def __init__(self) -> None:
+        """Initialize VideoCapture with the dummy image"""
         self._cap = cv2.VideoCapture(DUMMY_IMAGE_PATH)  # pylint: disable=no-member
 
     def read(self) -> Any:
@@ -36,7 +37,7 @@ class MockVideoCapture():
 
 @pytest.fixture(autouse=True, scope="module")
 def ensure_xvfb() -> None:
-    """Ensure that Xvfb is available."""
+    """Ensure that Xvfb is available"""
     if not pytest_xvfb.xvfb_available():
         raise Exception("Tests need Xvfb to run.")
 
