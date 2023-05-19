@@ -23,3 +23,23 @@ include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001
    ['images/blink_animated_anime.gif', 'images/blink_animated_anime.gif']
 ]
 silent_level = 1
+
+# `shiboken6`, which creates the python bindings for `Qt` C++ source, imports from a
+# `zip` file into the top-level directory at runtime. These files are deleted after
+# running, but `coverage` attempts to look at their source after they're gone, causing
+# warnings to appear. Namely, it looks for these modules/files:
+#
+#    myproj/pysrcript
+#    myproj/shibokensupport
+#    myproj/signature_bootstrap.py
+#
+# To avoid this error, `source` is specified to the package subdirectory. However, this
+# can also be avoided by explicitly omitting these folders in the `omit` section.
+#
+# See https://github.com/nedbat/coveragepy/issues/1392
+[tool.coverage.report]
+omit = [
+    "shibokensupport/*",
+    "pyscript",
+    "signature_bootstrap.py",
+]
