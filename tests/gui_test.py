@@ -13,7 +13,7 @@ from eyeblink_gui.__main__ import MainWindow
 from eyeblink_gui.widgets.window import Window
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
-DUMMY_IMAGE_PATH = "tests/dummy.jpg"
+DUMMY_IMAGE_PATH = "tests/assets/dummy.jpg"
 EYEBLINK_MODEL_THREAD_TIMEOUT = 3000
 
 
