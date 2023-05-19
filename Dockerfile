@@ -26,8 +26,12 @@ RUN apt-get autoclean && \
     x11-xserver-utils \
     libxkbcommon-x11-0 \
     x11-utils \
-    xvfb \
     && apt-get clean
+
+# Install xvfb
+# Doing this separately as doing it with the command above causes an exit code 100
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends xvfb && apt-get clean
 
 # Install packages, including CI requirements to overwrite poor package management by other libraries
 COPY requirements.txt .
