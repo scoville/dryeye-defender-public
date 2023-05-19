@@ -50,9 +50,12 @@ pipeline {
 
     stage('Coverage') {
       steps {
+        // The -i flag for coverage was added to ignore the following mysterious error:
+        // No source for code: '/data2/jenkins_scratch/worker_3/workspace/lle_eyeblink-detection-gui_PR-21/config-3.py' error
+        // So probably need not be copied to other repos!
         sh '''#!/usr/bin/env bash
           set -Eeux
-          python3 -m coverage report --show-missing |& tee coverage.log
+          python3 -m coverage report --show-missing -i |& tee coverage.log
           echo "${PIPESTATUS[0]}" | tee coverage_status.log
         '''
       }
