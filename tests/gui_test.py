@@ -29,7 +29,8 @@ def ensure_xvfb() -> None:
 @pytest.fixture(scope="module")
 def qapp() -> Generator[Application, None, None]:
     """Override creating a QApplication for the tests with our custom application. The init_cap
-    and get_cap_indexes functions are mocked to use a dummy image instead of a camera"""
+    and get_cap_indexes functions are mocked to use a dummy image instead of a camera
+    """
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap), \
          patch("eyeblink_gui.widgets.window.get_cap_indexes", new=lambda *args, **kwargs: [0]):
         yield Application([])
