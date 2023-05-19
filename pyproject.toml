@@ -37,9 +37,17 @@ silent_level = 1
 # can also be avoided by explicitly omitting these folders in the `omit` section.
 #
 # See https://github.com/nedbat/coveragepy/issues/1392
+#
+# Also ignoring `config-3.py` and `config.py`, it is unknown why they are needed / missing
+# and it is an issue that's been experienced before, possibly to do with an OpenCV bug.
+# 
+# See https://github.com/scoville/tkDNN/blob/e9323647ce68568972767bbacc9a88b203e6fe0b/jenkins/stage_coverage.sh#L23-L25
+#
 [tool.coverage.report]
 omit = [
     "shibokensupport/*",
     "pyscript",
     "signature_bootstrap.py",
+    "config-3.py",
+    "config.py"
 ]
