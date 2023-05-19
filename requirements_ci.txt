@@ -7,10 +7,10 @@ pydocstyle>=6.1.1
 pylint~=2.15.0
 pylint-quotes>=0.2.3
 pytest>=4.4.0
-pytest-qt==4.2.0
+pytest-qt>=4.2.0
 pytest-timeout>=1.4.1
 pytest-xdist>=1.27.0
-pytest-xvfb==2.0.0
+pytest-xvfb>=2.0.0
 openvino-dev~=2022.3.0  # needed to use `mo` command line tool to export models  
 stubs>=1.0.0
 cx-Freeze>=6.14.9
