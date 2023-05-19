@@ -4,7 +4,6 @@ This is a unit test for running the application, and testing the detector on a f
 import pytest
 from unittest.mock import patch
 
-from pytestqt import qtbot
 import pytest_xvfb
 import cv2
 import PySide6.QtCore as QtCore
@@ -25,8 +24,8 @@ def mock_init_cap(*args, **kwargs):
     args[0].cap = cv2.VideoCapture(DUMMY_IMAGE_PATH)
 
 
+@patch("eyeblink_gui.widgets.window.DEBUG", True)
 def test_application(qtbot):
-    # TODO: ensure that DEBUG is set to True
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap), \
          patch("eyeblink_gui.widgets.window.get_cap_indexes", new=lambda *args, **kwargs: [0]):
         main_window = MainWindow()
