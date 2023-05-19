@@ -11,11 +11,18 @@ import PySide6.QtCore as QtCore
 
 from eyeblink_gui.__main__ import MainWindow
 
+DUMMY_IMAGE_PATH = "tests/dummy.jpg"
+EYEBLINK_MODEL_THREAD_TIMEOUT = 3000
+
 
 @pytest.fixture(autouse=True, scope='session')
 def ensure_xvfb():
     if not pytest_xvfb.xvfb_available():
         raise Exception("Tests need Xvfb to run.")
+
+
+def mock_init_cap(*args, **kwargs):
+    args[0].cap = cv2.VideoCapture(DUMMY_IMAGE_PATH)
 
 
 def test_application(qtbot):
@@ -26,10 +33,8 @@ def test_application(qtbot):
         main_window.show()
         qtbot.addWidget(main_window)
         window = main_window.centralWidget()
-        for i in range(1):
-            with qtbot.waitSignal(window.eye_th.finished, timeout=3000):
+        for i in range(5):
+            with qtbot.waitSignal(window.eye_th.finished, timeout=EYEBLINK_MODEL_THREAD_TIMEOUT):
                 qtbot.mouseClick(window.compute_button, QtCore.Qt.LeftButton)
                 assert window.eye_th.isRunning()
-
-def mock_init_cap(*args, **kwargs):
-    args[0].cap = cv2.VideoCapture("tests/dummy.jpg")
+            window.eye_th.cap = cv2.VideoCapture(DUMMY_IMAGE_PATH)
