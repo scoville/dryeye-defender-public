@@ -57,14 +57,13 @@ class EyeblinkModelThread(QThread):
             raise IOError("No output from camera")
 
         time_start = time.time()
-        blink_value, annotated_img, left_ear, rigth_ear = self.model_api.update(
-                                                            img, debug=self.debug)
+        update_dict = self.model_api.update(img, debug=self.debug)
         LOGGER.info("time to compute frame: %s", str(time.time()-time_start))
-        self.update_label_output.emit(blink_value)
+        self.update_label_output.emit(update_dict["blink_value"])
         if self.debug:
             # assert annotated_img, f"The image was invalid {annotated_img }"
             annotated_img = cv2.cvtColor(  # pylint: disable=no-member
-                annotated_img, cv2.COLOR_BGR2RGB)  # pylint: disable=no-member
+                update_dict["img"], cv2.COLOR_BGR2RGB)  # pylint: disable=no-member
             annotated_img = Image.fromarray(annotated_img).convert("RGB")
             self.update_debug_img.emit(QPixmap.fromImage(ImageQt(annotated_img)))
-            self.update_ear_values.emit(left_ear, rigth_ear)
+            self.update_ear_values.emit(update_dict["left_ear"], update_dict["right_ear"])
