@@ -25,8 +25,7 @@ RUN apt-get autoclean && \
     libxcb-render-util0\
     x11-xserver-utils \
     libxkbcommon-x11-0 \
-    x11-utils \
-    && apt-get clean
+    x11-utils 
 
 # Install xvfb
 # Doing this separately as doing it with the command above causes an exit code 100
