@@ -262,8 +262,8 @@ class Window(QWidget):
             self.time_last_finished_th = time.time()
             self.label_fps.setText(f"fps:{str(int(1 / diff_time))}")
 
-        lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
-        if lack_blink:
+        # lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
+        if self.eye_th.model_api.lack_of_blink:
             # Only display popup if it's been > POPUP_DISMISS_SECONDS_COOLDOWN_S since last popup
             # dismissal
             if (time.time() - self.last_end_of_alert_time) > ALERT_SECONDS_COOLDOWN:
@@ -283,7 +283,7 @@ class Window(QWidget):
 
         :param output: output for the frame processed 1 for blink detected, -1 for no blink
         """
-        self.eye_th.model_api.add_blink(time.time(), output)
+        # self.eye_th.model_api.add_blink(time.time(), output)
         if output == 1:
             if DEBUG:
                 self.label_output.setText("Blink detected")
@@ -328,6 +328,7 @@ class Window(QWidget):
         :param spinbox_value: current value of the spin box
         """
         self.duration_lack = spinbox_value
+        # TODO remove duration lack for internal api variable
 
     @Slot()
     def set_timer(self) -> None:
