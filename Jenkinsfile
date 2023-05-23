@@ -98,9 +98,7 @@ pipeline {
           mv deb_build.deb eyehealth-${VERSION}.deb
         """
         script {
-          githubUtils.createRelease([
-            "eyehealth-${VERSION}.deb", false, '', true
-            ])
+          githubUtils.createRelease(["eyehealth-${VERSION}.deb"], false, '', true)
         }
       }
     }
