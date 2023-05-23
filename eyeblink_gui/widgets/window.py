@@ -95,7 +95,7 @@ class Window(QWidget):
         blink_reminder = AnimatedBlinkReminder(
             movie_path=self.blink_reminder_gifs["default"],
             dismiss_callback=self.reset_last_end_of_alert_time,
-            duration_lack=self.duration_lack,
+            duration_lack=self.eye_th.model_api.lack_of_blink_threshold,
             alert_seconds_cooldown=ALERT_SECONDS_COOLDOWN
         )
         self.last_end_of_alert_time = time.time() - ALERT_SECONDS_COOLDOWN
@@ -268,7 +268,8 @@ class Window(QWidget):
             if (time.time() - self.last_end_of_alert_time) > ALERT_SECONDS_COOLDOWN:
                 LOGGER.info("Lack of blink detected")
                 if self.alert_mode == "popup":
-                    self.blink_reminder.update_duration_lack(self.duration_lack)
+                    self.blink_reminder.update_duration_lack(
+                        self.eye_th.model_api.lack_of_blink_threshold)
                     self.blink_reminder.show_reminder()
                 else:
                     self.tray.showMessage(
