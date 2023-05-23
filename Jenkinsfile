@@ -99,7 +99,7 @@ pipeline {
         """
         script {
           githubUtils.createRelease([
-            "eyehealth-${VERSION}.deb"
+            "eyehealth-${VERSION}.deb", false, '', true
             ])
         }
       }
