@@ -4,7 +4,7 @@ set -Eeuxo pipefail
 # The person performing the release would do the following:
 
 # 1. Clone or pip install https://github.com/scoville/github-release-tool and put release.py into their path
-# 2. Ensure they have created and checkout out a branch called "release/${version}" (i.e. a staging branch) with the code for the next srelease
+# 2. Ensure they have created and checkout out a branch called "release/${version}" (i.e. a staging branch) with the code for the next release
 # 3. ./releaser.sh ${version} will update setup.py with latest version and commit it, then perform the git flow operations needed to automate the release
 # 4. The ci will build on that tag and deploy the Github release
 
