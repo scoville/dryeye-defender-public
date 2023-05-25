@@ -284,7 +284,6 @@ class Window(QWidget):
 
         :param output: output for the frame processed 1 for blink detected, -1 for no blink
         """
-        # self.eye_th.model_api.add_blink(time.time(), output)
         if output == 1:
             if DEBUG:
                 self.label_output.setText("Blink detected")
