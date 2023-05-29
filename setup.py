@@ -8,4 +8,4 @@ executables = [
     Executable('eyeblink_gui/__main__.py', base=base, target_name='eyehealth')
 ]
 
-setup(version='1.0', executables=executables)
+setup(version="1.0.0",
