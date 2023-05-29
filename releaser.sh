@@ -22,7 +22,7 @@ sed -i "s/Version:.*/Version: \"${VERSION}\"\,/g" deb_build/DEBIAN/control
 
 git add setup.py pyproject.toml deb_build/DEBIAN/control 
 git commit -m "feat(versions): update setup.py, pyproject.toml and deb_build/DEBIAN/control to ${VERSION}"
-git push 
+git push origin release/${VERSION}
 
 release.py --release_branch release/${VERSION} --production_branch main
 
