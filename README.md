@@ -80,3 +80,7 @@ from the venv created before
 5. build the deb package with the official tool
    1. `dpkg-deb --build --root-owner-group deb_build`
 6. `sudo apt install ./deb_build.deb` Only work locally not on docker
+
+## What is a breaking change for this repo?
+
+- For simplicitly, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)  
