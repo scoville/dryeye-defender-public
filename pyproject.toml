@@ -1,6 +1,6 @@
 [project]
 name = "eyeblink_gui"
-version = "1.0.0",
+version = "1.0.0"
 description = "Eye health software that detects blinks"
 readme = "README.md"
 requires-python = ">=3.8"
