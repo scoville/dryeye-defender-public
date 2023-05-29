@@ -39,7 +39,6 @@ class Window(QWidget):
         """
         super().__init__(parent)
 
-        self.duration_lack = MINIMUM_DURATION_LACK_OF_BLINK_MS
         window_layout = QGridLayout(self)
 
         self.icon = QIcon("images/blink.png")
@@ -56,6 +55,7 @@ class Window(QWidget):
         self.eye_th = EyeblinkModelThread(self, DEBUG)
         self.eye_th.finished.connect(self.thread_finished)
         self.eye_th.update_label_output.connect(self.output_slot)
+        self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start_thread)
@@ -95,7 +95,7 @@ class Window(QWidget):
         blink_reminder = AnimatedBlinkReminder(
             movie_path=self.blink_reminder_gifs["default"],
             dismiss_callback=self.reset_last_end_of_alert_time,
-            duration_lack=self.duration_lack,
+            duration_lack=self.eye_th.model_api.lack_of_blink_threshold,
             alert_seconds_cooldown=ALERT_SECONDS_COOLDOWN
         )
         self.last_end_of_alert_time = time.time() - ALERT_SECONDS_COOLDOWN
@@ -168,7 +168,7 @@ class Window(QWidget):
         """Create duration for settings button and label"""
         self.duration_lack_spin_box = QSpinBox()
         self.duration_lack_spin_box.setRange(1, 60)
-        self.duration_lack_spin_box.setValue(self.duration_lack)
+        self.duration_lack_spin_box.setValue(self.eye_th.model_api.lack_of_blink_threshold)
         self.duration_lack_spin_box.valueChanged.connect(self.update_duration_lack)
         self.duration_lack_label = QLabel("Minimum duration for considering lack of blink (s):")
 
@@ -263,18 +263,19 @@ class Window(QWidget):
             self.time_last_finished_th = time.time()
             self.label_fps.setText(f"fps:{str(int(1 / diff_time))}")
 
-        lack_blink = self.eye_th.model_api.lack_of_blink_detection(duration_lack=self.duration_lack)
-        if lack_blink:
+        if self.eye_th.model_api.lack_of_blink:
             # Only display popup if it's been > POPUP_DISMISS_SECONDS_COOLDOWN_S since last popup
             # dismissal
             if (time.time() - self.last_end_of_alert_time) > ALERT_SECONDS_COOLDOWN:
                 LOGGER.info("Lack of blink detected")
                 if self.alert_mode == "popup":
-                    self.blink_reminder.update_duration_lack(self.duration_lack)
+                    self.blink_reminder.update_duration_lack(
+                        self.eye_th.model_api.lack_of_blink_threshold)
                     self.blink_reminder.show_reminder()
                 else:
                     self.tray.showMessage(
-                        f"You didn't blink in the last {self.duration_lack} seconds",
+                        f"You didn't blink in the last {self.eye_th.model_api.ear_threshold}"
+                        "seconds",
                         "Blink now !", self.icon, 5000)
                     self.last_end_of_alert_time = time.time()
 
@@ -284,7 +285,6 @@ class Window(QWidget):
 
         :param output: output for the frame processed 1 for blink detected, -1 for no blink
         """
-        self.eye_th.model_api.add_blink(time.time(), output)
         if output == 1:
             if DEBUG:
                 self.label_output.setText("Blink detected")
@@ -328,7 +328,7 @@ class Window(QWidget):
 
         :param spinbox_value: current value of the spin box
         """
-        self.duration_lack = spinbox_value
+        self.eye_th.model_api.lack_of_blink_threshold = spinbox_value
 
     @Slot()
     def set_timer(self) -> None:

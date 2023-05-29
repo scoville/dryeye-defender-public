@@ -51,7 +51,6 @@ class EarGraph(QWidget):
         self.data_line_right = self.graphWidget.plot(self.x_axis, self.y_right, pen=pen_right)
 
         self.graphWidget.setXRange(0, 100)
-        self.graphWidget.setYRange(0, 0.7)
 
         layout.addWidget(self.graphWidget)
         self.setLayout(layout)
