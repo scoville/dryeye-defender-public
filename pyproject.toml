@@ -13,7 +13,7 @@ dependencies = [
 
 [tool.distutils.build_exe]
 excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"]
-optimize = 2
+# optimize = 2
 zip_include_packages = ["encodings", "PySide6"]
 include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin'],
    ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml'],
