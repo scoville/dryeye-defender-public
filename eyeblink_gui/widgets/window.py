@@ -351,8 +351,6 @@ class Window(QWidget):
             self.toggle_button.setText("Disable")
             if self.tray_available:
                 self.toggle_tray.setText("Disable")
-            # initialize with a blink, https://app.clickup.com/t/7508642/POC-2256
-            self.eye_th.model_api.init_blink()  # pylint:disable=no-member
             self.timer.start()
             LOGGER.info("timer started")
         else:
