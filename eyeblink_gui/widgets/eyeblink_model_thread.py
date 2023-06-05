@@ -4,7 +4,7 @@ import time
 from typing import Optional
 
 import cv2
-from blinkdetector.api.filtered_e2e_openvino_api import FilteredE2EOpenVinoModelAPI
+from blinkdetector.api.filtered_mediapipe_api import FilteredMediaPipeAPI
 from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
@@ -32,9 +32,7 @@ class EyeblinkModelThread(QThread):
 
         LOGGER.info("init thread")
 
-        self.model_api = FilteredE2EOpenVinoModelAPI(
-            find_data_file("face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml"),
-            find_data_file("vino_preprocess/lmks.xml"))
+        self.model_api = FilteredMediaPipeAPI("submodules/eyeblink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task")  # TODO find file
 
         self.cap = None
         self.debug = debug
