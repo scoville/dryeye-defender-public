@@ -41,7 +41,12 @@ class Window(QWidget):
 
         window_layout = QGridLayout(self)
 
+        self.eye_th = EyeblinkModelThread(self, DEBUG)
+        self.eye_th.finished.connect(self.thread_finished)
+        self.eye_th.update_label_output.connect(self.output_slot)
+        self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
         self.icon = QIcon("images/blink.png")
+
         if DEBUG:
             self.compute_button = QPushButton("Compute one frame")
             self.compute_button.clicked.connect(self.start_thread)
@@ -52,19 +57,17 @@ class Window(QWidget):
             window_layout.addWidget(self.label_output, 0, 1, 1, 1)
             window_layout.addWidget(self.debug_window_button, 0, 2, 1, 1)
 
-        self.eye_th = EyeblinkModelThread(self, DEBUG)
-        self.eye_th.finished.connect(self.thread_finished)
-        self.eye_th.update_label_output.connect(self.output_slot)
-        self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
+            self.time_last_finished_th = 0.0
+            self.label_fps = QLabel("fps: 0")
+            window_layout.addWidget(self.label_fps, 0, 3, 1, 1)
+
+            self.create_deque_size_slider()
+            window_layout.addWidget(self.deque_size_label, 0, 4, 1, 1)
+            window_layout.addWidget(self.deque_size_spin_box, 0, 5, 1, 1)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start_thread)
         self.timer.setInterval(DEFAULT_INFERENCE_INTERVAL_MS)
-
-        if DEBUG:
-            self.time_last_finished_th = 0.0
-            self.label_fps = QLabel("fps: 0")
-            window_layout.addWidget(self.label_fps, 0, 3, 1, 1)
 
         self.tray_available = (QSystemTrayIcon.isSystemTrayAvailable() and
                                QSystemTrayIcon.supportsMessages())
@@ -139,6 +142,15 @@ class Window(QWidget):
         self.frequency_spin_box.setValue(DEFAULT_INFERENCE_INTERVAL_MS)
         self.frequency_slider.valueChanged.connect(self.set_timer_interval)
         self.frequency_spin_box.valueChanged.connect(self.sync_slider)
+
+    def create_deque_size_slider(self) -> None:
+        """Create frequency slider for settings"""
+        self.deque_size_spin_box = QSpinBox()
+        self.deque_size_label = QLabel("Debug size deque")
+        # self.frequency_spin_box.singleStep(MIN_INFERENCE_INTERVAL_MS)
+        self.deque_size_spin_box.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
+        self.deque_size_spin_box.setValue(self.eye_th.model_api._rolling_history.maxlen)
+        self.deque_size_spin_box.valueChanged.connect(self.eye_th.model_api.update_deque_length)
 
     def create_toggle_settings(self) -> None:
         """Create toggle widget for toggle settings"""
