@@ -38,7 +38,7 @@ class MockVideoCapture():
 @pytest.fixture(autouse=True, scope="module")
 def ensure_xvfb() -> None:
     """Ensure that Xvfb is available"""
-    if not pytest_xvfb.xvfb_available():
+    if not pytest_xvfb.xvfb_available():  # pylint: disable=no-member
         raise Exception("Tests need Xvfb to run.")
 
 
