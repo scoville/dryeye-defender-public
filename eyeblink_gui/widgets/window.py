@@ -150,7 +150,8 @@ class Window(QWidget):
         # self.frequency_spin_box.singleStep(MIN_INFERENCE_INTERVAL_MS)
         self.deque_size_spin_box.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
         self.deque_size_spin_box.setValue(self.eye_th.model_api._rolling_history.maxlen)
-        self.deque_size_spin_box.valueChanged.connect(self.eye_th.model_api.update_deque_length)
+        self.deque_size_spin_box.valueChanged.connect(
+            self.eye_th.model_api._update_deque_length)
 
     def create_toggle_settings(self) -> None:
         """Create toggle widget for toggle settings"""
