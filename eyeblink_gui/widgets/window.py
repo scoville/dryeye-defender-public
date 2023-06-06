@@ -151,7 +151,7 @@ class Window(QWidget):
         self.deque_size_spin_box.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
         self.deque_size_spin_box.setValue(self.eye_th.model_api.maxlen_rolling_history)
         self.deque_size_spin_box.valueChanged.connect(
-            self.eye_th.model_api._update_deque_length) # pylint: disable=protected-access
+            self.eye_th.model_api._update_deque_length)  # pylint: disable=protected-access
         # disable protected acess becaues it is a debug settings
 
     def create_toggle_settings(self) -> None:
