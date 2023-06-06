@@ -266,7 +266,7 @@ class Window(QWidget):
             LOGGER.info("starting thread for computing one frame")
             self.eye_th.start()
         else:
-            LOGGER.info("inference thread already running so skipping computing this frame")
+            LOGGER.debug("inference thread already running so skipping computing this frame")
 
     @Slot()
     def thread_finished(self) -> None:
