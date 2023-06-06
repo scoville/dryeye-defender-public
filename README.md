@@ -31,7 +31,7 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
 
 #### Quickstart
 
-`git submodule update --init && docker-compose up` 
+`git submodule update --init && docker-compose up`
 Will launch the GUI, performing all the below operations, and update submodule
 
 #### Step-by-step
@@ -67,7 +67,7 @@ from the venv created before
 
 #### Deb file
 
-1. mkdir -p deb_build/opt/eyehealth
+1. `mkdir -p deb_build/opt/eyehealth`
 2. we copy the files from the build folder to the deb package folder before deb creation
    1. `cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyehealth`
 3. we change the permissions of the files and folders because files will keep permissions after packaging
