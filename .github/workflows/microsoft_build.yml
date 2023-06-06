@@ -12,7 +12,7 @@ permissions:
 jobs:
   build:
 
-    runs-on: macos-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout Repository
@@ -32,11 +32,11 @@ jobs:
     - name: build 
       run: |
         python3 setup.py build
-
-        mkdir -p macos_build/opt/eyehealth
-        cp -R build/exe.macosx-10.14-intel-3.8/* macos_build/opt/eyehealth
-        find macos_build/opt/eyehealth -type f -exec chmod 644 -- {} +
-        find macos_build/opt/eyehealth -type d -exec chmod 755 -- {} +
-        chmod +x macos_build/opt/eyehealth/eyehealth
-
-        dpkg-deb --build --root-owner-group deb_build
+        ls -la 
+        ls -la build
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact
+      with:
+        name: windows_build
+        path: build
