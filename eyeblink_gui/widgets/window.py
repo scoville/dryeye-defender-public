@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 import time
-from typing import Optional, List
+from typing import List, Optional
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
@@ -13,10 +13,10 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
 from eyeblink_gui.utils.utils import get_cap_indexes
+from eyeblink_gui.widgets.animated_blink_reminder import AnimatedBlinkReminder
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
 from eyeblink_gui.widgets.debug_window.main import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
-from eyeblink_gui.widgets.animated_blink_reminder import AnimatedBlinkReminder
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
@@ -151,7 +151,8 @@ class Window(QWidget):
         self.deque_size_spin_box.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
         self.deque_size_spin_box.setValue(self.eye_th.model_api.maxlen_rolling_history)
         self.deque_size_spin_box.valueChanged.connect(
-            self.eye_th.model_api._update_deque_length)
+            self.eye_th.model_api._update_deque_length) # pylint: disable=protected-access
+        # disable protected acess becaues it is a debug settings
 
     def create_toggle_settings(self) -> None:
         """Create toggle widget for toggle settings"""
