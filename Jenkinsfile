@@ -68,7 +68,7 @@ pipeline {
           # all the files for the program will be in /opt/eyehealth, so easy handle of dependencies
           mkdir -p deb_build/opt/eyehealth 
 
-          python_version=$(python3 --version 2>&1 | sed -E "s/Python ([0-9]+\.[0-9]+).*/\1/")
+          python_version=$(python3 --version 2>&1 | sed -E "s/Python ([0-9]+\\.[0-9]+).*/\\1/")
           # we copy the files from the build folder to the deb package folder before deb creation
           cp -R "build/exe.linux-x86_64-${python_version}/*" deb_build/opt/eyehealth
 
