@@ -4,10 +4,7 @@
 name: Python application
 
 on:
-  push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,20 +15,28 @@ jobs:
     runs-on: macos-latest
 
     steps:
+    - name: Checkout Repository
     - uses: actions/checkout@v3
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements_mac.txt
+        pip install cx-Freeze
+
     - name: build 
       run: |
         python3 setup.py build
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+
+        mkdir -p macos_build/opt/eyehealth
+        cp -R build/exe.macosx-10.14-intel-3.8/* macos_build/opt/eyehealth
+        find macos_build/opt/eyehealth -type f -exec chmod 644 -- {} +
+        find macos_build/opt/eyehealth -type d -exec chmod 755 -- {} +
+        chmod +x macos_build/opt/eyehealth/eyehealth
+
+        dpkg-deb --build --root-owner-group deb_build
