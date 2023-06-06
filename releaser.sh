@@ -18,7 +18,7 @@ fi
 
 sed -i "s/version.*/version=\"${VERSION}\"\,/g" setup.py   
 sed -i "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
-sed -i "s/Version:.*/Version: \"${VERSION}\"/g" deb_build/DEBIAN/control 
+sed -i "s/Version:.*/Version: ${VERSION}/g" deb_build/DEBIAN/control 
 
 git add setup.py pyproject.toml deb_build/DEBIAN/control 
 git commit -m "feat(versions): update setup.py, pyproject.toml and deb_build/DEBIAN/control to ${VERSION}"
