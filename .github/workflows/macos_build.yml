@@ -36,7 +36,7 @@ jobs:
         ls -la build
         
     - name: Upload Artifact
-      uses: actions/upload-artifact
+      uses: actions/upload-artifact@v3
       with:
         name: windows_build
         path: build
