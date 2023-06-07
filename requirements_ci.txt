@@ -1,4 +1,4 @@
--r requirements.txt
+-r requirements_linux.txt
 coverage>=5.0.3
 mypy>=0.971
 mypy-extensions>=0.4.3
@@ -13,4 +13,4 @@ pytest-xdist>=1.27.0
 pytest-xvfb~=2.0.0  # 3.0.0 is missing pytest_xvfb.xvfb_available() check so stuck with 2.0.0 for now  
 openvino-dev~=2022.3.0  # needed to use `mo` command line tool to export models  
 stubs>=1.0.0
-cx-Freeze>=6.14.9
+cx-freeze>=6.14.9
