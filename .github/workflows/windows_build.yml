@@ -27,7 +27,7 @@ jobs:
       env:
         SSH_KEY_FOR_SUBMODULE: ${{secrets.DEPLOY_BLINK_DETECTION_BACKEND}}
       run: |
-        mkdir $HOME/.ssh && echo "$SSH_KEY_FOR_SUBMODULE" > $HOME/.ssh/id_rsa && chmod 600 $HOME/.ssh/id_rsa && git submodule update --init --recursive && docker login docker.pkg.github.com -u $GITHUB_ACTOR --password $GITHUB_TOKEN && docker build . -t docker.pkg.github.com/blogname
+        mkdir $HOME/.ssh && echo "$SSH_KEY_FOR_SUBMODULE" > $HOME/.ssh/id_rsa && chmod 600 $HOME/.ssh/id_rsa && git submodule update --init --recursive
 
     - name: Install dependencies
       run: |
