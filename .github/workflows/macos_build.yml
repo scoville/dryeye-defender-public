@@ -24,10 +24,10 @@ jobs:
         python-version: "3.10"
 
     - name: Checkout submodules
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-        token: ${{secrets.ACCESS_TOKEN}}
+      env:
+        SSH_KEY_FOR_SUBMODULE: ${{secrets.DEPLOY_BLINK_DETECTION_BACKEND}}
+      run: |
+        mkdir $HOME/.ssh && echo "$SSH_KEY_FOR_SUBMODULE" > $HOME/.ssh/id_rsa && chmod 600 $HOME/.ssh/id_rsa && git submodule update --init --recursive && docker login docker.pkg.github.com -u $GITHUB_ACTOR --password $GITHUB_TOKEN && docker build . -t docker.pkg.github.com/blogname
 
     - name: Install dependencies
       run: |
@@ -38,11 +38,9 @@ jobs:
     - name: build 
       run: |
         python3 setup.py build
-        ls
-        ls build/
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: windows_build
-        path: build/
+        name: macos_build
+        path: build/exe.macosx-11.7-x86_64-3.10/

@@ -24,17 +24,16 @@ jobs:
         python-version: "3.10"
 
     - name: Checkout submodules
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-        token: ${{secrets.ACCESS_TOKEN}}
+      env:
+        SSH_KEY_FOR_SUBMODULE: ${{secrets.DEPLOY_BLINK_DETECTION_BACKEND}}
+      run: |
+        mkdir $HOME/.ssh && echo "$SSH_KEY_FOR_SUBMODULE" > $HOME/.ssh/id_rsa && chmod 600 $HOME/.ssh/id_rsa && git submodule update --init --recursive && docker login docker.pkg.github.com -u $GITHUB_ACTOR --password $GITHUB_TOKEN && docker build . -t docker.pkg.github.com/blogname
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements_windows.txt
         pip install cx-freeze
-        pip install -r submodules/eyeblink-detection/requirements.txt
 
     - name: build 
       run: |
