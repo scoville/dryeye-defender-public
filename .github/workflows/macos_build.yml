@@ -32,18 +32,18 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements_windows.txt
+        pip install -r requirements_macos.txt
         pip install -r submodules/eyeblink-detection/requirements.txt
         pip install cx-Freeze
 
     - name: build 
       run: |
         python3 setup.py build
-        ls -la 
-        ls -la build
+        ls
+        ls build
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: windows_build
-        path: build\exe.win-amd64-3.10\
+        path: build
