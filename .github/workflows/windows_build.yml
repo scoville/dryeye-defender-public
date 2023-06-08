@@ -23,19 +23,16 @@ jobs:
       with:
         python-version: "3.10" 
         
-    - name: Add SSH private keys for submodule repositories
-      uses: webfactory/ssh-agent@v0.8.0
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2.5.1
       with:
-        ssh-private-key: |
-          ${{ secrets.DEPLOY_BLINK_DETECTION_BACKEND }}
-    - run: git submodule update --init --recursive --remote
+        key: ${{ secrets.DEPLOY_BLINK_DETECTION_BACKEND }}
+        name: id_rsa # optional
+        known_hosts: unnecessary
+        if_key_exists: fail # replace / ignore / fail; optional (defaults to fail)
 
     - name: Checkout submodules
-      env:
-        SSH_KEY_FOR_SUBMODULE: ${{secrets.DEPLOY_BLINK_DETECTION_BACKEND}}
       run: |
-        mkdir %USERPROFILE%\.ssh
-        echo %SSH_KEY_FOR_SUBMODULE% > %USERPROFILE%\.ssh\id_rsa
         git submodule update --init
 
     - name: Install dependencies
