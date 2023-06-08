@@ -27,7 +27,7 @@ jobs:
       env:
         SSH_KEY_FOR_SUBMODULE: ${{secrets.DEPLOY_BLINK_DETECTION_BACKEND}}
       run: |
-        mkdir $HOME/.ssh && echo "$SSH_KEY_FOR_SUBMODULE" > $HOME/.ssh/id_rsa && chmod 600 $HOME/.ssh/id_rsa && git submodule update --init
+        mkdir -p $HOME/.ssh && echo "$SSH_KEY_FOR_SUBMODULE" > $HOME/.ssh/id_rsa && chmod 600 $HOME/.ssh/id_rsa && git submodule update --init
 
     - name: Install dependencies
       run: |
