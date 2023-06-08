@@ -37,7 +37,7 @@ jobs:
 
     - name: build 
       run: |
-        python3 setup.py bdist_mac
+        python3 setup.py bdist_dmg
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v3

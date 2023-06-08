@@ -38,6 +38,12 @@ silent_level = 1
 # 
 # See https://github.com/scoville/tkDNN/blob/e9323647ce68568972767bbacc9a88b203e6fe0b/jenkins/stage_coverage.sh#L23-L25
 #
+
+
+[tool.distutils.bdist_dmg]
+volume_label = "Eyeblink GUI"
+applications_shortcut = true
+
 [tool.coverage.report]
 omit = [
     "shibokensupport/*",
