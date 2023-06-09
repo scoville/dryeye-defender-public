@@ -44,10 +44,10 @@ jobs:
 
     - name: build 
       run: |
-        python3 setup.py build
+        python3 setup.py bdist_msi
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: windows_build
-        path: build\exe.win-amd64-3.10\
+        path: dist\eyeblink_gui-1.0.0-win64.msi
