@@ -40,9 +40,6 @@ silent_level = 1
 #
 
 
-[tool.distutils.bdist_dmg]
-volume_label = "Eyeblink GUI"
-applications_shortcut = true
 
 [tool.coverage.report]
 omit = [
