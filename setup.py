@@ -33,7 +33,7 @@ bdist_mac_options = {
 }
 
 bdist_dmg_options = {
-    "volume_label": "Eyeblink GUI",
+    "volume_label": "Eyeblink_GUI",
     "applications_shortcut": True,
     # Add other options as needed
 }
