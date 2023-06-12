@@ -39,11 +39,13 @@ jobs:
         pip install cx-freeze
         pip install ./submodules/eyeblink-detection
 
-    - name: build
+    - name: Build binary
       run: |
         # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
         python3 setup.py build 
 
+    - name: Package to deb
+      run: |
         # create the folder structure for the deb package
         # all the files for the program will be in /opt/eyehealth, so easy handle of dependencies
         mkdir -p deb_build/opt/eyehealth 
@@ -61,14 +63,12 @@ jobs:
         chmod +x deb_build/opt/eyehealth/eyehealth
 
         # build the deb package with the official tool
-        dpkg-deb --build --root-owner-group deb_build --debug
+        dpkg-deb --build --root-owner-group deb_build eyehealth_${{  github.ref_name }}_all.deb
 
         ls
-
-        mv deb_build.deb eyehealth-$GITHUB_REF_NAME.deb
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: windows_build
-        path: eyehealth-$GITHUB_REF_NAME.deb
+        path: eyehealth_${{  github.ref_name }}_all.deb
