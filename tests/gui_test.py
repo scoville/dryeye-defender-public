@@ -50,8 +50,7 @@ def qapp() -> Generator[Application, None, None]:
     """Override creating a QApplication for the tests with our custom application. The init_cap
     and get_cap_indexes functions are mocked to use a dummy image instead of a camera
     """
-    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap), \
-         patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
+    with patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
         print("setup")
         application = Application([])
         yield application
@@ -85,8 +84,7 @@ def mock_get_cap_indexes() -> List[str]:
 
 def test_application(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector for a few frames on a dummy image"""
-    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap), \
-         patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
+    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap):
         window = Window(qapp.main_window.centralWidget())
         for _ in range(5):
             with qtbot.waitSignal(window.eye_th.finished, timeout=EYEBLINK_MODEL_THREAD_TIMEOUT_MS):
@@ -97,8 +95,8 @@ def test_application(qtbot: QtBot, qapp: Application) -> None:
 def test_application_no_blink(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector for a frame on an image of a face that
     isn't blinking"""
-    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_no_blink), \
-         patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
+    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap",
+               new=mock_init_cap_no_blink):
         window = Window(qapp.main_window.centralWidget())
         window.cap = MockVideoCapture(NO_BLINKING_IMAGE_PATH)
         with qtbot.waitSignal(window.eye_th.finished, timeout=EYEBLINK_MODEL_THREAD_TIMEOUT_MS):
@@ -111,8 +109,7 @@ def test_application_no_blink(qtbot: QtBot, qapp: Application) -> None:
 def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector for a frame on an image of a face that
     is blinking"""
-    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_blink), \
-         patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
+    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_blink):
         window = Window(qapp.main_window.centralWidget())
         with qtbot.waitSignal(window.eye_th.finished, timeout=EYEBLINK_MODEL_THREAD_TIMEOUT_MS):
             qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
