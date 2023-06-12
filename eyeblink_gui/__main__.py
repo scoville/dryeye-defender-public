@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
         self.resize(800, 700)
         widget = Window()
         self.setCentralWidget(widget)
-        icon_path = find_data_file("blink.png")
+        icon_path = find_data_file("images/blink.png")
         icon = QIcon(icon_path)
         self.setWindowIcon(icon)
 
