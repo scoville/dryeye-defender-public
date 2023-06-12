@@ -61,8 +61,10 @@ jobs:
         chmod +x deb_build/opt/eyehealth/eyehealth
 
         # build the deb package with the official tool
-        dpkg-deb --build --root-owner-group deb_build
-        
+        dpkg-deb --build --root-owner-group deb_build --debug
+
+        ls
+
         mv deb_build.deb eyehealth-$GITHUB_REF_NAME.deb
 
     - name: Upload Artifact
