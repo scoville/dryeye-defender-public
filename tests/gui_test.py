@@ -2,7 +2,7 @@
 """
 This is a unit test for running the application, and testing the detector on a few dummy frames.
 """
-from typing import List, Generator, Any
+from typing import Generator, Any
 from unittest.mock import patch
 import pytest
 
@@ -12,7 +12,6 @@ import cv2
 from PySide6.QtCore import Qt
 
 from eyeblink_gui.__main__ import Application
-import eyeblink_gui.widgets.window as window
 from eyeblink_gui.widgets.window import Window
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
@@ -24,7 +23,7 @@ EYEBLINK_MODEL_THREAD_TIMEOUT_MS = 3000
 
 class MockVideoCapture():
     """Mock the VideoCapture class to use instead of cv2.VideoCapture. Reads from a dummy image"""
-    def __init__(self, image_path=DUMMY_IMAGE_PATH) -> None:
+    def __init__(self, image_path: str = DUMMY_IMAGE_PATH) -> None:
         """Initialize VideoCapture with the dummy image"""
         self.image_path = image_path
         self._cap = cv2.VideoCapture(image_path)  # pylint: disable=no-member
@@ -88,25 +87,24 @@ def test_application(qtbot: QtBot, qapp: Application) -> None:
 
 def test_application_no_blink(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector for a frame on an image of a face that
-    isn't blinking"""
+    isn't blinking
+    """
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap",
                new=mock_init_cap_no_blink):
         window = Window(qapp.main_window.centralWidget())
-        window.cap = MockVideoCapture(NO_BLINKING_IMAGE_PATH)
         with qtbot.waitSignal(window.eye_th.finished, timeout=EYEBLINK_MODEL_THREAD_TIMEOUT_MS):
             qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
-            # TODO: Ensure debug to true
             assert window.eye_th.isRunning()
         assert window.label_output.text() == "No blink detected"
 
 
 def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector for a frame on an image of a face that
-    is blinking"""
+    is blinking
+    """
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_blink):
         window = Window(qapp.main_window.centralWidget())
         with qtbot.waitSignal(window.eye_th.finished, timeout=EYEBLINK_MODEL_THREAD_TIMEOUT_MS):
             qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
-            # TODO: Ensure debug to true
             assert window.eye_th.isRunning()
         assert window.label_output.text() == "Blink detected"
