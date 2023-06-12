@@ -7,7 +7,7 @@ requires-python = ">=3.8"
 
 [tool.distutils.build_exe]
 excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"]
-optimize = -7
+optimize = 0
 zip_include_packages = ["encodings", "PySide6"]
 include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin'],
    ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml'],
@@ -17,7 +17,7 @@ include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001
    ['images/blink_animated.gif', 'assets/images/blink_animated.gif'],
    ['images/blink_animated_anime.gif', 'assets/images/blink_animated_anime.gif']
 ]
-silent_level = 3
+silent_level = 1
 
 # `shiboken6`, which creates the python bindings for `Qt` C++ source, imports from a
 # `zip` file into the top-level directory at runtime. These files are deleted after
