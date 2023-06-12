@@ -12,6 +12,7 @@ import cv2
 from PySide6.QtCore import Qt
 
 from eyeblink_gui.__main__ import Application
+import eyeblink_gui.widgets.window as window
 from eyeblink_gui.widgets.window import Window
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
@@ -47,15 +48,13 @@ def ensure_xvfb() -> None:
 
 @pytest.fixture(scope="module")
 def qapp() -> Generator[Application, None, None]:
-    """Override creating a QApplication for the tests with our custom application. The init_cap
-    and get_cap_indexes functions are mocked to use a dummy image instead of a camera
+    """Override creating a QApplication for the tests with our custom application. The
+    get_cap_indexes function is mocked to return a list of two available ports
     """
-    with patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
-        print("setup")
+    with patch("eyeblink_gui.widgets.window.get_cap_indexes", new=lambda *args, **kwargs: [0, 1]), \
+         patch("eyeblink_gui.widgets.window.DEBUG", new=True):
         application = Application([])
         yield application
-        print("teardown")
-        del application
 
 
 def mock_init_cap(self: EyeblinkModelThread, input_device: int) -> None:
@@ -75,11 +74,6 @@ def mock_init_cap_blink(self: EyeblinkModelThread, input_device: int) -> None:
     camera
     """
     self.cap = MockVideoCapture(BLINKING_IMAGE_PATH)  # type: ignore[assignment]
-
-
-def mock_get_cap_indexes() -> List[str]:
-    """Mock the get_cap_indexes function to return a list of two indexes"""
-    return ["0", "1"]
 
 
 def test_application(qtbot: QtBot, qapp: Application) -> None:
