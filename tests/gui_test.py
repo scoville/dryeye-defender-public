@@ -58,36 +58,6 @@ def qapp() -> Generator[Application, None, None]:
         print("teardown")
         del application
 
-'''
-@pytest.fixture(scope="module")
-def qapp_no_blink() -> Generator[Application, None, None]:
-    """Override creating a QApplication for the tests with our custom application. The init_cap
-    and get_cap_indexes functions are mocked to use an image of a face  that isn't blinking instead
-    of a camera
-    """
-    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_no_blink), \
-         patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
-        print("setup")
-        application = Application([])
-        yield application
-        print("teardown")
-        del application
-
-
-@pytest.fixture(scope="module")
-def qapp_blink() -> Generator[Application, None, None]:
-    """Override creating a QApplication for the tests with our custom application. The init_cap
-    and get_cap_indexes functions are mocked to use an image of a face that is blinking instead of
-    a camera
-    """
-    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_blink), \
-         patch("eyeblink_gui.widgets.window.get_cap_indexes", new=mock_get_cap_indexes):
-        print("setup")
-        application = Application([])
-        yield application
-        print("teardown")
-        del application
-'''
 
 def mock_init_cap(self: EyeblinkModelThread, input_device: int) -> None:
     """Mock the init_cap function to use a dummy image instead of a camera"""
