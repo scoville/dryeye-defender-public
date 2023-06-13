@@ -103,7 +103,7 @@ jobs:
             ./ubuntu-latest_build.zip
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref }}'
-          tag: '${{ github.ref }}'
+          tag: '${{ github.ref_name }}'
           allowUpdates: true
           replacesArtifacts: false
           generateReleaseNotes : true
