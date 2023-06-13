@@ -88,25 +88,25 @@ pipeline {
         '''
       }
     }
-    stage('Release') {
-      when {
-        buildingTag()
-      }
-      environment {
-        VERSION = "$tag_name"
-      }
-      steps {
-        sh """#!/usr/bin/env bash
-          set -Eeuxo pipefail
+    // stage('Release') {
+    //   when {
+    //     buildingTag()
+    //   }
+    //   environment {
+    //     VERSION = "$tag_name"
+    //   }
+    //   steps {
+    //     sh """#!/usr/bin/env bash
+    //       set -Eeuxo pipefail
 
-          # rename deb file
-          mv deb_build.deb eyehealth-${VERSION}.deb
-        """
-        script {
-          githubUtils.createRelease(["eyehealth-${VERSION}.deb"], false, '', true)
-        }
-      }
-    }
+    //       # rename deb file
+    //       mv deb_build.deb eyehealth-${VERSION}.deb
+    //     """
+    //     script {
+    //       githubUtils.createRelease(["eyehealth-${VERSION}.deb"], false, '', true)
+    //     }
+    //   }
+    // }
   }
 
   post {
