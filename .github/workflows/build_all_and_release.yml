@@ -95,22 +95,16 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
           
-      - name: ls everything
+      - name: Ls downloads
         run: |
           ls -R
-          ls windows-latest_build
-          ls macos-latest_build
-          ls ubuntu-latest_build
-          # unzip -q windows-latest_build.zip -d windows-latest_build
-          # unzip -q macos-latest_build.zip -d macos-latest_build
-          # unzip -q ubuntu-latest_build.zip -d ubuntu-latest_build
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: >-
-            ./windows-latest_build/windows-latest_build,
-            ./macos-latest_build/macos-latest_build,
-            ./ubuntu-latest_build/ubuntu-latest_build
+            ./windows-latest_build/dist/eyeblink_gui-2.0.0-win64.msi,
+            ./macos-latest_build/build/Eyeblink_GUI.dmg,
+            ./ubuntu-latest_build/eyehealth_2.0.0_all.deb
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref }}'
           tag: '${{ github.ref_name }}'
