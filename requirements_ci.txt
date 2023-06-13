@@ -13,5 +13,4 @@ pytest-xdist>=1.27.0
 pytest-xvfb~=2.0.0  # 3.0.0 is missing pytest_xvfb.xvfb_available() check so stuck with 2.0.0 for now  
 openvino-dev~=2022.3.0  # needed to use `mo` command line tool to export models  
 stubs>=1.0.0
-types-pywin32>=306.0.0.1
 cx-Freeze>=6.14.9
