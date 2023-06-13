@@ -36,7 +36,6 @@ RUN apt-get install -y --no-install-recommends xvfb && apt-get clean
 COPY requirements.txt .
 COPY requirements_ci.txt .
 RUN pip install -r requirements_ci.txt
-RUN mypy --install-types
 
 # Make the git submodule accessible:
 ENV PYTHONPATH="submodules/eyeblink-detection:$PYTHONPATH"
