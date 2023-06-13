@@ -36,6 +36,7 @@ jobs:
             pip install -r requirements_mac.txt
           else
             pip install -r requirements_linux.txt
+          fi
           pip install cx-freeze
           pip install ./submodules/eyeblink-detection
       - name: Build with cx_Freeze
