@@ -8,10 +8,10 @@ from PySide6.QtGui import QMovie, QScreen
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QApplication
 
 if os.name == "nt":  # Windows
-    import win32gui  # type: ignore[import] # pylint: disable=import-error
-    import win32con  # type: ignore[import] # pylint: disable=import-error
-    import win32process  # type: ignore[import] # pylint: disable=import-error
-    import win32api  # type: ignore[import] # pylint: disable=import-error
+    import win32gui  # pylint: disable=import-error
+    import win32con  # pylint: disable=import-error
+    import win32process  # pylint: disable=import-error
+    import win32api  # pylint: disable=import-error
 
 
 class AnimatedBlinkReminder(QWidget):
