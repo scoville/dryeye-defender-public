@@ -39,6 +39,7 @@ jobs:
           fi
           pip install cx-freeze
           pip install ./submodules/eyeblink-detection
+        shell: bash
       - name: Build with cx_Freeze
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
@@ -75,6 +76,7 @@ jobs:
 
             ls
           fi
+        shell: bash
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
