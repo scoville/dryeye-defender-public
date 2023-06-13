@@ -4,9 +4,46 @@ on:
     tags:
       - '*'
   workflow_dispatch: null
-
 jobs:
+  build:
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os:
+          - windows-latest
+          - macos-latest
+          - ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Build with cx_Freeze
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            # Windows commands
+            echo "Running Windows build"
+            mkdir dist/
+            echo "test" > dist/eyeblink_gui-2.0.0-win64.msi
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            # MacOS commands
+            echo "Running MacOS build"
+            mkdir build/
+            echo "test" > build/Eyeblink_GUI.dmg
+          else
+            # Linux commands
+            echo "Running Linux build"    
+            echo "test" > eyehealth_2.0.0_all.deb
+          fi
+        shell: bash
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: '${{ matrix.os }}_build'
+          path: |
+            ${{ matrix.os == 'windows-latest' && 'dist/eyeblink_gui-2.0.0-win64.msi' }}
+            ${{ matrix.os == 'macos-latest' && 'build/Eyeblink_GUI.dmg' }}
+            ${{ matrix.os == 'ubuntu-latest' && 'eyehealth_2.0.0_all.deb' }}
   release:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download all workflow run artifacts
