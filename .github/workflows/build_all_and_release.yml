@@ -93,14 +93,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
+          
+      - name: ls everything
+        run: |
+          ls -R
+          ls windows-latest_build
+          ls macos-latest_build
+          ls ubuntu-latest_build
+          # unzip -q windows-latest_build.zip -d windows-latest_build
+          # unzip -q macos-latest_build.zip -d macos-latest_build
+          # unzip -q ubuntu-latest_build.zip -d ubuntu-latest_build
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: >-
-            ./windows-latest_build/windows-latest_build.zip,
-            ./macos-latest_build/macos-latest_build.zip,
-            ./ubuntu-latest_build/ubuntu-latest_build.zip
+            ./windows-latest_build/windows-latest_build,
+            ./macos-latest_build/macos-latest_build,
+            ./ubuntu-latest_build/ubuntu-latest_build
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref }}'
           tag: '${{ github.ref_name }}'
