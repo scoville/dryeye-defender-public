@@ -62,9 +62,9 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: >-
-            ./windows-latest_build/windows-latest_build,
-            ./macos-latest_build/macos-latest_build,
-            ./ubuntu-latest_build/ubuntu-latest_build
+            ./windows-latest_build/dist/eyeblink_gui-2.0.0-win64.msi,
+            ./macos-latest_build/build/Eyeblink_GUI.dmg,
+            ./ubuntu-latest_build/eyehealth_2.0.0_all.deb
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref }}'
           tag: '${{ github.ref_name }}'
