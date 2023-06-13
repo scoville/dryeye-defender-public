@@ -33,8 +33,8 @@ class EyeblinkModelThread(QThread):
         LOGGER.info("init thread")
 
         self.model_api = FilteredE2EOpenVinoModelAPI(
-            find_data_file("face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml"),
-            find_data_file("vino_preprocess/lmks.xml"))
+            find_data_file("face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml", True),
+            find_data_file("vino_preprocess/lmks.xml", True))
 
         self.cap = None
         self.debug = debug
