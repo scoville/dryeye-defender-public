@@ -72,4 +72,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: windows_build
-        path: eyehealth_${{  github.ref_name }}_all.deb
+        path: eyehealth_2.0.1_all.deb
+        # path: eyehealth_${{  github.ref_name }}_all.deb
