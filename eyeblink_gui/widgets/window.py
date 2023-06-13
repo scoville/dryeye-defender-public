@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
-from eyeblink_gui.utils.utils import get_cap_indexes
+from eyeblink_gui.utils.utils import find_data_file, get_cap_indexes
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
 from eyeblink_gui.widgets.debug_window.main import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
@@ -89,8 +89,8 @@ class Window(QWidget):
         :return: return the AnimatedBlinkReminder object
         """
         self.blink_reminder_gifs = {
-            "default": "images/blink_animated.gif",
-            "anime": "images/blink_animated_anime.gif"
+            "default": find_data_file("images/blink_animated.gif"),
+            "anime": find_data_file("images/blink_animated_anime.gif")
         }
         blink_reminder = AnimatedBlinkReminder(
             movie_path=self.blink_reminder_gifs["default"],
