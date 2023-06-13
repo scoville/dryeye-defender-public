@@ -98,10 +98,12 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: >-
-            ./windows-latest_build.zip, ./macos-latest_build.zip,
+            ./windows-latest_build.zip,
+            ./macos-latest_build.zip,
             ./ubuntu-latest_build.zip
-          body: Release of eyehealth for all platforms
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref }}'
           tag: '${{ github.ref }}'
           allowUpdates: true
+          replacesArtifacts: false
+          generateReleaseNotes : true
