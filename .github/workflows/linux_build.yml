@@ -63,7 +63,8 @@ jobs:
         chmod +x deb_build/opt/eyehealth/eyehealth
 
         # build the deb package with the official tool
-        dpkg-deb --build --root-owner-group deb_build eyehealth_${{  github.ref_name }}_all.deb
+        # dpkg-deb --build --root-owner-group deb_build eyehealth_${{  github.ref_name }}_all.deb
+        dpkg-deb --build --root-owner-group deb_build eyehealth_2.0.1_all.deb
 
         ls
 
