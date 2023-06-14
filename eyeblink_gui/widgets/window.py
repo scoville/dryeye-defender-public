@@ -61,9 +61,9 @@ class Window(QWidget):
             self.label_fps = QLabel("fps: 0")
             window_layout.addWidget(self.label_fps, 0, 3, 1, 1)
 
-            self.create_deque_size_slider()
-            window_layout.addWidget(self.deque_size_label, 0, 4, 1, 1)
-            window_layout.addWidget(self.deque_size_spin_box, 0, 5, 1, 1)
+            #self.create_deque_size_slider()
+            #window_layout.addWidget(self.deque_size_label, 0, 4, 1, 1)
+            #window_layout.addWidget(self.deque_size_spin_box, 0, 5, 1, 1)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start_thread)
@@ -263,7 +263,7 @@ class Window(QWidget):
         """Slot that call the thread for inference"""
         # The following line ensures we only have one thread processing a frame at a time
         if not self.eye_th.isRunning():
-            LOGGER.info("starting thread for computing one frame")
+            LOGGER.debug("starting thread for computing one frame")
             self.eye_th.start()
         else:
             LOGGER.debug("inference thread already running so skipping computing this frame")
@@ -271,7 +271,7 @@ class Window(QWidget):
     @Slot()
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
-        LOGGER.info("Thread is finished")
+        LOGGER.debug("Thread is finished")
         if DEBUG:
             diff_time = time.time() - self.time_last_finished_th
             self.time_last_finished_th = time.time()

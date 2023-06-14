@@ -69,4 +69,4 @@ class EarGraph(QWidget):
         self.data_line_left.setData(self.x_axis, self.y_left)  # Update the data.
         self.data_line_right.setData(self.x_axis, self.y_right)  # Update the data.
 
-        LOGGER.info("update graph time: %s", time.time() - b_time)
+        LOGGER.debug("update graph time: %s", time.time() - b_time)

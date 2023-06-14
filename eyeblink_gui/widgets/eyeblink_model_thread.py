@@ -57,10 +57,9 @@ class EyeblinkModelThread(QThread):
 
         time_start = time.time()
         update_dict = self.model_api.update(img, blink_timestamp_s=time_start)
-        LOGGER.info("time to compute frame: %s", str(time.time()-time_start))
+        LOGGER.debug("time to compute frame: %s", str(time.time()-time_start))
         self.update_label_output.emit(update_dict["blink_value"])
         if self.debug:
-            # assert annotated_img, f"The image was invalid {annotated_img }"
             annotated_img = cv2.cvtColor(  # pylint: disable=no-member
                 update_dict["img"], cv2.COLOR_BGR2RGB)  # pylint: disable=no-member
             annotated_img = Image.fromarray(annotated_img).convert("RGB")
