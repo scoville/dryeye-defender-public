@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 import time
-from typing import Optional, List
+from typing import List, Optional
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
@@ -13,10 +13,10 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
 from eyeblink_gui.utils.utils import find_data_file, get_cap_indexes
+from eyeblink_gui.widgets.animated_blink_reminder import AnimatedBlinkReminder
 from eyeblink_gui.widgets.blink_graph import BlinkGraph
 from eyeblink_gui.widgets.debug_window.main import DebugWindow
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
-from eyeblink_gui.widgets.animated_blink_reminder import AnimatedBlinkReminder
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
@@ -41,7 +41,12 @@ class Window(QWidget):
 
         window_layout = QGridLayout(self)
 
+        self.eye_th = EyeblinkModelThread(self, DEBUG)
+        self.eye_th.finished.connect(self.thread_finished)
+        self.eye_th.update_label_output.connect(self.output_slot)
+        self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
         self.icon = QIcon("images/blink.png")
+
         if DEBUG:
             self.compute_button = QPushButton("Compute one frame")
             self.compute_button.clicked.connect(self.start_thread)
@@ -52,19 +57,13 @@ class Window(QWidget):
             window_layout.addWidget(self.label_output, 0, 1, 1, 1)
             window_layout.addWidget(self.debug_window_button, 0, 2, 1, 1)
 
-        self.eye_th = EyeblinkModelThread(self, DEBUG)
-        self.eye_th.finished.connect(self.thread_finished)
-        self.eye_th.update_label_output.connect(self.output_slot)
-        self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
+            self.time_last_finished_th = 0.0
+            self.label_fps = QLabel("fps: 0")
+            window_layout.addWidget(self.label_fps, 0, 3, 1, 1)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.start_thread)
         self.timer.setInterval(DEFAULT_INFERENCE_INTERVAL_MS)
-
-        if DEBUG:
-            self.time_last_finished_th = 0.0
-            self.label_fps = QLabel("fps: 0")
-            window_layout.addWidget(self.label_fps, 0, 3, 1, 1)
 
         self.tray_available = (QSystemTrayIcon.isSystemTrayAvailable() and
                                QSystemTrayIcon.supportsMessages())
@@ -249,15 +248,15 @@ class Window(QWidget):
         """Slot that call the thread for inference"""
         # The following line ensures we only have one thread processing a frame at a time
         if not self.eye_th.isRunning():
-            LOGGER.info("starting thread for computing one frame")
+            LOGGER.debug("starting thread for computing one frame")
             self.eye_th.start()
         else:
-            LOGGER.info("inference thread already running so skipping computing this frame")
+            LOGGER.debug("inference thread already running so skipping computing this frame")
 
     @Slot()
     def thread_finished(self) -> None:
         """Slot called at the end of the thread, and manage the lack of blink detection"""
-        LOGGER.info("Thread is finished")
+        LOGGER.debug("Thread is finished")
         if DEBUG:
             diff_time = time.time() - self.time_last_finished_th
             self.time_last_finished_th = time.time()
@@ -339,8 +338,6 @@ class Window(QWidget):
             self.toggle_button.setText("Disable")
             if self.tray_available:
                 self.toggle_tray.setText("Disable")
-            # initialize with a blink, https://app.clickup.com/t/7508642/POC-2256
-            self.eye_th.model_api.init_blink()  # pylint:disable=no-member
             self.timer.start()
             LOGGER.info("timer started")
         else:

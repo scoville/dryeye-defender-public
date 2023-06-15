@@ -13,6 +13,7 @@ include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001
    ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml'],
    ['submodules/eyeblink-detection/assets/vino_preprocess/lmks.bin', 'assets/vino_preprocess/lmks.bin'],
    ['submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml', 'assets/vino_preprocess/lmks.xml'],
+   ['submodules/eyeblink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe/face_landmarker_v2_with_blendshapes.task'],
    ['images/blink.png', 'assets/images/blink.png'],
    ['images/blink_animated.gif', 'assets/images/blink_animated.gif'],
    ['images/blink_animated_anime.gif', 'assets/images/blink_animated_anime.gif']

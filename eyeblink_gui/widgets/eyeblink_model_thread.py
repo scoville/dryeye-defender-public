@@ -4,7 +4,7 @@ import time
 from typing import Optional
 
 import cv2
-from blinkdetector.api.filtered_e2e_openvino_api import FilteredE2EOpenVinoModelAPI
+from blinkdetector.api.filtered_mediapipe_api import FilteredMediaPipeAPI
 from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
@@ -32,9 +32,8 @@ class EyeblinkModelThread(QThread):
 
         LOGGER.info("init thread")
 
-        self.model_api = FilteredE2EOpenVinoModelAPI(
-            find_data_file("face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml", True),
-            find_data_file("vino_preprocess/lmks.xml", True))
+        self.model_api = FilteredMediaPipeAPI(find_data_file(
+            "mediapipe/face_landmarker_v2_with_blendshapes.task", submodule=True), debug=True)
 
         self.cap = None
         self.debug = debug
@@ -57,11 +56,10 @@ class EyeblinkModelThread(QThread):
             raise IOError("No output from camera")
 
         time_start = time.time()
-        update_dict = self.model_api.update(img, debug=self.debug)
-        LOGGER.info("time to compute frame: %s", str(time.time()-time_start))
+        update_dict = self.model_api.update(img, blink_timestamp_s=time_start)
+        LOGGER.debug("time to compute frame: %s", str(time.time()-time_start))
         self.update_label_output.emit(update_dict["blink_value"])
         if self.debug:
-            # assert annotated_img, f"The image was invalid {annotated_img }"
             annotated_img = cv2.cvtColor(  # pylint: disable=no-member
                 update_dict["img"], cv2.COLOR_BGR2RGB)  # pylint: disable=no-member
             annotated_img = Image.fromarray(annotated_img).convert("RGB")

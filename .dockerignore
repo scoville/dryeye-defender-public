@@ -19,5 +19,6 @@ __pycache__
 .mypy_cache
 .pytest_cache
 .vscode
+**/deb_build.deb
 deb_build/opt/
 build/
