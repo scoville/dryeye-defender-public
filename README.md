@@ -44,14 +44,6 @@ Will launch the GUI, performing all the below operations, and update submodule
    1. `docker compose run --rm eyeblink bash`
    1. or `docker-compose run --rm eyeblink bash`
 
-3. Build latest model:
-
-```
-cd submodules/eyeblink-detection/ && \
-python scripts/optimizer/export_to_openvino.py && \
-cd ../../
-```
-
 4. Run program
    1. `python -m eyeblink_gui`
 
