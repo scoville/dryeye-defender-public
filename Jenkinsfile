@@ -72,11 +72,11 @@ pipeline {
           find . -maxdepth 2 -type d -ls
           # create the folder structure for the deb package
           # all the files for the program will be in /opt/${binary_name}, so easy handle of dependencies
-          # mkdir -p deb_build/opt/${binary_name}
+          mkdir -p deb_build/opt/${binary_name}
 
 
           # we copy the files from the build folder to the deb package folder before deb creation
-          cp -R "build/${folder_name}/" deb_build/opt/${binary_name}/
+          cp -R "build/${folder_name}/." deb_build/opt/${binary_name}/
 
           # we change the permissions of the files and folders because files will keep permissions after packaging
           find deb_build/opt/${binary_name} -type f -exec chmod 644 -- {} +
