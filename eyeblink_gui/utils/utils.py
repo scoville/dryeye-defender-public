@@ -10,7 +10,7 @@ import cv2
 LOGGER = logging.getLogger(__name__)
 
 
-def find_data_file(filename: str) -> str:
+def find_data_file(filename: str, submodule: bool = False) -> str:
     """Search where the file is, depending if the app is compiled(frozen) or not
 
     :param filename: name of the file to find
@@ -23,8 +23,12 @@ def find_data_file(filename: str) -> str:
     else:
         # The application is not frozen (python mode)
         # where we store your data files:
-        datadir = os.path.join(os.path.dirname(__file__),
-                               "../../submodules/eyeblink-detection/assets/")
+        if submodule:
+            datadir = os.path.join(os.path.dirname(__file__),
+                                   "../../submodules/eyeblink-detection/assets/")
+        else:
+            datadir = os.path.join(os.path.dirname(__file__),
+                                   "../../")
 
     return os.path.join(datadir, filename)
 

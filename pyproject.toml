@@ -1,28 +1,22 @@
 [project]
 name = "eyeblink_gui"
-version = "1.0.0"
+version = "2.0.0"
 description = "Eye health software that detects blinks"
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = [
-    "opencv-python~=4.7",
-    "openvino~=2022.3.0",
-    "Pillow~=9.5.0",
-    "PySide6~=6.4.2",
-]
 
 [tool.distutils.build_exe]
 excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"]
-# optimize = 2
+optimize = 0
 zip_include_packages = ["encodings", "PySide6"]
 include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin'],
    ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml'],
    ['submodules/eyeblink-detection/assets/vino_preprocess/lmks.bin', 'assets/vino_preprocess/lmks.bin'],
    ['submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml', 'assets/vino_preprocess/lmks.xml'],
    ['submodules/eyeblink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe/face_landmarker_v2_with_blendshapes.task'],
-   ['images/blink.png', 'images/blink.png'],
-   ['images/blink_animated.gif', 'images/blink_animated.gif'],
-   ['images/blink_animated_anime.gif', 'images/blink_animated_anime.gif']
+   ['images/blink.png', 'assets/images/blink.png'],
+   ['images/blink_animated.gif', 'assets/images/blink_animated.gif'],
+   ['images/blink_animated_anime.gif', 'assets/images/blink_animated_anime.gif']
 ]
 silent_level = 1
 
