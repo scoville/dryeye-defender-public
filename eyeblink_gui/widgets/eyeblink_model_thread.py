@@ -33,7 +33,7 @@ class EyeblinkModelThread(QThread):
         LOGGER.info("init thread")
 
         self.model_api = FilteredMediaPipeAPI(find_data_file(
-            "mediapipe/face_landmarker_v2_with_blendshapes.task"), debug=True)
+            "mediapipe/face_landmarker_v2_with_blendshapes.task", submodule=True), debug=True)
 
         self.cap = None
         self.debug = debug
