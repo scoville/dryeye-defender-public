@@ -74,14 +74,14 @@ pipeline {
 
 
           # we copy the files from the build folder to the deb package folder before deb creation
-          cp -R "build/${folder_name}/" deb_build/opt/${binary_name}
+          cp -R "build/${folder_name}/*" deb_build/opt/${binary_name}
 
           # we change the permissions of the files and folders because files will keep permissions after packaging
           find deb_build/opt/${binary_name} -type f -exec chmod 644 -- {} +
           find deb_build/opt/${binary_name} -type d -exec chmod 755 -- {} +
 
           # we make the binary executable (not done by cxfreeze)
-          chmod +x deb_build/opt/eyehealth/${folder_name}/eyehealth
+          chmod +x deb_build/opt/eyehealth/eyehealth
 
           # build the deb package with the official tool
           dpkg-deb --build --root-owner-group deb_build
