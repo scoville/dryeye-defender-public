@@ -68,6 +68,8 @@ pipeline {
           # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
           python3 setup.py build 
 
+          # how the file structure looks like
+          find . -maxdepth 2 -type d -ls
           # create the folder structure for the deb package
           # all the files for the program will be in /opt/${binary_name}, so easy handle of dependencies
           mkdir -p deb_build/opt/${binary_name}
