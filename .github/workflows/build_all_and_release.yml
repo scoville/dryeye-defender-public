@@ -44,6 +44,9 @@ jobs:
           pip install ./submodules/eyeblink-detection
         shell: bash
       - name: Build with cx_Freeze
+        env:
+          binary_name: eyehealth
+          VERSION: github.ref_name
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             # Windows commands
@@ -56,26 +59,28 @@ jobs:
           else
             # Linux commands
             echo "Running Linux build"
+
+            # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
             python3 setup.py build 
+
+            # how the file structure looks like
+            find . -maxdepth 2 -type d -ls
+
             # create the folder structure for the deb package
-            # all the files for the program will be in /opt/eyehealth, so easy handle of dependencies
-            mkdir -p deb_build/opt/eyehealth 
-            
-            ls build
-            
+            # all the files for the program will be in /opt/${binary_name}, so easy handle of dependencies
+            mkdir -p deb_build/opt/${binary_name}
             # we copy the files from the build folder to the deb package folder before deb creation
-            cp -R build/exe.linux-x86_64-3.10/* deb_build/opt/eyehealth
+            cp -R "build/exe.linux-x86_64-3.10/." deb_build/opt/${binary_name}/
+
 
             # we change the permissions of the files and folders because files will keep permissions after packaging
-            find deb_build/opt/eyehealth -type f -exec chmod 644 -- {} +
-            find deb_build/opt/eyehealth -type d -exec chmod 755 -- {} +
-
+            find deb_build/opt/${binary_name} -type f -exec chmod 644 -- {} +
+            find deb_build/opt/${binary_name} -type d -exec chmod 755 -- {} +
             # we make the binary executable (not done by cxfreeze)
-            chmod +x deb_build/opt/eyehealth/eyehealth
+            chmod +x deb_build/opt/eyehealth/${binary_name}
 
             # build the deb package with the official tool
-            # dpkg-deb --build --root-owner-group deb_build eyehealth_${{  github.ref_name }}_all.deb
-            dpkg-deb --build --root-owner-group deb_build eyehealth_2.0.0_all.deb
+            dpkg-deb --build --root-owner-group deb_build eyehealth_${{  github.ref_name }}_all.deb
 
             ls
           fi
@@ -85,9 +90,9 @@ jobs:
         with:
           name: '${{ matrix.os }}_build'
           path: |
-            ${{ matrix.os == 'windows-latest' && 'dist/eyeblink_gui-2.0.0-win64.msi' }}
+            ${{ matrix.os == 'windows-latest' && format('dist/eyeblink_gui-{0}-win64.msi', github.ref_name) || '' }}
             ${{ matrix.os == 'macos-latest' && 'build/Eyeblink_GUI.dmg' }}
-            ${{ matrix.os == 'ubuntu-latest' && 'eyehealth_2.0.0_all.deb' }}
+            ${{ matrix.os == 'ubuntu-latest' && format('eyehealth_{0}_all.deb', github.ref_name) || '' }}
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -102,11 +107,11 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: >-
-            ./windows-latest_build/dist/eyeblink_gui-2.0.0-win64.msi,
+            ./windows-latest_build/dist/eyeblink_gui-${{  github.ref_name }}-win64.msi,
             ./macos-latest_build/build/Eyeblink_GUI.dmg,
-            ./ubuntu-latest_build/eyehealth_2.0.0_all.deb
+            ./ubuntu-latest_build/eyehealth_${{  github.ref_name }}_all.deb
           token: '${{ secrets.GITHUB_TOKEN }}'
-          name: 'Release ${{ github.ref }}'
+          name: 'Release ${{ github.ref_name }}'
           tag: '${{ github.ref_name }}'
           allowUpdates: true
           replacesArtifacts: false
