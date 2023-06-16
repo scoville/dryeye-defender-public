@@ -58,3 +58,4 @@ setup(version=version,
           "bdist_dmg": bdist_dmg_options,
       },
       )
+
