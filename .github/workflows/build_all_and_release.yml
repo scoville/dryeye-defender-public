@@ -48,6 +48,10 @@ jobs:
           binary_name: eyehealth
           VERSION: github.ref_name
         run: |
+          sed -i "s/version.*/version=\"${VERSION}\"\,/g" setup.py   
+          sed -i "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
+          sed -i "s/Version:.*/Version: ${VERSION}/g" deb_build/DEBIAN/control 
+        
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             # Windows commands
             echo "Running Windows build"
