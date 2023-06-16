@@ -46,7 +46,7 @@ jobs:
       - name: Build with cx_Freeze
         env:
           binary_name: eyehealth
-          VERSION: github.ref_name
+          VERSION: '${{github.ref_name}}'
         run: |
           sed -i "s/version.*/version=\"${VERSION}\"\,/g" setup.py   
           sed -i "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
