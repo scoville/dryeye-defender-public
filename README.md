@@ -44,7 +44,7 @@ Will launch the GUI, performing all the below operations, and update submodule
    1. `docker compose run --rm eyeblink bash`
    1. or `docker-compose run --rm eyeblink bash`
 
-4. Run program
+3. Run program
    1. `python -m eyeblink_gui`
 
 ### Export program
