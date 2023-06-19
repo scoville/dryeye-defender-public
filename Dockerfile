@@ -36,6 +36,7 @@ RUN apt-get install -y --no-install-recommends xvfb && apt-get clean
 COPY requirements.txt .
 COPY requirements_ci.txt .
 COPY requirements_linux.txt .
+COPY submodules/eyeblink-detection/requirements.txt submodules/eyeblink-detection/requirements.txt
 
 RUN pip install -r requirements_ci.txt
 
