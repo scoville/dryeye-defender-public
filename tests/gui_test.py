@@ -5,6 +5,7 @@ This is a unit test for running the application, and testing the detector on a f
 from typing import Generator, Any
 from unittest.mock import patch
 import pytest
+import time
 
 from pytestqt.qtbot import QtBot    # type: ignore[import]
 import pytest_xvfb    # type: ignore[import]
@@ -45,7 +46,7 @@ def ensure_xvfb() -> None:
         raise Exception("Tests need Xvfb to run.")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def qapp() -> Generator[Application, None, None]:
     """Override creating a QApplication for the tests with our custom application. The
     get_cap_indexes function is mocked to return a list of two available ports
@@ -76,7 +77,9 @@ def mock_init_cap_blink(self: EyeblinkModelThread, input_device: int) -> None:
 
 
 def test_application(qtbot: QtBot, qapp: Application) -> None:
-    """Test the main application, running the detector for a few frames on a dummy image"""
+    """Test the main application, running the detector using the debug compute button for a few
+    frames on a dummy image
+    """
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap):
         window = Window(qapp.main_window.centralWidget())
         for _ in range(5):
@@ -86,8 +89,8 @@ def test_application(qtbot: QtBot, qapp: Application) -> None:
 
 
 def test_application_no_blink(qtbot: QtBot, qapp: Application) -> None:
-    """Test the main application, running the detector for a frame on an image of a face that
-    isn't blinking
+    """Test the main application, running the detector using the debug compute button for a frame
+    on an image of a face that isn't blinking
     """
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap",
                new=mock_init_cap_no_blink):
@@ -99,8 +102,8 @@ def test_application_no_blink(qtbot: QtBot, qapp: Application) -> None:
 
 
 def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
-    """Test the main application, running the detector for a frame on an image of a face that
-    is blinking
+    """Test the main application, running the detector using the debug compute button for a frame
+    on an image of a face that is blinking
     """
     with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_blink):
         window = Window(qapp.main_window.centralWidget())
@@ -108,3 +111,29 @@ def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
             qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
             assert window.eye_th.isRunning()
         assert window.label_output.text() == "Blink detected"
+
+
+def test_application_popup(qtbot: QtBot, qapp: Application) -> None:
+    """Test the main application with the popup alert mode, running the detector and checking
+    that the popup window appears"""
+    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_no_blink):
+        window = Window(qapp.main_window.centralWidget())
+
+        # Set variables so that the popup window will appear
+        window.alert_mode = "popup"
+        window.duration_lack_spin_box.setValue(1)  # seconds
+
+        qtbot.mouseClick(window.toggle_button, Qt.MouseButton.LeftButton)
+        assert window.toggle_button.isChecked()
+        assert not window.blink_reminder.isVisible()
+
+        # Initialise the last blink time, otherwise lack of blinking will not be detected
+        # Must be done after the thread is started (which happens when the toggle button is clicked)
+        window.eye_th.model_api._last_blink_time = time.time()
+
+        # Wait for the popup window to appear
+        qtbot.wait(1500)
+        assert window.blink_reminder.isVisible()
+
+        qtbot.mouseClick(window.toggle_button, Qt.MouseButton.LeftButton)
+        assert not window.toggle_button.isChecked()
