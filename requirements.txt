@@ -1,5 +1,4 @@
 -r submodules/eyeblink-detection/requirements.txt
--e submodules/eyeblink-detection/
 pyside6~=6.4.2
 pillow~=9.5
 pyqtgraph~=0.13.3
