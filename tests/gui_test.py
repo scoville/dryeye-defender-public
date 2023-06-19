@@ -46,7 +46,7 @@ def ensure_xvfb() -> None:
         raise Exception("Tests need Xvfb to run.")
 
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def qapp() -> Generator[Application, None, None]:
     """Override creating a QApplication for the tests with our custom application. The
     get_cap_indexes function is mocked to return a list of two available ports
