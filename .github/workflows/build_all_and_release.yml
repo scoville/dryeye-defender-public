@@ -57,8 +57,7 @@ jobs:
           else
             pip install -r requirements_linux.txt
           fi
-          pip install cx-freeze
-          pip install ./submodules/eyeblink-detection
+          pip install -r requirements_build.txt
         shell: bash
 
       - name: Build with cx_Freeze
