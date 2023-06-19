@@ -1,11 +1,11 @@
-# pylint: disable = redefined-outer-name, unused-argument
+# pylint: disable = redefined-outer-name, unused-argument, protected-access
 """
 This is a unit test for running the application, and testing the detector on a few dummy frames.
 """
 from typing import Generator, Any
+import time
 from unittest.mock import patch
 import pytest
-import time
 
 from pytestqt.qtbot import QtBot    # type: ignore[import]
 import pytest_xvfb    # type: ignore[import]
@@ -115,8 +115,10 @@ def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
 
 def test_application_popup(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application with the popup alert mode, running the detector and checking
-    that the popup window appears"""
-    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_no_blink):
+    that the popup window appears
+    """
+    with patch("eyeblink_gui.widgets.window.EyeblinkModelThread.init_cap",
+               new=mock_init_cap_no_blink):
         window = Window(qapp.main_window.centralWidget())
 
         # Set variables so that the popup window will appear
