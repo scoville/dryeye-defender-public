@@ -55,6 +55,8 @@ def qapp() -> Generator[Application, None, None]:
          patch("eyeblink_gui.widgets.window.DEBUG", new=True):
         application = Application([])
         yield application
+    application.quit()
+    time.sleep(0.5)
 
 
 def mock_init_cap(self: EyeblinkModelThread, input_device: int) -> None:
