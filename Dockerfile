@@ -35,6 +35,9 @@ RUN apt-get install -y --no-install-recommends xvfb && apt-get clean
 # Install packages, including CI requirements to overwrite poor package management by other libraries
 COPY requirements.txt .
 COPY requirements_ci.txt .
+COPY requirements_linux.txt .
+COPY submodules/eyeblink-detection/requirements.txt submodules/eyeblink-detection/requirements.txt
+
 RUN pip install -r requirements_ci.txt
 
 # Make the git submodule accessible:

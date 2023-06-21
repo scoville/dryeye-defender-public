@@ -1,0 +1,141 @@
+name: Build and Release on all platforms
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch: null
+jobs:
+  build:
+    runs-on: '${{ matrix.os }}'
+    env:
+      binary_name: eyehealth
+      VERSION: '${{github.ref_name}}'
+      python_version: '3.10'
+    strategy:
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+          # - macos-latest deactivate because of mac os signing
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python '${{ env.python_version }}'
+        uses: actions/setup-python@v3
+        with:
+          python-version: '${{ env.python_version }}'
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2.5.1
+        with:
+          key: '${{ secrets.DEPLOY_BLINK_DETECTION_BACKEND }}'
+          name: id_rsa
+          known_hosts: unnecessary
+          if_key_exists: fail
+
+      - name: Checkout submodules
+        run: |
+          git submodule update --init
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3.2.1
+        with:
+          version: '6.4.3'
+          install-deps: 'true'
+          modules: 'qtcharts'
+          setup-python: 'false'
+          set-env: 'true'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            pip install -r requirements_windows.txt
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            pip install -r requirements_mac.txt
+          else
+            pip install -r requirements_linux.txt
+          fi
+          pip install -r requirements_build.txt
+        shell: bash
+
+      - name: Build with cx_Freeze
+        run: |
+          sed -i "s/version.*/version=\"${VERSION}\"\,/g" setup.py   
+          sed -i "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
+          sed -i "s/Version:.*/Version: ${VERSION}/g" deb_build/DEBIAN/control 
+        
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            # Windows commands
+            echo "Running Windows build"
+            python3 setup.py bdist_msi
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            # MacOS commands
+            echo "Running MacOS build"
+            python3 setup.py bdist_dmg
+          else
+            # Linux commands
+            echo "Running Linux build"
+
+            # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
+            python3 setup.py build 
+
+            # how the file structure looks like
+            find . -maxdepth 2 -type d -ls
+
+            # create the folder structure for the deb package
+            # all the files for the program will be in /opt/${binary_name}, so easy handle of dependencies
+            mkdir -p deb_build/opt/${binary_name}
+            # we copy the files from the build folder to the deb package folder before deb creation
+            cp -R "build/exe.linux-x86_64-${python_version}/." deb_build/opt/${binary_name}/
+
+
+            # we change the permissions of the files and folders because files will keep permissions after packaging
+            find deb_build/opt/${binary_name} -type f -exec chmod 644 -- {} +
+            find deb_build/opt/${binary_name} -type d -exec chmod 755 -- {} +
+            # we make the binary executable (not done by cxfreeze)
+            chmod +x deb_build/opt/eyehealth/${binary_name}
+
+            # build the deb package with the official tool
+            dpkg-deb --build --root-owner-group deb_build eyehealth_${{  github.ref_name }}_all.deb
+
+            ls
+          fi
+        shell: bash
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: '${{ matrix.os }}_build'
+          path: |
+            ${{ matrix.os == 'windows-latest' && format('dist/eyeblink_gui-{0}-win64.msi', github.ref_name) || '' }}
+            ${{ matrix.os == 'macos-latest' && 'build/Eyeblink_GUI.dmg' }}
+            ${{ matrix.os == 'ubuntu-latest' && format('eyehealth_{0}_all.deb', github.ref_name) || '' }}
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+          
+      - name: Ls downloads
+        run: |
+          ls -R
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: >-
+            ./windows-latest_build/dist/eyeblink_gui-${{  github.ref_name }}-win64.msi,
+            ./macos-latest_build/build/Eyeblink_GUI.dmg,
+            ./ubuntu-latest_build/eyehealth_${{  github.ref_name }}_all.deb
+          token: '${{ secrets.GITHUB_TOKEN }}'
+          name: 'Release ${{ github.ref_name }}'
+          tag: '${{ github.ref_name }}'
+          allowUpdates: true
+          replacesArtifacts: false
+          generateReleaseNotes : true
+
+      - name: Delete artifacts
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: '*_build'
