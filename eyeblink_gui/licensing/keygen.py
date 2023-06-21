@@ -39,11 +39,12 @@ def validate_key(license_key, verifying_key):
         return False
 
 
-sk = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1) 
+# TODO: export these keys to files
+sk = ecdsa.SigningKey.generate(curve=ecdsa.Ed25519) 
 vk = sk.get_verifying_key()
 
-license_key = generate_key(b"hello world", sk)
+license_key = generate_key(b"hello@world.com", sk)
 print(f"{license_key}")
 
-isSignatureValid = validate_key("fsdf.scdf", vk)
+isSignatureValid = validate_key(license_key, vk)
 print(f"{isSignatureValid=}")
