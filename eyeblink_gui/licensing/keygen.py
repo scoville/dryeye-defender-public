@@ -1,6 +1,10 @@
+import logging
+import traceback
 import base64
 
 import ecdsa
+
+LOGGER = logging.getLogger(__name__)
 
 
 def generate_key(data, signing_key):
@@ -25,11 +29,14 @@ def validate_key(license_key, verifying_key):
     :param verifying_key: the verifying key
     :return: True if the license key is valid, False otherwise
     """
-    data, signature = license_key.split(".")
-    data = base64.b64decode(data)
-    signature = base64.b64decode(signature)
-
-    return verifying_key.verify(signature, data)
+    try:
+        data, signature = license_key.split(".")
+        data = base64.b64decode(data)
+        signature = base64.b64decode(signature)
+        return verifying_key.verify(signature, data)
+    except Exception:
+        LOGGER.warning("Handled the following user error:\n%s", traceback.format_exc())
+        return False
 
 
 sk = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1) 
@@ -38,5 +45,5 @@ vk = sk.get_verifying_key()
 license_key = generate_key(b"hello world", sk)
 print(f"{license_key}")
 
-isSignatureValid = validate_key(license_key, vk)
+isSignatureValid = validate_key("fsdf.scdf", vk)
 print(f"{isSignatureValid=}")
