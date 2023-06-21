@@ -2,7 +2,7 @@ import sys
 import os
 from cx_Freeze import setup, Executable
 
-version = os.getenv('VERSION', '0.0.0')
+version="3.0.0",
 
 base = 'Win32GUI' if sys.platform == 'win32' else None
 
@@ -50,7 +50,7 @@ executables = [
                )
 ]
 
-setup(version=version,
+setup(version="3.0.0",
       executables=executables,
       options={
           "bdist_msi": bdist_msi_options,
