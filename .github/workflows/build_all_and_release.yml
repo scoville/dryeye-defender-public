@@ -135,6 +135,7 @@ jobs:
           replacesArtifacts: false
           generateReleaseNotes : true
 
-      - uses: geekyeggo/delete-artifact@v2
+      - name: Delete artifacts
+        uses: geekyeggo/delete-artifact@v2
         with:
-          name: *_build
+          name: '*_build'
