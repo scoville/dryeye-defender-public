@@ -1,2 +1,2 @@
 cx-freeze>=6.14.9
--e submodules/eyeblink-detection/
+submodules/eyeblink-detection/
