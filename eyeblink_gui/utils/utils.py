@@ -44,7 +44,10 @@ def get_saved_data_path() -> Path:
         app_name = Path(sys.executable).name
 
         if os.name == "nt":  # Windows
-            saved_data_dir = Path(os.getenv("APPDATA")) / app_name
+            # appdata_path = Path(os.getenv("LOCALAPPDATA"))
+            appdata_path = os.getenv("APPDATA")
+            assert appdata_path is not None
+            saved_data_dir = Path(appdata_path) / app_name
         elif os.name == "posix":  # Linux or macOS
             if "darwin" in os.sys.platform:  # macOS
                 saved_data_dir = Path.home() / "Library" / "Application Support" / app_name

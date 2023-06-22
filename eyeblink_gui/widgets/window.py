@@ -76,8 +76,8 @@ class Window(QWidget):
 
         self.blink_graph = BlinkGraph()
         self.get_stats = QPushButton(("Update statistics"))
-        self.get_stats.clicked.connect(
-            lambda: self.blink_graph.update_graph(self.eye_th.model_api.blink_history))
+        # self.get_stats.clicked.connect(
+        #     lambda: self.blink_graph.update_graph(self.eye_th.model_api.blink_history))
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
         window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
         window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
