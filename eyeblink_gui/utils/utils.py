@@ -36,7 +36,7 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
 def get_saved_data_path() -> Path:
     """Get the path where the data is saved.
 
-    :return: path to the data
+    :return: path to where to save the database
     """
     if getattr(sys, "frozen", False):
         # The application is frozen(binary file)
@@ -49,7 +49,7 @@ def get_saved_data_path() -> Path:
             assert appdata_path is not None
             saved_data_dir = Path(appdata_path) / app_name
         elif os.name == "posix":  # Linux or macOS
-            if "darwin" in os.sys.platform:  # macOS
+            if "darwin" in sys.platform:  # macOS
                 saved_data_dir = Path.home() / "Library" / "Application Support" / app_name
             else:  # Assume Linux
                 saved_data_dir = Path.home() / ".local" / "share" / app_name
@@ -60,8 +60,9 @@ def get_saved_data_path() -> Path:
         saved_data_dir = Path(__file__).parent.parent.parent / "saved_data"
 
     saved_data_dir.mkdir(parents=True, exist_ok=True)
-
-    return saved_data_dir / "saved_blink.db"
+    database_path = saved_data_dir / "saved_blink.db"
+    LOGGER.info("Database path: %s", database_path)
+    return database_path
 
 
 def get_cap_indexes() -> List[str]:
