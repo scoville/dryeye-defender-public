@@ -29,7 +29,13 @@ bdist_msi_options = {
 
 bdist_mac_options = {
     "bundle_name": "EyeblinkHealth",
-    "iconfile": "images/icon.icns",  # replace with your icon file
+    "iconfile": "images/icon.icns",  # replace with your icon file    
+    # "codesign_identity": "common name of the certificate",  # replace with your Developer ID
+    # you can also specify other codesign options
+    # "codesign_entitlements": "myapp.entitlements",  # replace with your entitlements file if any
+    # "codesign_deep": True,
+    # "codesign_resource_rules": "resource_rules.plist"  # replace with your resource rules file if any
+
     # "custom_info_plist": "Info.plist",  # replace with your plist file if any
     # Add other options as needed
 }
