@@ -3,6 +3,7 @@ import logging
 
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import Slot
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
@@ -10,6 +11,8 @@ from eyeblink_gui.widgets.debug_window.ear_graph import EarGraph
 from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 LOGGER = logging.getLogger(__name__)
+MAX_CAMERA_VIEW_WIDTH = 600
+MAX_CAMERA_VIEW_HEIGTH = 800
 
 
 class DebugWindow(QWidget):
@@ -24,12 +27,15 @@ class DebugWindow(QWidget):
         # Title and dimensions
         # self.setWindowTitle("Debug window")
         debug_layout = QVBoxLayout(self)
-        logging.info("init debug window")
+        LOGGER.info("init debug window")
         self.setGeometry(0, 0, 800, 1000)
+
         thread.update_debug_img.connect(self.update_img)
         # Create a label for the display camera
         self.label = QLabel()
-        self.label.setFixedSize(640, 480)
+        self.label.setScaledContents(True)
+        self.label.setFixedSize(MAX_CAMERA_VIEW_HEIGTH, MAX_CAMERA_VIEW_WIDTH)
+        self.label.setScaledContents(True)
         self.chart_view = EarGraph(thread=thread)
 
         debug_layout.addWidget(self.chart_view)
@@ -42,4 +48,14 @@ class DebugWindow(QWidget):
 
         :param image: QPixMap of the current debug output
         """
+        ar_image = image.width() / image.height()
+        ar_label = MAX_CAMERA_VIEW_WIDTH / MAX_CAMERA_VIEW_HEIGTH
+        
+        # If image aspect ratio is wider than label aspect ratio
+        # then scale by width, else by height
+        if ar_image > ar_label:
+            image = image.scaledToWidth(MAX_CAMERA_VIEW_WIDTH, Qt.SmoothTransformation)
+        else:
+            image = image.scaledToHeight(MAX_CAMERA_VIEW_HEIGTH, Qt.SmoothTransformation)
+
         self.label.setPixmap(image)
