@@ -16,7 +16,7 @@ jobs:
         os:
           - windows-latest
           - ubuntu-latest
-          # - macos-latest deactivate because of mac os signing
+          - macos-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -52,15 +52,18 @@ jobs:
           python -m pip install --upgrade pip
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             pip install -r requirements_windows.txt
+            pip install -r requirements_build_mac.txt
+
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             pip install -r requirements_mac.txt
+            pip install -r requirements_build.txt
           else
             pip install -r requirements_linux.txt
+            pip install -r requirements_build.txt
           fi
-          pip install -r requirements_build.txt
         shell: bash
 
-      - name: Build with cx_Freeze
+      - name: Build with cx_Freeze or pyinstaller
         run: |
           sed -i "s/version.*/version=\"${VERSION}\"\,/g" setup.py   
           sed -i "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
@@ -73,7 +76,9 @@ jobs:
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             # MacOS commands
             echo "Running MacOS build"
-            python3 setup.py bdist_dmg
+            pyinstaller eyeblink_gui.spec
+            # compress the folder, because app on mac os are in a fake folder.app so we need to zip it for uploading
+            ditto -c -k --sequesterRsrc --keepParent dist/EyeblinkHealth.app ${binary_name}.zip
           else
             # Linux commands
             echo "Running Linux build"
@@ -109,7 +114,7 @@ jobs:
           name: '${{ matrix.os }}_build'
           path: |
             ${{ matrix.os == 'windows-latest' && format('dist/eyeblink_gui-{0}-win64.msi', github.ref_name) || '' }}
-            ${{ matrix.os == 'macos-latest' && 'build/Eyeblink_GUI.dmg' }}
+            ${{ matrix.os == 'macos-latest' && '${binary_name}.zip' }}
             ${{ matrix.os == 'ubuntu-latest' && format('eyehealth_{0}_all.deb', github.ref_name) || '' }}
   release:
     needs: build
@@ -126,7 +131,7 @@ jobs:
         with:
           artifacts: >-
             ./windows-latest_build/dist/eyeblink_gui-${{  github.ref_name }}-win64.msi,
-            ./macos-latest_build/build/Eyeblink_GUI.dmg,
+            ./macos-latest_build/build/${binary_name}.zip,
             ./ubuntu-latest_build/eyehealth_${{  github.ref_name }}_all.deb
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref_name }}'
