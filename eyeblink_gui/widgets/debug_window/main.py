@@ -1,10 +1,8 @@
 """Class for debug window"""
 import logging
 
-from PySide6.QtCharts import QChartView
-from PySide6.QtCore import Slot
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter, QPixmap
+from PySide6.QtCore import Qt, Slot
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from eyeblink_gui.widgets.debug_window.ear_graph import EarGraph
@@ -50,12 +48,15 @@ class DebugWindow(QWidget):
         """
         ar_image = image.width() / image.height()
         ar_label = MAX_CAMERA_VIEW_WIDTH / MAX_CAMERA_VIEW_HEIGTH
-        
+
         # If image aspect ratio is wider than label aspect ratio
         # then scale by width, else by height
         if ar_image > ar_label:
-            image = image.scaledToWidth(MAX_CAMERA_VIEW_WIDTH, Qt.SmoothTransformation)
+            image = image.scaledToWidth(
+                MAX_CAMERA_VIEW_WIDTH, Qt.TransformationMode.SmoothTransformation
+            )
         else:
-            image = image.scaledToHeight(MAX_CAMERA_VIEW_HEIGTH, Qt.SmoothTransformation)
-
+            image = image.scaledToHeight(
+                MAX_CAMERA_VIEW_HEIGTH, Qt.TransformationMode.SmoothTransformation
+            )
         self.label.setPixmap(image)
