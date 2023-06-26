@@ -67,6 +67,7 @@ assets/
 .venv*
 deb_build/opt/
 deb_build.deb
+*.db
 
 # Keep test assets
 !tests/assets
