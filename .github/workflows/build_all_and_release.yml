@@ -52,11 +52,11 @@ jobs:
           python -m pip install --upgrade pip
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             pip install -r requirements_windows.txt
-            pip install -r requirements_build_mac.txt
+            pip install -r requirements_build.txt
 
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             pip install -r requirements_mac.txt
-            pip install -r requirements_build.txt
+            pip install -r requirements_build_mac.txt
           else
             pip install -r requirements_linux.txt
             pip install -r requirements_build.txt
