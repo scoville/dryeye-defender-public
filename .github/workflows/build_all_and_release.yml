@@ -74,7 +74,7 @@ jobs:
             echo "Running MacOS build"
             pyinstaller eyeblink_gui.spec
             # compress the folder, because app on mac os are in a fake folder.app so we need to zip it for uploading
-            ditto -c -k --sequesterRsrc --keepParent dist/EyeblinkHealth.app ${binary_name}.zip
+            ditto -c -k --sequesterRsrc --keepParent dist/EyeblinkHealth.app eyehealth_${{  github.ref_name }}.zip
           else
             # Linux commands
             echo "Running Linux build"
@@ -110,7 +110,7 @@ jobs:
           name: '${{ matrix.os }}_build'
           path: |
             ${{ matrix.os == 'windows-latest' && format('dist/eyeblink_gui-{0}-win64.msi', github.ref_name) || '' }}
-            ${{ matrix.os == 'macos-latest' && '${binary_name}.zip' }}
+            ${{ matrix.os == 'macos-latest' && format('eyehealth_{0}.zip', github.ref_name) || '' }}
             ${{ matrix.os == 'ubuntu-latest' && format('eyehealth_{0}_all.deb', github.ref_name) || '' }}
   release:
     needs: build
