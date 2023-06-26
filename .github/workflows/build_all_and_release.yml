@@ -65,8 +65,8 @@ jobs:
 
       - name: Build with cx_Freeze or pyinstaller
         run: |
-          sed -i "s/version.*/version=\"${VERSION}\"\,/g" setup.py   
-          sed -i "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
+          sed -i'' -e "s/version.*/version=\"${VERSION}\"\,/g" setup.py   
+          sed -i'' -e "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
           sed -i "s/Version:.*/Version: ${VERSION}/g" deb_build/DEBIAN/control 
           sed -i'' -e "s/'CFBundleShortVersionString': '.*'/'CFBundleShortVersionString': '${VERSION}'/g" eyeblink_gui.spec
           sed -i'' -e "s/version='3.0.0'/version='${VERSION}'/g" eyeblink_gui.spec
