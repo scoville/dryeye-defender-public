@@ -9,7 +9,6 @@ jobs:
     runs-on: '${{ matrix.os }}'
     env:
       binary_name: eyehealth
-      VERSION: '${{github.ref_name}}'
       python_version: '3.10'
     strategy:
       matrix:
@@ -113,6 +112,8 @@ jobs:
             ${{ matrix.os == 'macos-latest' && format('{0}_{1}.zip',env.binary_name, github.ref_name) || '' }}
             ${{ matrix.os == 'ubuntu-latest' && format('{0}_{1}_all.deb',env.binary_name, github.ref_name) || '' }}
   release:
+    env:
+      binary_name: eyehealth
     needs: build
     runs-on: ubuntu-latest
     steps:

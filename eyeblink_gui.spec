@@ -42,7 +42,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version='3.0.0'
+    version='3.0.1'
 )
 coll = COLLECT(
     exe,
@@ -61,6 +61,6 @@ app = BUNDLE(
     bundle_identifier=None,
     info_plist={
                 'NSCameraUsageDescription': 'This app requires access to the camera for eye blink detection.',
-                'CFBundleShortVersionString': '3.0.0',
+                'CFBundleShortVersionString': '3.0.1',
              }
 )
