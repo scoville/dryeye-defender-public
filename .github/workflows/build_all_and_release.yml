@@ -74,7 +74,7 @@ jobs:
             echo "Running MacOS build"
             pyinstaller eyeblink_gui.spec
             # compress the folder, because app on mac os are in a fake folder.app so we need to zip it for uploading
-            ditto -c -k --sequesterRsrc --keepParent dist/EyeblinkHealth.app eyehealth_${{  github.ref_name }}.zip
+            ditto -c -k --sequesterRsrc --keepParent dist/EyeblinkHealth.app ${{ env.binary_name }}_${{  github.ref_name }}.zip
           else
             # Linux commands
             echo "Running Linux build"
@@ -86,20 +86,20 @@ jobs:
             find . -maxdepth 2 -type d -ls
 
             # create the folder structure for the deb package
-            # all the files for the program will be in /opt/${binary_name}, so easy handle of dependencies
-            mkdir -p deb_build/opt/${binary_name}
+            # all the files for the program will be in /opt/${{ env.binary_name }}, so easy handle of dependencies
+            mkdir -p deb_build/opt/${{ env.binary_name }}
             # we copy the files from the build folder to the deb package folder before deb creation
-            cp -R "build/exe.linux-x86_64-${python_version}/." deb_build/opt/${binary_name}/
+            cp -R "build/exe.linux-x86_64-${python_version}/." deb_build/opt/${{ env.binary_name }}/
 
 
             # we change the permissions of the files and folders because files will keep permissions after packaging
-            find deb_build/opt/${binary_name} -type f -exec chmod 644 -- {} +
-            find deb_build/opt/${binary_name} -type d -exec chmod 755 -- {} +
+            find deb_build/opt/${{ env.binary_name }} -type f -exec chmod 644 -- {} +
+            find deb_build/opt/${{ env.binary_name }} -type d -exec chmod 755 -- {} +
             # we make the binary executable (not done by cxfreeze)
-            chmod +x deb_build/opt/eyehealth/${binary_name}
+            chmod +x deb_build/opt/eyehealth/${{ env.binary_name }}
 
             # build the deb package with the official tool
-            dpkg-deb --build --root-owner-group deb_build eyehealth_${{  github.ref_name }}_all.deb
+            dpkg-deb --build --root-owner-group deb_build ${{ env.binary_name }}_${{  github.ref_name }}_all.deb
 
             ls
           fi
@@ -110,8 +110,8 @@ jobs:
           name: '${{ matrix.os }}_build'
           path: |
             ${{ matrix.os == 'windows-latest' && format('dist/eyeblink_gui-{0}-win64.msi', github.ref_name) || '' }}
-            ${{ matrix.os == 'macos-latest' && format('eyehealth_{0}.zip', github.ref_name) || '' }}
-            ${{ matrix.os == 'ubuntu-latest' && format('eyehealth_{0}_all.deb', github.ref_name) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('{0}_{1}.zip',env.binary_name, github.ref_name) || '' }}
+            ${{ matrix.os == 'ubuntu-latest' && format('{0}_{1}_all.deb',env.binary_name, github.ref_name) || '' }}
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -127,8 +127,8 @@ jobs:
         with:
           artifacts: >-
             ./windows-latest_build/dist/eyeblink_gui-${{  github.ref_name }}-win64.msi,
-            ./macos-latest_build/build/${binary_name}.zip,
-            ./ubuntu-latest_build/eyehealth_${{  github.ref_name }}_all.deb
+            ./macos-latest_build/build/${{ env.binary_name }}.zip,
+            ./ubuntu-latest_build/${{ env.binary_name }}h_${{  github.ref_name }}_all.deb
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref_name }}'
           tag: '${{ github.ref_name }}'
