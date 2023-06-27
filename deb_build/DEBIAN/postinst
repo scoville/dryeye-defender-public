@@ -1,2 +1,2 @@
 #!/bin/bash
-ln -s /opt/eyehealth/eyehealth /usr/bin/eyehealth
+ln -s /opt/dryeye_defender/dryeye_defender /usr/bin/dryeye_defender

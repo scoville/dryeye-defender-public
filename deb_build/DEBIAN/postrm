@@ -1,2 +1,2 @@
 #!/bin/bash
-rm /usr/bin/eyehealth
+rm /usr/bin/dryeye_defender

@@ -4,16 +4,16 @@
 Type=Application
 
 # The application name.
-Name=Eye health
+Name=DryEye Defender
 
 # Tooltip comment to show in menus.
 Comment=Detect blinks
 
 # The path (folder) in which the executable is run
-Path=/opt/eyehealth
+Path=/opt/dryeye_defender
 
 # The executable (can include arguments)
-Exec=/opt/eyehealth/eyehealth
+Exec=/opt/dryeye_defender/dryeye_defender
 
 # The icon for the entry, using the name from `hicolor/scalable` without the extension.
 # You can also use a full path to a file in /opt.

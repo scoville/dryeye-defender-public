@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
     def __init__(self) -> None:
         """Initialize main window with custom config"""
         QMainWindow.__init__(self)
-        self.setWindowTitle("Eye health")
+        self.setWindowTitle("DryEye Defender")
         self.resize(800, 700)
         widget = Window()
         self.setCentralWidget(widget)

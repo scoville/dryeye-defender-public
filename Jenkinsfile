@@ -61,32 +61,8 @@ pipeline {
       steps {
         sh '''#!/usr/bin/env bash
           set -Eeux
-          python_version=$(python3 --version 2>&1 | sed -E "s/Python ([0-9]+\\.[0-9]+).*/\\1/")
-          binary_name=eyehealth
-          folder_name="exe.linux-x86_64-${python_version}"
-
           # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
           python3 setup.py build 
-
-          # how the file structure looks like
-          find . -maxdepth 2 -type d -ls
-          # create the folder structure for the deb package
-          # all the files for the program will be in /opt/${binary_name}, so easy handle of dependencies
-          mkdir -p deb_build/opt/${binary_name}
-
-
-          # we copy the files from the build folder to the deb package folder before deb creation
-          cp -R "build/${folder_name}/." deb_build/opt/${binary_name}/
-
-          # we change the permissions of the files and folders because files will keep permissions after packaging
-          find deb_build/opt/${binary_name} -type f -exec chmod 644 -- {} +
-          find deb_build/opt/${binary_name} -type d -exec chmod 755 -- {} +
-
-          # we make the binary executable (not done by cxfreeze)
-          chmod +x deb_build/opt/eyehealth/eyehealth
-
-          # build the deb package with the official tool
-          dpkg-deb --build --root-owner-group deb_build
         '''
       }
     }

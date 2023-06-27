@@ -8,7 +8,9 @@ jobs:
   build:
     runs-on: '${{ matrix.os }}'
     env:
-      binary_name: eyehealth
+      binary_name: dryeye_defender
+      deb_name: dryeye-defender
+      app_name: 'DryEye Defender'
       python_version: '3.10'
     strategy:
       matrix:
@@ -71,9 +73,9 @@ jobs:
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             # MacOS commands
             echo "Running MacOS build"
-            pyinstaller eyeblink_gui.spec
+            pyinstaller pyinstaller_build.spec
             # compress the folder, because app on mac os are in a fake folder.app so we need to zip it for uploading
-            ditto -c -k --sequesterRsrc --keepParent dist/EyeblinkHealth.app ${{ env.binary_name }}_${{  github.ref_name }}.zip
+            ditto -c -k --sequesterRsrc --keepParent "dist/${{env.app_name}}.app" ${{ env.binary_name }}_${{  github.ref_name }}.zip
           else
             # Linux commands
             echo "Running Linux build"
@@ -95,10 +97,10 @@ jobs:
             find deb_build/opt/${{ env.binary_name }} -type f -exec chmod 644 -- {} +
             find deb_build/opt/${{ env.binary_name }} -type d -exec chmod 755 -- {} +
             # we make the binary executable (not done by cxfreeze)
-            chmod +x deb_build/opt/eyehealth/${{ env.binary_name }}
+            chmod +x deb_build/opt/${{ env.binary_name }}/${{ env.binary_name }}
 
             # build the deb package with the official tool
-            dpkg-deb --build --root-owner-group deb_build ${{ env.binary_name }}_${{  github.ref_name }}_all.deb
+            dpkg-deb --build --root-owner-group deb_build ${{ env.deb_name }}_${{  github.ref_name }}_all.deb
 
             ls
           fi
@@ -108,12 +110,12 @@ jobs:
         with:
           name: '${{ matrix.os }}_build'
           path: |
-            ${{ matrix.os == 'windows-latest' && format('dist/eyeblink_gui-{0}-win64.msi', github.ref_name) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('dist/{0}-{1}-win64.msi',env.binary_name ,github.ref_name) || '' }}
             ${{ matrix.os == 'macos-latest' && format('{0}_{1}.zip',env.binary_name, github.ref_name) || '' }}
             ${{ matrix.os == 'ubuntu-latest' && format('{0}_{1}_all.deb',env.binary_name, github.ref_name) || '' }}
   release:
     env:
-      binary_name: eyehealth
+      binary_name: dryeye_defender
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -127,7 +129,7 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: >-
-            ./windows-latest_build/eyeblink_gui-${{  github.ref_name }}-win64.msi,
+            ./windows-latest_build/${{ env.binary_name }}-${{  github.ref_name }}-win64.msi,
             ./macos-latest_build/${{ env.binary_name }}_${{  github.ref_name }}.zip,
             ./ubuntu-latest_build/${{ env.binary_name }}_${{  github.ref_name }}_all.deb
           token: '${{ secrets.GITHUB_TOKEN }}'
