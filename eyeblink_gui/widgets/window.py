@@ -45,7 +45,7 @@ class Window(QWidget):
         self.eye_th.finished.connect(self.thread_finished)
         self.eye_th.update_label_output.connect(self.output_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
-        self.icon = QIcon("images/blink.png")
+        self.icon = QIcon(find_data_file("images/blink.png"))
 
         if DEBUG:
             self.compute_button = QPushButton("Compute one frame")
@@ -120,7 +120,7 @@ class Window(QWidget):
         tray.setContextMenu(menu)
         # system_tray.setContextMenu()
         tray.setVisible(True)
-        tray.showMessage("Test", "Tray initialized", self.icon, 5000)
+        tray.showMessage("App initialized", "blink reminder will show like this", self.icon, 5000)
         return tray
 
     def create_frequency_slider(self) -> None:
@@ -279,7 +279,7 @@ class Window(QWidget):
                         f"You didn't blink in the last {self.eye_th.model_api.ear_threshold}"
                         "seconds",
                         "Blink now !", self.icon, 5000)
-                    self.last_end_of_alert_time = time.time()
+                    self.reset_last_end_of_alert_time()
 
     @Slot()
     def output_slot(self, output: int) -> None:
