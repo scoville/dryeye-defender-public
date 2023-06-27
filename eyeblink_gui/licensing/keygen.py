@@ -14,7 +14,6 @@ import ecdsa    # type: ignore[import]
 
 LOGGER = logging.getLogger(__name__)
 
-# Verifying key
 VERIFYING_KEY_STRING = "e3c77e79b005eb55b139b3d6a09b36364bf390071e0ac2b43f897d3ec769d4a7"
 
 
@@ -53,7 +52,7 @@ def validate_license_key(
     try:
         verifying_key = ecdsa.VerifyingKey.from_string(
             bytes.fromhex(verifying_key_string),
-            curve=ecdsa.Ed2551  # pylint: disable=no-member
+            curve=ecdsa.Ed25519  # pylint: disable=no-member
         )
         data, signature = license_key.split(".")
         data_bytes = base64.b64decode(data)
@@ -99,7 +98,7 @@ def parse_args_and_generate_license_key() -> str:
     with open(args.signing_key, "r", encoding="utf-8") as signing_key_file:
         signing_key = args.signing_key = signing_key_file.read()
         license_key = generate_license_key(args.user_email, int(args.order_num), signing_key)
-    return license_key
+    print(license_key)
 
 
 if __name__ == "__main__":
