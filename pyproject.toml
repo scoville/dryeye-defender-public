@@ -1,6 +1,6 @@
 [project]
 name = "eyeblink_gui"
-version = "2.0.2"
+version = "3.0.0"
 description = "Eye health software that detects blinks"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -9,10 +9,7 @@ requires-python = ">=3.8"
 excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"]
 optimize = 0
 zip_include_packages = ["encodings", "PySide6"]
-include_files= [ ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.bin'],
-   ['submodules/eyeblink-detection/assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml', 'assets/face-detection-adas-0001/FP16-INT8/face-detection-adas-0001.xml'],
-   ['submodules/eyeblink-detection/assets/vino_preprocess/lmks.bin', 'assets/vino_preprocess/lmks.bin'],
-   ['submodules/eyeblink-detection/assets/vino_preprocess/lmks.xml', 'assets/vino_preprocess/lmks.xml'],
+include_files= [ 
    ['submodules/eyeblink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe/face_landmarker_v2_with_blendshapes.task'],
    ['images/blink.png', 'assets/images/blink.png'],
    ['images/blink_animated.gif', 'assets/images/blink_animated.gif'],
@@ -39,6 +36,9 @@ silent_level = 1
 # 
 # See https://github.com/scoville/tkDNN/blob/e9323647ce68568972767bbacc9a88b203e6fe0b/jenkins/stage_coverage.sh#L23-L25
 #
+
+
+
 [tool.coverage.report]
 omit = [
     "shibokensupport/*",

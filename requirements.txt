@@ -1,7 +1,6 @@
-opencv-python~=4.7
+-r submodules/eyeblink-detection/requirements.txt
 pyside6~=6.4.2
 pillow~=9.5
-types-pywin32==306.0.0.1
 pyqtgraph~=0.13.3
-mediapipe
 ecdsa~=0.18.0
+types-pywin32==306.0.0.1
