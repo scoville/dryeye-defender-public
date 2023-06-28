@@ -1,9 +1,9 @@
 [project]
 name = "eyeblink_gui"
-version = "3.0.0"
+version = "5.0"
 description = "Eye health software that detects blinks"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 [tool.distutils.build_exe]
 excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"]
