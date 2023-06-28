@@ -10,7 +10,7 @@ from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 LOGGER = logging.getLogger(__name__)
 MAX_CAMERA_VIEW_WIDTH = 600
-MAX_CAMERA_VIEW_HEIGTH = 800
+MAX_CAMERA_VIEW_HEIGHT = 800
 
 
 class DebugWindow(QWidget):
@@ -32,7 +32,7 @@ class DebugWindow(QWidget):
         # Create a label for the display camera
         self.label = QLabel()
         self.label.setScaledContents(True)
-        self.label.setFixedSize(MAX_CAMERA_VIEW_HEIGTH, MAX_CAMERA_VIEW_WIDTH)
+        self.label.setFixedSize(MAX_CAMERA_VIEW_HEIGHT, MAX_CAMERA_VIEW_WIDTH)
         self.label.setScaledContents(True)
         self.chart_view = EarGraph(thread=thread)
 
@@ -47,7 +47,7 @@ class DebugWindow(QWidget):
         :param image: QPixMap of the current debug output
         """
         ar_image = image.width() / image.height()
-        ar_label = MAX_CAMERA_VIEW_WIDTH / MAX_CAMERA_VIEW_HEIGTH
+        ar_label = MAX_CAMERA_VIEW_WIDTH / MAX_CAMERA_VIEW_HEIGHT
 
         # If image aspect ratio is wider than label aspect ratio
         # then scale by width, else by height
@@ -57,6 +57,6 @@ class DebugWindow(QWidget):
             )
         else:
             image = image.scaledToHeight(
-                MAX_CAMERA_VIEW_HEIGTH, Qt.TransformationMode.SmoothTransformation
+                MAX_CAMERA_VIEW_HEIGHT, Qt.TransformationMode.SmoothTransformation
             )
         self.label.setPixmap(image)

@@ -120,7 +120,7 @@ class Window(QWidget):
         tray.setContextMenu(menu)
         # system_tray.setContextMenu()
         tray.setVisible(True)
-        tray.showMessage("App initialized", "blink reminder will show like this", self.icon, 5000)
+        tray.showMessage("App initialized", "", self.icon, 5000)
         return tray
 
     def create_frequency_slider(self) -> None:
