@@ -73,7 +73,7 @@ def generate_sk_and_vk() -> Tuple[str, str]:
     return signing_key.hex(), verifying_key.hex()  # pylint: disable=no-member
 
 
-def parse_args_and_generate_license_key() -> str:
+def parse_args_and_generate_license_key() -> None:
     """Parses arguments and generates a license key.
     """
     parser = ArgumentParser("Generate a license key")
