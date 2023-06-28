@@ -75,6 +75,10 @@ from the venv created before
 
 #### Signing the app for mac os
 
+> Currently, the app works without signing. The reason it was not working before is that cxfreeze was breaking the build with bad mandatory signing, but with pyinstaller the problem is not present and you can still try the app without signing. If we want the user to not have a lot of warning at launch, we will need to sign the app.
+
+To manually add signing:
+
 - Add a signing certificate on mac os keychain
 - If it's a dev certificate we need to add this certifate also to trust our certificate <https://developer.apple.com/forums/thread/662300>
 - On the certificate, get more info to see what is the `common name` of the certificate
