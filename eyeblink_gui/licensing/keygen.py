@@ -87,17 +87,25 @@ def parse_args_and_generate_license_key() -> None:
                         type=int,
                         required=True,
                         help="order number")
-    parser.add_argument("--signing_key",
-                        "-sk",
-                        type=str,
-                        required=True,
-                        help="file path of the signing key")
-
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--signing_key",
+                       "-sk",
+                       type=str,
+                       help="the signing key")
+    group.add_argument("--signing_key_file",
+                       "-skf",
+                       type=str,
+                       help="file path of the signing key")
     args = parser.parse_args()
 
-    with open(args.signing_key, "r", encoding="utf-8") as signing_key_file:
-        signing_key = args.signing_key = signing_key_file.read()
-        license_key = generate_license_key(args.user_email, int(args.order_num), signing_key)
+    if args.signing_key:
+        signing_key = args.signing_key
+    else:
+        with open(args.signing_key_file, "r", encoding="utf-8") as signing_key_file:
+            signing_key = args.signing_key = signing_key_file.read()
+
+    license_key = generate_license_key(args.user_email, int(args.order_num), signing_key)
+
     print(license_key)
 
 
