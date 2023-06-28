@@ -77,6 +77,8 @@ from the venv created before
 
 > Currently, the app works without signing. The reason it was not working before is that cxfreeze was breaking the build with bad mandatory signing, but with pyinstaller the problem is not present and you can still try the app without signing. If we want the user to not have a lot of warning at launch, we will need to sign the app.
 
+https://app.clickup.com/t/7508642/POC-2780
+
 To manually add signing:
 
 - Add a signing certificate on mac os keychain
