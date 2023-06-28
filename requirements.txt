@@ -2,4 +2,5 @@
 pyside6~=6.4.2
 pillow~=9.5
 pyqtgraph~=0.13.3
+ecdsa~=0.18.0
 types-pywin32==306.0.0.1
