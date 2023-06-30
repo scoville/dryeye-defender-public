@@ -5,8 +5,8 @@ from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from eyeblink_gui.widgets.debug_window.ear_graph import EarGraph
-from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
+from dryeye_defender.widgets.debug_window.ear_graph import EarGraph
+from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
 
 LOGGER = logging.getLogger(__name__)
 MAX_CAMERA_VIEW_WIDTH = 600
@@ -16,7 +16,7 @@ MAX_CAMERA_VIEW_HEIGHT = 800
 class DebugWindow(QWidget):
     """Class to create the debug window with a juste a simple image of the output of the model"""
 
-    def __init__(self, thread: EyeblinkModelThread):
+    def __init__(self, thread: BlinkModelThread):
         """Init the debug window
 
         :param thread: thread that compute the model

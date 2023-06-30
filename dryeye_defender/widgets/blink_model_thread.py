@@ -10,12 +10,12 @@ from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
 from PySide6.QtGui import QPixmap
 
-from eyeblink_gui.utils.utils import find_data_file, get_saved_data_path
+from dryeye_defender.utils.utils import find_data_file, get_saved_data_path
 
 LOGGER = logging.getLogger(__name__)
 
 
-class EyeblinkModelThread(QThread):
+class BlinkModelThread(QThread):
     """Thread doing the inference of the model and outputting if blink is detected
     callable maximum one at a time
     """
@@ -38,7 +38,7 @@ class EyeblinkModelThread(QThread):
             db_path=get_saved_data_path(),
             debug=True)
 
-        self.cap = None
+        self.cap: Optional[cv2.VideoCapture] = None  # pylint: disable=no-member
         self.debug = debug
         # self.init_cap()
 
@@ -54,7 +54,7 @@ class EyeblinkModelThread(QThread):
 
     def run(self) -> None:
         """Run the thread, compute model and signal the image and output"""
-        ret, img = self.cap.read()  # type: ignore[attr-defined]
+        ret, img = self.cap.read()  # type: ignore[union-attr]
         if not ret:
             raise IOError("No output from camera")
 

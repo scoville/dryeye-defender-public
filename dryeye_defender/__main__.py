@@ -8,8 +8,8 @@ from typing import Any, Tuple, Sequence
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from eyeblink_gui.utils.utils import find_data_file
-from eyeblink_gui.widgets.window import Window
+from dryeye_defender.utils.utils import find_data_file
+from dryeye_defender.widgets.window import Window
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 

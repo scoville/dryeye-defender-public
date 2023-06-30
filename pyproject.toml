@@ -1,7 +1,7 @@
 [project]
 name = "dryeye_defender"
 version = "3.0.1"
-description = "Software for improving eye health and preventing dry eye"
+description = "Software for improving eye health and preventing dry eye disease"
 readme = "README.md"
 requires-python = ">=3.10"
 
@@ -10,7 +10,7 @@ excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extension
 optimize = 0
 zip_include_packages = ["encodings", "PySide6"]
 include_files= [ 
-   ['submodules/eyeblink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe/face_landmarker_v2_with_blendshapes.task'],
+   ['submodules/blink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe/face_landmarker_v2_with_blendshapes.task'],
    ['images/blink.png', 'assets/images/blink.png'],
    ['images/blink_animated.gif', 'assets/images/blink_animated.gif'],
    ['images/blink_animated_anime.gif', 'assets/images/blink_animated_anime.gif']

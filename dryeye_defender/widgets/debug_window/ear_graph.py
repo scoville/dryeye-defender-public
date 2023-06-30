@@ -7,7 +7,7 @@ import pyqtgraph as pg
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
+from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 class EarGraph(QWidget):
     """Class for the graph displaying the ear values over time"""
 
-    def __init__(self, thread: EyeblinkModelThread) -> None:
+    def __init__(self, thread: BlinkModelThread) -> None:
         """Create the graph with the two series for left and right eye
 
         :param thread: thread for connecting to signal
