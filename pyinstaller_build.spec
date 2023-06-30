@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['eyeblink_gui/__main__.py'],
+    ['dryeye_defender/__main__.py'],
     pathex=[],
     binaries=[],
     datas=[

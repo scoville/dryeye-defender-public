@@ -12,11 +12,11 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
-from eyeblink_gui.utils.utils import find_data_file, get_cap_indexes
-from eyeblink_gui.widgets.animated_blink_reminder import AnimatedBlinkReminder
-from eyeblink_gui.widgets.blink_graph import BlinkGraph
-from eyeblink_gui.widgets.debug_window.main import DebugWindow
-from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
+from dryeye_defender.utils.utils import find_data_file, get_cap_indexes
+from dryeye_defender.widgets.animated_blink_reminder import AnimatedBlinkReminder
+from dryeye_defender.widgets.blink_graph import BlinkGraph
+from dryeye_defender.widgets.debug_window.main import DebugWindow
+from dryeye_defender.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink

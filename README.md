@@ -1,6 +1,6 @@
-# Eye blink detection gui
+# DryEye Defender
 
-Basic prototype for detecting eyeblink and warn user when blinking is too low
+The graphical user interface for the DryEye Defender software: detecting blinks and providing reminders to blink.
 
 ## How to install
 
@@ -22,7 +22,7 @@ Basic prototype for detecting eyeblink and warn user when blinking is too low
     2. or using another solution `python -m pip install "git+https://github.com/scoville/eyeblink-detection.git"`
 
 5. Run program
-   1. `python -m eyeblink_gui`
+   1. `python -m dryeye_defender`
 
 ### Docker
 
@@ -41,11 +41,10 @@ Will launch the GUI, performing all the below operations, and update submodule
    1. or `docker-compose build`
 
 2. Running docker image
-   1. `docker compose run --rm eyeblink bash`
-   1. or `docker-compose run --rm eyeblink bash`
+   1. `docker compose up`
 
 3. Run program
-   1. `python -m eyeblink_gui`
+   1. `python -m dryeye_defender`
 
 ### Export program
 

@@ -22,5 +22,5 @@ services:
       - /dev/video2:/dev/video3
     working_dir: /mount/
     command: >
-      bash -c "python -m eyeblink_gui"
+      bash -c "python -m dryeye_defender"
     privileged: true

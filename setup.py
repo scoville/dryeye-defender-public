@@ -26,7 +26,7 @@ bdist_msi_options = {
 }
 
 executables = [
-    Executable("eyeblink_gui/__main__.py",
+    Executable("dryeye_defender/__main__.py",
                base=BASE,
                icon="images/icon.ico",
                target_name="dryeye_defender",

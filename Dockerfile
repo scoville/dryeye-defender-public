@@ -46,5 +46,5 @@ ENV PYTHONPATH="submodules/eyeblink-detection:$PYTHONPATH"
 USER user
 
 # Not needed, but makes it easy to run outside of Jenkins:
-workdir /home/user/eyeblink
+workdir /home/user/dryeye_defender
 # COPY . .

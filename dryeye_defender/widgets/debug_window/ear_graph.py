@@ -7,7 +7,7 @@ import pyqtgraph as pg
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from eyeblink_gui.widgets.eyeblink_model_thread import EyeblinkModelThread
+from dryeye_defender.widgets.eyeblink_model_thread import EyeblinkModelThread
 
 LOGGER = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
 from PySide6.QtGui import QPixmap
 
-from eyeblink_gui.utils.utils import find_data_file, get_saved_data_path
+from dryeye_defender.utils.utils import find_data_file, get_saved_data_path
 
 LOGGER = logging.getLogger(__name__)
 
