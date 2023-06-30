@@ -56,7 +56,7 @@ coll = COLLECT(
 )
 app = BUNDLE(
     coll,
-    name='EyeblinkHealth.app',
+    name='DryEye Defender.app',
     icon='images/icon.icns',
     bundle_identifier=None,
     info_plist={

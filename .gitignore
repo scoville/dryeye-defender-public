@@ -71,3 +71,6 @@ deb_build.deb
 
 # Keep test assets
 !tests/assets
+
+# sqlite database storage location
+saved_data/
