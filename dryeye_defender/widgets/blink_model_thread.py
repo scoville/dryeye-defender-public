@@ -38,7 +38,7 @@ class BlinkModelThread(QThread):
             db_path=get_saved_data_path(),
             debug=True)
 
-        self.cap: Optional[cv2.VideoCapture] = None
+        self.cap: Optional[cv2.VideoCapture] = None  # pylint: disable=no-member
         self.debug = debug
         # self.init_cap()
 
