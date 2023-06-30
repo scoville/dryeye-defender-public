@@ -1,10 +1,8 @@
+"""Build instructions"""
 import sys
-import os
 from cx_Freeze import setup, Executable
 
-version="3.0.1",
-
-base = 'Win32GUI' if sys.platform == 'win32' else None
+BASE = "Win32GUI" if sys.platform == "win32" else None
 
 directory_table = [
     ("ProgramMenuFolder", "TARGETDIR", "."),
@@ -14,7 +12,8 @@ directory_table = [
 msi_data = {
     "Directory": directory_table,
     "ProgId": [
-        ("Prog.Id", None, None, "Software for improving eye health and preventing dry eye", "Ic:onId", None),
+        ("Prog.Id", None, None, "Software for improving eye health and preventing dry eye disease",
+         "Ic:onId", None),
     ],
     "Icon": [
         ("IconId", "images/icon.ico"),
@@ -26,12 +25,11 @@ bdist_msi_options = {
     "data": msi_data,
 }
 
-
 executables = [
-    Executable('eyeblink_gui/__main__.py',
-               base=base,
-               icon='images/icon.ico',
-               target_name='dryeye_defender',
+    Executable("eyeblink_gui/__main__.py",
+               base=BASE,
+               icon="images/icon.ico",
+               target_name="dryeye_defender",
                shortcut_name="DryEye Defender",
                shortcut_dir="ProgramMenuFolder",
                )
@@ -43,4 +41,3 @@ setup(version="3.0.1",
           "bdist_msi": bdist_msi_options,
       },
       )
-
