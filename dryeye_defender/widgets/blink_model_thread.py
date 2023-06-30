@@ -38,7 +38,7 @@ class BlinkModelThread(QThread):
             db_path=get_saved_data_path(),
             debug=True)
 
-        self.cap = None
+        self.cap: Optional[cv2.VideoCapture] = None
         self.debug = debug
         # self.init_cap()
 
@@ -54,7 +54,7 @@ class BlinkModelThread(QThread):
 
     def run(self) -> None:
         """Run the thread, compute model and signal the image and output"""
-        ret, img = self.cap.read()  # type: ignore[attr-defined]
+        ret, img = self.cap.read()  # type: ignore[union-attr]
         if not ret:
             raise IOError("No output from camera")
 
