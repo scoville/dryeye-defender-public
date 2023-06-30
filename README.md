@@ -18,8 +18,8 @@ The graphical user interface for the DryEye Defender software: detecting blinks 
     1. for linting and ci libraries : `python -m pip install -r requirements_ci.txt`
 
 4. Install other repo with pip
-    1. `python -m pip install submodules/eyeblink-detection`
-    2. or using another solution `python -m pip install "git+https://github.com/scoville/eyeblink-detection.git"`
+    1. `python -m pip install submodules/blink-detection`
+    2. or using another solution `python -m pip install "git+https://github.com/scoville/blink-detection.git"`
 
 5. Run program
    1. `python -m dryeye_defender`
@@ -52,7 +52,7 @@ Will launch the GUI, performing all the below operations, and update submodule
 
 from the venv created before
 
-1. `pip install -e submodules/eyeblink-detection/` Only locally (not needed for docker)
+1. `pip install -e submodules/blink-detection/` Only locally (not needed for docker)
 2. `python setup.py build`
 3. `build/exe.linux-x86_64-3.8/eyehealth` to run the binary file
 
@@ -85,10 +85,10 @@ To manually add signing:
 - On the certificate, get more info to see what is the `common name` of the certificate
   - e.g `Mac Developer: Benjamin Lowe (FDFD2FE)`
 - use this command to sign the app :
-  - `codesign --deep --force --verify --verbose --sign "Mac Developer: Benjamin Lowe (NKNH9AYUS2)" /full/path/to/the/app/EyeblinkHealth.app`
+  - `codesign --deep --force --verify --verbose --sign "Mac Developer: Benjamin Lowe (NKNH9AYUS2)" /full/path/to/the/app/DryEye_Defender.app`
 - verify the signing
-  - `codesign -dv --verbose=4 /Users/felix/Documents/poc/eyeblink-detection-gui/dist/EyeblinkHealth.app`
+  - `codesign -dv --verbose=4 /Users/felix/Documents/poc/blink-detection-gui/dist/DryEye_Defender.app`
 
 ## What is a breaking change for this repo?
 
-- For simplicitly, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)  
+- For simplicity, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)  

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- mode: python ; coding: utf-8 -*-
 
 
@@ -9,7 +10,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ['submodules/eyeblink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe'],
+        ['submodules/blink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe'],
         ['images/blink.png', 'assets/images'],
         ['images/blink_animated.gif', 'assets/images'],
         ['images/blink_animated_anime.gif', 'assets/images']
@@ -60,7 +61,9 @@ app = BUNDLE(
     icon='images/icon.icns',
     bundle_identifier=None,
     info_plist={
-                'NSCameraUsageDescription': 'This app requires access to the camera for eye blink detection.',
+                'NSCameraUsageDescription':
+                    'This app requires access to the camera for the blink detection feature.'
+                    ' Please enable this in your system settings.',
                 'CFBundleShortVersionString': '3.0.1',
              }
 )

@@ -25,7 +25,7 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
         # where we store your data files:
         if submodule:
             datadir = os.path.join(os.path.dirname(__file__),
-                                   "../../submodules/eyeblink-detection/assets/")
+                                   "../../submodules/blink-detection/assets/")
         else:
             datadir = os.path.join(os.path.dirname(__file__),
                                    "../../")

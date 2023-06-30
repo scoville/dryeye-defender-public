@@ -1,2 +1,2 @@
 pyinstaller~=5.12.0
-submodules/eyeblink-detection/
+submodules/blink-detection/
