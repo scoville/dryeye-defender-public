@@ -15,7 +15,7 @@ from dryeye_defender.utils.utils import find_data_file, get_saved_data_path
 LOGGER = logging.getLogger(__name__)
 
 
-class EyeblinkModelThread(QThread):
+class BlinkModelThread(QThread):
     """Thread doing the inference of the model and outputting if blink is detected
     callable maximum one at a time
     """

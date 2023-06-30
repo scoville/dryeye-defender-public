@@ -16,7 +16,7 @@ from dryeye_defender.utils.utils import find_data_file, get_cap_indexes
 from dryeye_defender.widgets.animated_blink_reminder import AnimatedBlinkReminder
 from dryeye_defender.widgets.blink_graph import BlinkGraph
 from dryeye_defender.widgets.debug_window.main import DebugWindow
-from dryeye_defender.widgets.eyeblink_model_thread import EyeblinkModelThread
+from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
@@ -41,7 +41,7 @@ class Window(QWidget):
 
         window_layout = QGridLayout(self)
 
-        self.eye_th = EyeblinkModelThread(self, DEBUG)
+        self.eye_th = BlinkModelThread(self, DEBUG)
         self.eye_th.finished.connect(self.thread_finished)
         self.eye_th.update_label_output.connect(self.output_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS

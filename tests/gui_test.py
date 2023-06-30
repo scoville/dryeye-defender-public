@@ -14,7 +14,7 @@ from PySide6.QtCore import Qt
 
 from dryeye_defender.__main__ import Application
 from dryeye_defender.widgets.window import Window
-from dryeye_defender.widgets.eyeblink_model_thread import EyeblinkModelThread
+from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
 
 DUMMY_IMAGE_PATH = "tests/assets/dummy.jpg"
 NO_BLINKING_IMAGE_PATH = "tests/assets/no_blink.jpg"
@@ -59,19 +59,19 @@ def qapp() -> Generator[Application, None, None]:
     time.sleep(0.5)
 
 
-def mock_init_cap(self: EyeblinkModelThread, input_device: int) -> None:
+def mock_init_cap(self: BlinkModelThread, input_device: int) -> None:
     """Mock the init_cap function to use a dummy image instead of a camera"""
     self.cap = MockVideoCapture()  # type: ignore[assignment]
 
 
-def mock_init_cap_no_blink(self: EyeblinkModelThread, input_device: int) -> None:
+def mock_init_cap_no_blink(self: BlinkModelThread, input_device: int) -> None:
     """Mock the init_cap function to use an image of a face that isn't blinking instead of a
     camera
     """
     self.cap = MockVideoCapture(NO_BLINKING_IMAGE_PATH)  # type: ignore[assignment]
 
 
-def mock_init_cap_blink(self: EyeblinkModelThread, input_device: int) -> None:
+def mock_init_cap_blink(self: BlinkModelThread, input_device: int) -> None:
     """Mock the init_cap function to use an image of a face that is blinking instead of a
     camera
     """
@@ -82,7 +82,7 @@ def test_application(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector using the debug compute button for a few
     frames on a dummy image
     """
-    with patch("dryeye_defender.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap):
+    with patch("dryeye_defender.widgets.window.BlinkModelThread.init_cap", new=mock_init_cap):
         window = Window(qapp.main_window.centralWidget())
         for _ in range(5):
             with qtbot.waitSignal(window.eye_th.finished, timeout=BLINK_MODEL_THREAD_TIMEOUT_MS):
@@ -94,7 +94,7 @@ def test_application_no_blink(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector using the debug compute button for a frame
     on an image of a face that isn't blinking
     """
-    with patch("dryeye_defender.widgets.window.EyeblinkModelThread.init_cap",
+    with patch("dryeye_defender.widgets.window.BlinkModelThread.init_cap",
                new=mock_init_cap_no_blink):
         window = Window(qapp.main_window.centralWidget())
         with qtbot.waitSignal(window.eye_th.finished, timeout=BLINK_MODEL_THREAD_TIMEOUT_MS):
@@ -107,7 +107,7 @@ def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application, running the detector using the debug compute button for a frame
     on an image of a face that is blinking
     """
-    with patch("dryeye_defender.widgets.window.EyeblinkModelThread.init_cap", new=mock_init_cap_blink):
+    with patch("dryeye_defender.widgets.window.BlinkModelThread.init_cap", new=mock_init_cap_blink):
         window = Window(qapp.main_window.centralWidget())
         with qtbot.waitSignal(window.eye_th.finished, timeout=BLINK_MODEL_THREAD_TIMEOUT_MS):
             qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
@@ -119,7 +119,7 @@ def test_application_popup(qtbot: QtBot, qapp: Application) -> None:
     """Test the main application with the popup alert mode, running the detector and checking
     that the popup window appears
     """
-    with patch("dryeye_defender.widgets.window.EyeblinkModelThread.init_cap",
+    with patch("dryeye_defender.widgets.window.BlinkModelThread.init_cap",
                new=mock_init_cap_no_blink):
         window = Window(qapp.main_window.centralWidget())
 
