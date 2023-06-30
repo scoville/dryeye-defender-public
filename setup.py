@@ -1,4 +1,5 @@
 """Build instructions"""
+import os
 import sys
 from cx_Freeze import setup, Executable
 
@@ -35,7 +36,7 @@ executables = [
                )
 ]
 
-setup(version="3.0.1",
+setup(version=os.environ["RELEASE_VERSION"],
       executables=executables,
       options={
           "bdist_msi": bdist_msi_options,

@@ -11,7 +11,6 @@ fi
 
 # ensure you are on branch: hotfix/2.0.2  (e.g.  git flow hotfix start 2.0.2)
 
-sed -i "s/version.*/version=\"${VERSION}\"/g" setup.py
 sed -i "s/version =.*/version = \"${VERSION}\"/g" pyproject.toml    
 sed -i "s/Version:.*/Version: ${VERSION}/g" deb_build/DEBIAN/control 
 sed -i "s/'CFBundleShortVersionString': '.*'/'CFBundleShortVersionString': '${VERSION}'/g" pyinstaller_build.spec

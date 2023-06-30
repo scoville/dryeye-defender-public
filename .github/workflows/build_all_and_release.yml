@@ -70,8 +70,8 @@ jobs:
             # Windows commands
             set -Eeuxo pipefail
             echo "Running Windows build"
-            python3 setup.py bdist_msi
-            ls -lst dist/  # the output is placed to a dist/ folder
+            RELEASE_VERSION=${{github.ref_name}} python3 setup.py bdist_msi
+            ls -lst dist/  # the output is placed to dist/dryeye_defender-RELEASE_VERSION-win64.msi folder
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             # MacOS commands
             set -Eeuxo pipefail
@@ -85,7 +85,7 @@ jobs:
             echo "Running Linux build"
 
             # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
-            python3 setup.py build 
+            RELEASE_VERSION=${{github.ref_name}} python3 setup.py build 
 
             # how the file structure looks like
             find . -maxdepth 2 -type d -ls

@@ -62,7 +62,7 @@ pipeline {
         sh '''#!/usr/bin/env bash
           set -Eeux
           # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
-          python3 setup.py build 
+          RELEASE_VERSION="0.0.1rc1" python3 setup.py build
         '''
       }
     }
