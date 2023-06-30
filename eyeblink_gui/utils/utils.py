@@ -1,5 +1,5 @@
 """Utils functions"""
-
+from pathlib import Path
 import logging
 import os
 import sys
@@ -31,6 +31,38 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
                                    "../../")
 
     return os.path.join(datadir, filename)
+
+
+def get_saved_data_path() -> Path:
+    """Get the path where the data is saved.
+
+    :return: path to where to save the database
+    """
+    if getattr(sys, "frozen", False):
+        # The application is frozen(binary file)
+
+        app_name = Path(sys.executable).name
+
+        if os.name == "nt":  # Windows
+            # appdata_path = Path(os.getenv("LOCALAPPDATA"))
+            appdata_path = os.getenv("APPDATA")
+            assert appdata_path is not None
+            saved_data_dir = Path(appdata_path) / app_name
+        elif os.name == "posix":  # Linux or macOS
+            if "darwin" in sys.platform:  # macOS
+                saved_data_dir = Path.home() / "Library" / "Application Support" / app_name
+            else:  # Assume Linux
+                saved_data_dir = Path.home() / ".local" / "share" / app_name
+
+    else:
+        # The application is not frozen (python mode)
+        # where we store your data files:
+        saved_data_dir = Path(__file__).parent.parent.parent / "saved_data"
+
+    saved_data_dir.mkdir(parents=True, exist_ok=True)
+    database_path = saved_data_dir / "saved_blink.db"
+    LOGGER.info("Database path: %s", database_path)
+    return database_path
 
 
 def get_cap_indexes() -> List[str]:
