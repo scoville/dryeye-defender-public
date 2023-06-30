@@ -65,18 +65,22 @@ jobs:
         shell: bash
 
       - name: Build with cx_Freeze or pyinstaller
-        run: |        
+        run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             # Windows commands
+            set -Eeuxo pipefail
             echo "Running Windows build"
             python3 setup.py bdist_msi
+            ls -lst dist/  # the output is placed to a dist/ folder
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             # MacOS commands
+            set -Eeuxo pipefail
             echo "Running MacOS build"
             pyinstaller pyinstaller_build.spec
             # compress the folder, because app on mac os are in a fake folder.app so we need to zip it for uploading
             ditto -c -k --sequesterRsrc --keepParent "dist/${{env.app_name}}.app" ${{ env.binary_name }}_${{  github.ref_name }}.zip
           else
+            set -Eeuxo pipefail
             # Linux commands
             echo "Running Linux build"
 
@@ -110,9 +114,9 @@ jobs:
         with:
           name: '${{ matrix.os }}_build'
           path: |
-            ${{ matrix.os == 'windows-latest' && format('dist/{0}-{1}-win64.msi',env.binary_name ,github.ref_name) || '' }}
-            ${{ matrix.os == 'macos-latest' && format('{0}_{1}.zip',env.binary_name, github.ref_name) || '' }}
-            ${{ matrix.os == 'ubuntu-latest' && format('{0}_{1}_all.deb',env.binary_name, github.ref_name) || '' }}
+            ${{ matrix.os == 'windows-latest' && format('dist/{0}-{1}-win64.msi', env.binary_name, github.ref_name) || '' }}
+            ${{ matrix.os == 'macos-latest' && format('{0}_{1}.zip', env.binary_name, github.ref_name) || '' }}
+            ${{ matrix.os == 'ubuntu-latest' && format('{0}_{1}_all.deb', env.deb_name, github.ref_name) || '' }}
   release:
     env:
       binary_name: dryeye_defender
@@ -121,7 +125,7 @@ jobs:
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
-          
+
       - name: Ls downloads
         run: |
           ls -R
@@ -137,7 +141,7 @@ jobs:
           tag: '${{ github.ref_name }}'
           allowUpdates: true
           replacesArtifacts: false
-          generateReleaseNotes : true
+          generateReleaseNotes: true
 
       - name: Delete artifacts
         uses: geekyeggo/delete-artifact@v2
