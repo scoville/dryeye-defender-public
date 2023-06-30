@@ -40,7 +40,7 @@ Will launch the GUI, performing all the below operations, and update submodule
    1. `docker compose build`
    1. or `docker-compose build`
 
-2. Running docker image
+2. Running docker container
    1. `docker compose up`
 
 3. Run program
@@ -81,7 +81,7 @@ https://app.clickup.com/t/7508642/POC-2780
 To manually add signing:
 
 - Add a signing certificate on mac os keychain
-- If it's a dev certificate we need to add this certifate also to trust our certificate <https://developer.apple.com/forums/thread/662300>
+- If it's a dev certificate we need to add this certificate also to trust our certificate <https://developer.apple.com/forums/thread/662300>
 - On the certificate, get more info to see what is the `common name` of the certificate
   - e.g `Mac Developer: Benjamin Lowe (FDFD2FE)`
 - use this command to sign the app :

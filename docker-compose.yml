@@ -1,7 +1,7 @@
 version: '3'
 services:
-  eyeblink:
-    image: eyeblink
+  dryeye_defender_service:
+    image: dryeye_defender_image
     stdin_open: true # docker run -i
     tty: true
     build:
