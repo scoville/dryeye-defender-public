@@ -73,6 +73,23 @@ from the venv created before
    1. `dpkg-deb --build --root-owner-group deb_build`
 6. `sudo apt install ./deb_build.deb` Only work locally not on docker
 
+#### Signing the app for mac os
+
+> Currently, the app works without signing. The reason it was not working before is that cxfreeze was breaking the build with bad mandatory signing, but with pyinstaller the problem is not present and you can still try the app without signing. If we want the user to not have a lot of warning at launch, we will need to sign the app.
+
+https://app.clickup.com/t/7508642/POC-2780
+
+To manually add signing:
+
+- Add a signing certificate on mac os keychain
+- If it's a dev certificate we need to add this certifate also to trust our certificate <https://developer.apple.com/forums/thread/662300>
+- On the certificate, get more info to see what is the `common name` of the certificate
+  - e.g `Mac Developer: Benjamin Lowe (FDFD2FE)`
+- use this command to sign the app :
+  - `codesign --deep --force --verify --verbose --sign "Mac Developer: Benjamin Lowe (NKNH9AYUS2)" /full/path/to/the/app/EyeblinkHealth.app`
+- verify the signing
+  - `codesign -dv --verbose=4 /Users/felix/Documents/poc/eyeblink-detection-gui/dist/EyeblinkHealth.app`
+
 ## What is a breaking change for this repo?
 
 - For simplicitly, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)  

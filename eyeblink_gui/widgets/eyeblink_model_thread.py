@@ -9,7 +9,8 @@ from PIL import Image
 from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal
 from PySide6.QtGui import QPixmap
-from eyeblink_gui.utils.utils import find_data_file
+
+from eyeblink_gui.utils.utils import find_data_file, get_saved_data_path
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,8 +33,10 @@ class EyeblinkModelThread(QThread):
 
         LOGGER.info("init thread")
 
-        self.model_api = FilteredMediaPipeAPI(find_data_file(
-            "mediapipe/face_landmarker_v2_with_blendshapes.task", submodule=True), debug=True)
+        self.model_api = FilteredMediaPipeAPI(model_path=find_data_file(
+            "mediapipe/face_landmarker_v2_with_blendshapes.task", submodule=True),
+            db_path=get_saved_data_path(),
+            debug=True)
 
         self.cap = None
         self.debug = debug
