@@ -7,8 +7,8 @@ import time
 from unittest.mock import patch
 import pytest
 
-from pytestqt.qtbot import QtBot    # type: ignore[import]
-import pytest_xvfb    # type: ignore[import]
+from pytestqt.qtbot import QtBot  # type: ignore[import]
+import pytest_xvfb  # type: ignore[import]
 import cv2
 from PySide6.QtCore import Qt
 
@@ -24,6 +24,7 @@ BLINK_MODEL_THREAD_TIMEOUT_MS = 3000
 
 class MockVideoCapture():
     """Mock the VideoCapture class to use instead of cv2.VideoCapture. Reads from a dummy image"""
+
     def __init__(self, image_path: str = DUMMY_IMAGE_PATH) -> None:
         """Initialize VideoCapture with the dummy image"""
         self.image_path = image_path
@@ -51,8 +52,9 @@ def qapp() -> Generator[Application, None, None]:
     """Override creating a QApplication for the tests with our custom application. The
     get_cap_indexes function is mocked to return a list of two available ports
     """
-    with patch("dryeye_defender.widgets.window.get_cap_indexes", new=lambda *args, **kwargs: [0, 1]), \
-         patch("dryeye_defender.widgets.window.DEBUG", new=True):
+    with patch("dryeye_defender.widgets.window.get_cap_indexes",
+               new=lambda *args, **kwargs: [0, 1]), \
+            patch("dryeye_defender.widgets.window.DEBUG", new=True):
         application = Application([])
         yield application
     application.quit()

@@ -18,7 +18,6 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
     """
     if getattr(sys, "frozen", False):
         # The application is frozen(binary file)
-        # datadir = os.path.dirname("/usr/share/eyeblinkgui/")
         datadir = os.path.join(os.path.dirname(sys.executable), "assets/")
     else:
         # The application is not frozen (python mode)
