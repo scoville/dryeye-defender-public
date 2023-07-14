@@ -74,3 +74,4 @@ deb_build.deb
 
 # sqlite database storage location
 saved_data/
+*.bak
