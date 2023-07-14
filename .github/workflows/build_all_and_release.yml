@@ -9,7 +9,7 @@ jobs:
     runs-on: '${{ matrix.os }}'
     env:
       binary_name: dryeye_defender
-      deb_name: dryeye-defender
+      deb_name: dryeye_defender
       app_name: 'DryEye Defender'
       python_version: '3.10'
     strategy:
