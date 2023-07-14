@@ -9,7 +9,7 @@ jobs:
     runs-on: '${{ matrix.os }}'
     env:
       binary_name: dryeye_defender
-      deb_name: dryeye-defender
+      deb_name: dryeye_defender
       app_name: 'DryEye Defender'
       python_version: '3.10'
     strategy:
@@ -47,6 +47,7 @@ jobs:
           modules: 'qtcharts'
           setup-python: 'false'
           set-env: 'true'
+          cache: 'true'
 
       - name: Install dependencies
         run: |
@@ -63,7 +64,10 @@ jobs:
             pip install -r requirements_build.txt
           fi
         shell: bash
-
+      - name: Set software version based on current tag name
+        run: |
+          ./update_version_strings.sh ${{github.ref_name}}
+        shell: bash
       - name: Build with cx_Freeze or pyinstaller
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
