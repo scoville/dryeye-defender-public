@@ -16,7 +16,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-#          - ubuntu-latest
+          - ubuntu-latest
 #          - macos-latest
     steps:
       - name: Checkout Repository
@@ -63,7 +63,10 @@ jobs:
             pip install -r requirements_build.txt
           fi
         shell: bash
-
+      - name: Set software version based on current tag name
+        run: |
+          ./update_version_strings.sh ${{github.ref_name}}
+        shell: bash
       - name: Build with cx_Freeze or pyinstaller
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then

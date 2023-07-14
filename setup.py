@@ -24,6 +24,7 @@ msi_data = {
 bdist_msi_options = {
     "add_to_path": False,
     "data": msi_data,
+    "target_name": "dryeye_defender"
 }
 
 executables = [
