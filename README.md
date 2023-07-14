@@ -98,3 +98,16 @@ To manually add signing:
 ## What is a breaking change for this repo?
 
 - For simplicity, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)  
+
+## Querying DB
+```
+SELECT strftime('%Y-%m-%d %H:%M:%S', blink_time, 'unixepoch') AS minute_utc, * from blink_history ORDER BY blink_time DESC;
+
+
+SELECT strftime('%Y-%m-%d %H:%M', blink_time, 'unixepoch') AS minute_utc,
+       COUNT(*) AS events_per_minute
+FROM blink_history
+WHERE blink_marker = 1 AND blink_time >= strftime('%s', 'now') - (600 * 60)
+GROUP BY minute_utc;
+
+```
