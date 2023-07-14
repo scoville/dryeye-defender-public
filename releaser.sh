@@ -18,7 +18,7 @@ fi
 
 ./update_version_strings.sh ${VERSION}
 
-git add setup.py pyproject.toml deb_build/DEBIAN/control 
+git add setup.py pyproject.toml deb_build/DEBIAN/control pyinstaller_build.spec 
 git commit -m "feat(versions): update setup.py, pyproject.toml and deb_build/DEBIAN/control to ${VERSION}"
 git push origin release/${VERSION}
 
