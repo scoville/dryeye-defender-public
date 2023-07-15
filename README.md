@@ -40,6 +40,9 @@ The graphical user interface for the DryEye Defender software: detecting blinks 
 `git submodule update --init && docker-compose up`
 Will launch the GUI, performing all the below operations, and update submodule
 
+To run the tests:
+`git submodule update --init && docker-compose run --entrypoint pytest dryeye_defender_service`
+
 #### Step-by-step
 
 1. Building docker image
