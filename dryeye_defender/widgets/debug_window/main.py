@@ -31,7 +31,6 @@ class DebugWindow(QWidget):
         thread.update_debug_img.connect(self.update_img)
         # Create a label for the display camera
         self.label = QLabel()
-        self.label.setScaledContents(True)
         self.label.setFixedSize(MAX_CAMERA_VIEW_HEIGHT, MAX_CAMERA_VIEW_WIDTH)
         self.label.setScaledContents(True)
         self.chart_view = EarGraph(thread=thread)
