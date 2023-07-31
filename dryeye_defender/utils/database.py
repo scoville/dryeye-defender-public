@@ -2,7 +2,7 @@
 import logging
 import sqlite3
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 from typing import Optional
 
@@ -45,12 +45,14 @@ class BlinkHistory:
             result = self.db_con.execute("SELECT * FROM blink_history LIMIT 100").fetchall()
         return result
 
-    def query_blink_history_groupby_minute_since(self, since: float) -> List:
+    def query_blink_history_groupby_minute_since(self, since: float) -> List[Tuple[str, int]]:
         """Fetch the last blink history (blink_marker) from since provided timestamp,
         groupby minutes
 
         :param since: Only consider timestamps after this, a unix timestamp
-        :return: list of the n last blink in ascending order (oldest first)
+        :return: list of tuples, each is a utc datetime string e.g.
+         [('2023-01-01 12:59', 2), ('2023-01-01 13:00', 3), ('2023-01-01 13:01', 5), ] followed by
+         the number of blinks that minute bin.
         """
         with self.db_con:
             cursor = self.db_con.execute(
@@ -61,6 +63,31 @@ class BlinkHistory:
                 WHERE blink_marker = 1 AND blink_time >= ?
                 GROUP BY minute_utc ORDER BY minute_utc ASC;
                 """, (since,))
+            rows = cursor.fetchall()
+        return rows
+
+    def query_blink_history_groupby_hour_since(self, since: float) -> List[Tuple[str, float]]:
+        """Fetch the last blink history (blink_marker) from since provided timestamp,
+        groupby minutes as a subquery, then aggregate that as a mean over hourly bins.
+
+        :param since: Only consider timestamps after this, a unix timestamp
+        :return: list of tuples, each is a utc datetime string e.g.
+         [('2023-01-01 12:00', 2.1), ('2023-01-01 13:00', 3.5), ('2023-01-01 14:00', 5.2),]
+          followed by the mean number of blinks that hourly bin, averaged over minute bins.
+        """
+        with self.db_con:
+            cursor = self.db_con.execute(
+                """SELECT strftime('%Y-%m-%d %H:00', minute_utc) AS hour_utc,
+               AVG(events_per_minute) AS mean_events_per_hour
+        FROM (
+            SELECT strftime('%Y-%m-%d %H:%M', blink_time, 'unixepoch') AS minute_utc,
+                   COUNT(*) AS events_per_minute
+            FROM blink_history
+            WHERE blink_marker = 1 AND blink_time >= ?
+            GROUP BY minute_utc
+        ) AS subquery
+        GROUP BY hour_utc
+        ORDER BY hour_utc ASC;""", (since,))
             rows = cursor.fetchall()
         return rows
 

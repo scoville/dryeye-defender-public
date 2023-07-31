@@ -14,9 +14,10 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
 
 from dryeye_defender.utils.utils import find_data_file, get_cap_indexes
 from dryeye_defender.widgets.animated_blink_reminder import AnimatedBlinkReminder
-from dryeye_defender.widgets.blink_graph import BlinkGraph
+from dryeye_defender.widgets.blink_window.blink_graph import BlinkGraph
 from dryeye_defender.widgets.debug_window.main import DebugWindow
 from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
+from dryeye_defender.widgets.blink_window.main import BlinkStatsWindow
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
@@ -76,11 +77,9 @@ class Window(QWidget):
 
         # Blink Graph window
         self.blink_graph = BlinkGraph()
-        self.get_stats = QPushButton(("Update stats by minute"))
-        self.get_stats.clicked.connect(
-            lambda: self.blink_graph.plot_graph_by_minute())
-        window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
-        window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
+        self.open_blink_stats_button = QPushButton(("Blink Statistics"))
+        self.open_blink_stats_button.clicked.connect(self.open_blink_stats)
+        window_layout.addWidget(self.open_blink_stats_button, 3, 0, 1, 6)
 
         # Create Settings
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
@@ -359,3 +358,10 @@ class Window(QWidget):
         self.debug_window = DebugWindow(self.eye_th)
         self.debug_window.show()
         LOGGER.info("open debug")
+
+    @Slot()
+    def open_blink_stats(self) -> None:
+        """Create blink stats window and launch it"""
+        self.blink_stats_window = BlinkStatsWindow()
+        self.blink_stats_window.show()
+        LOGGER.info("open blink stats windows")
