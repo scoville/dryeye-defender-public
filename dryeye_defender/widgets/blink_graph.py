@@ -1,72 +1,76 @@
-"""Contains class blink graph"""
+"""Contains the a manual test for experimenting with graphs"""
 import logging
 import time
-from typing import List, Tuple, Optional
+import os
+import signal
+import sys
+from datetime import datetime
+from typing import Any, Tuple, Sequence
 
-from PySide6.QtCharts import QBarSeries, QBarSet, QChart, QChartView
-from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QPainter
-from PySide6.QtWidgets import QGridLayout, QWidget
+import pyqtgraph as pg
+from PySide6.QtCore import Slot
+from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QVBoxLayout, QWidget
+from pyqtgraph import DateAxisItem
+
+from dryeye_defender.utils.utils import get_saved_data_path
+from dryeye_defender.utils.database import BlinkHistory
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 LOGGER = logging.getLogger(__name__)
 
+class MinuteOnlyDateAxisItem(pg.DateAxisItem):
+    def tickStrings(self, values, scale, spacing):
+        print(values)
+        return [datetime.fromtimestamp(value).strftime("%H:%M") for value in values]
 
 class BlinkGraph(QWidget):
-    """Widget for the blink frequency graph"""
+    """Class for the graph displaying the ear values over time"""
 
     def __init__(self) -> None:
-        """Initialize the graph variables"""
-        super().__init__()
-
-        self.series = QBarSeries()
-        self.blink_bar = QBarSet("blink")
-        self.chart = QChart()
-        self.chart.addSeries(self.series)
-        self.chart.setTitle("How many blink per minute")
-        self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
-        self.chart.createDefaultAxes()
-
-        axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
-        # axis_x = self.chart.axes(Qt.Horizontal)[0]
-        axis_y.setTitleText("Number of blink")
-        # axis_x.setTitleText("Minutes")
-
-        self.chart.legend().setVisible(True)
-        self.chart.legend().setAlignment(Qt.AlignmentFlag.AlignBottom)
-
-        self.chart_view = QChartView(self.chart)
-        self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        self.main_layout = QGridLayout()
-        self.main_layout.addWidget(self.chart_view, 0, 0, 5, 6)
-        self.setLayout(self.main_layout)
-
-    @Slot(list)
-    def update_graph(self, blink_history: List[Tuple[float, int, Optional[float],
-                                                     Optional[float]]]) -> None:
-        """Update the graph with next value
-
-        :param blink_history: List of blink value(1 if detected blink, else -1) associated with time
+        """Create the graph
         """
-        LOGGER.info("updating graph")
-        current_time = time.time()
-        if blink_history:
-            start_of_detection = blink_history[0][0]
-            n_minutes = ((int(current_time) - int(start_of_detection))//60)
-            blink_per_minutes = [0]+[0]*n_minutes
-            for time_code, blink_value, _, _ in reversed(blink_history):
-                current_minute = (int(current_time) - int(time_code))//60
-                if blink_value == 1:
-                    blink_per_minutes[current_minute] += 1
-            blink_per_minutes.reverse()
-            LOGGER.info("blink_per_minutes=%s", blink_per_minutes)
-            self.blink_bar.append(blink_per_minutes)
-            self.series.append(self.blink_bar)
+        super().__init__()
+        self.blink_history = BlinkHistory(get_saved_data_path())
 
-        self.chart.createDefaultAxes()
+        # # `update graph` is called each time thread emits the `update ear values` signal
+        # thread.update_ear_values.connect(self.update_graph)
 
-        axis_y = self.chart.axes(Qt.Orientation.Vertical)[0]
-        axis_y.setTitleText("Number of blink")
-        if not blink_per_minutes:
-            blink_per_minutes = [5]  # defaut for axis y
-        axis_y.setRange(0, max(blink_per_minutes))
+        # Create the graph widget
+        self.graphWidget = pg.PlotWidget()
+        self.graphWidget.setBackground("#31313a")  # Set the background color of the graph
+
+        axis = DateAxisItem()
+        self.graphWidget.setAxisItems({'bottom': axis})
+
+        # Set the axis labels
+        self.graphWidget.setLabel("left", "Blink values")
+        self.graphWidget.setLabel("bottom", "x")
+
+        # Set the axis font size
+        axis_font = pg.QtGui.QFont()
+        axis_font.setPointSize(10)
+        self.graphWidget.getAxis("left").tickFont = axis_font
+        self.graphWidget.getAxis("bottom").tickFont = axis_font
+
+        x_axis_handle = MinuteOnlyDateAxisItem()
+        x_axis_handle.setLabel(text="Time", units="s")
+        self.graphWidget.setAxisItems({'bottom': x_axis_handle})
+
+        layout = QVBoxLayout()
+
+        layout.addWidget(self.graphWidget)
+        self.setLayout(layout)
+
+    @Slot()
+    def plot_graph_by_minute(self) -> None:
+        """Update the graph of blinks grouped by minute
+
+        """
+        data = self.blink_history.query_blink_history_groupby_minute_since(time.time() - 600)
+        LOGGER.info("Retrieved data for plot: %s", data)
+        x_axis = [datetime.strptime(i[0], "%Y-%m-%d %H:%M").timestamp() for i in data]
+        y_axis = [i[1] for i in data]
+        bargraph = pg.BarGraphItem(x=x_axis, height=y_axis, width=60 - 2, brush='g')
+        self.graphWidget.addItem(bargraph)

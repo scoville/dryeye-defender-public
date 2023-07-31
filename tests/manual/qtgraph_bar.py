@@ -54,6 +54,10 @@ class GraphTest(QWidget):
         self.graphWidget.getAxis("left").tickFont = axis_font
         self.graphWidget.getAxis("bottom").tickFont = axis_font
 
+        x_axis_handle = MinuteOnlyDateAxisItem()
+        x_axis_handle.setLabel(text="Time", units="s")
+        self.graphWidget.setAxisItems({'bottom': x_axis_handle})
+
         layout = QVBoxLayout()
         layout.addWidget(self.graphWidget)
         self.setLayout(layout)
@@ -71,11 +75,7 @@ class GraphTest(QWidget):
         print(x_axis, y_axis)
         bargraph = pg.BarGraphItem(x=x_axis, height=y_axis, width=60 - 2, brush='g')
         self.graphWidget.addItem(bargraph)
-        x_axis_handle = MinuteOnlyDateAxisItem()
-        # x_axis_handle.setTickSpacing(major=timedelta(minutes=1), minor=timedelta(minutes=1))
-        x_axis_handle.setLabel(text="Time", units="s")
-        # x_axis_handle.setTicks([("12:59", "12:59"), ("12:59", "12:59"), ("12:59", "12:59")])
-        self.graphWidget.setAxisItems({'bottom': x_axis_handle})
+
         # self.data_line_left = self.graphWidget.plot(x_axis, y_axis, pen=pen, symbol ='o')
 
 

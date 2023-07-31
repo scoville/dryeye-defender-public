@@ -74,13 +74,16 @@ class Window(QWidget):
             self.alert_mode = "popup"
         self.blink_reminder = self.create_blink_reminder()
 
+        # Blink Graph window
         self.blink_graph = BlinkGraph()
-        # self.get_stats = QPushButton(("Update statistics"))
-        # self.get_stats.clicked.connect(
-        #     lambda: self.blink_graph.update_graph(self.eye_th.model_api.blink_history))
+        self.get_stats = QPushButton(("Update stats by minute"))
+        self.get_stats.clicked.connect(
+            lambda: self.blink_graph.plot_graph_by_minute())
+        window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
+        window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
+
+        # Create Settings
         window_layout.addWidget(self.create_settings(), 1, 0, 2, 6)
-        # window_layout.addWidget(self.get_stats, 3, 0, 1, 6)
-        # window_layout.addWidget(self.blink_graph, 4, 0, 3, 6)
 
     def create_blink_reminder(self) -> AnimatedBlinkReminder:
         """Initialize blink reminder for later usage

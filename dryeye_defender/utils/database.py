@@ -4,9 +4,6 @@ import sqlite3
 from pathlib import Path
 from typing import List
 
-import pandas as pd
-
-from blinkdetector.utils.return_dict import ReturnDict
 from typing import Optional
 
 LOGGER = logging.getLogger(__name__)
