@@ -183,7 +183,7 @@ class Window(QWidget):
             self.toggle_button.setEnabled(False)
             cap_indexes = self.alert_no_cam()
 
-        # reput to true because the alert cam is finished and camera is detected
+        # rebut to true because the alert cam is finished and camera is detected
         self.toggle_button.setEnabled(True)
         self.select_cam.addItems(cap_indexes)
         selected_cap_index = int(cap_indexes[int(os.environ.get("DEFAULT_CAMERA_INDEX", 0))])
