@@ -28,7 +28,7 @@ class DebugWindow(QWidget):
         LOGGER.info("init debug window")
         self.setGeometry(0, 0, 800, 1000)
 
-        thread.update_debug_img.connect(self.update_img)
+        thread.update_debug_img.connect(self._update_img)
         # Create a label for the display camera
         self.label = QLabel()
         self.label.setFixedSize(MAX_CAMERA_VIEW_HEIGHT, MAX_CAMERA_VIEW_WIDTH)
@@ -40,7 +40,7 @@ class DebugWindow(QWidget):
         self.setLayout(debug_layout)
 
     @Slot(QPixmap)
-    def update_img(self, image: QPixmap) -> None:
+    def _update_img(self, image: QPixmap) -> None:
         """Slot for updating the image on the window, called by the thread when finished
 
         :param image: QPixMap of the current debug output

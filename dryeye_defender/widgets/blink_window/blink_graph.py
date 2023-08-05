@@ -42,9 +42,6 @@ class BlinkGraph(QWidget):
         super().__init__()
         self.blink_history = BlinkHistory(get_saved_data_path())
 
-        # # `update graph` is called each time thread emits the `update ear values` signal
-        # thread.update_ear_values.connect(self.update_graph)
-
         # Create the graph widget
         self.graph_widget = pg.PlotWidget()
         self.graph_widget.setBackground("#31313a")  # Set the background color of the graph
