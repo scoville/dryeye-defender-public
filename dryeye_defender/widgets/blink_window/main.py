@@ -28,14 +28,17 @@ class BlinkStatsWindow(QWidget):
         self.select_stats_dropdown = QComboBox()
         self.select_stats_dropdown.addItems(["Blinks by Minute",
                                              "Blinks by Hour"])
-        self.select_stats_dropdown.currentIndexChanged.connect(self.select_plot)
+        self.select_stats_dropdown.currentIndexChanged.connect(self.draw_selected_plot)
         qbbox_layout.addWidget(self.select_stats_dropdown, stretch=3)
         qbbox_layout.addWidget(self.blink_graph, stretch=3)
-
         self.setLayout(qbbox_layout)
 
     @Slot()
-    def select_plot(self, stats_index) -> None:
+    def draw_selected_plot(self, stats_index) -> None:
+        """Slot for drawing the selected plot
+
+        :param stats_index: index of the selected type of plot to draw
+        """
         if stats_index == -1:
             raise RuntimeError("This should not occur as there is no unselected option")
         elif stats_index == 0:

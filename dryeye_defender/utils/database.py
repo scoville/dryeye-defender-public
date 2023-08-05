@@ -2,7 +2,8 @@
 import logging
 import sqlite3
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Any
+from datetime import datetime, timezone
 
 from typing import Optional
 
@@ -12,7 +13,9 @@ LOGGER = logging.getLogger(__name__)
 class BlinkHistory:
     """Database class to interact with SQLite3 database"""
 
-    def __init__(self, db_path: Optional[Path] = None, db_con: bool = None) -> None:
+    def __init__(self,
+                 db_path: Optional[Path] = None,
+                 db_con: Optional[sqlite3.Connection] = None) -> None:
         """Create the SQLite3 Database and table if not exist
 
         :param db_path: if db_con not provided, provide a path to were to store the database
@@ -25,9 +28,12 @@ class BlinkHistory:
         if db_con:
             self.db_con = db_con
         else:
+            if not db_path:
+                raise RuntimeError("db_path must be provided if db_con is not")
             self.db_con = self._create_connection(db_path)
 
-    def _create_connection(self, db_path) -> sqlite3.Connection:
+    @staticmethod
+    def _create_connection(db_path: Path) -> sqlite3.Connection:
         """Create the SQLite3 connection
 
         :param db_path: Path to sqlite3 database on disk
@@ -39,13 +45,13 @@ class BlinkHistory:
             check_same_thread = True
         return sqlite3.connect(db_path, check_same_thread=check_same_thread)
 
-    def _display_all_rows(self) -> int:
+    def _display_all_rows(self) -> List[Any]:
         """A debugging function to display all rows of DB up to max of 100"""
         with self.db_con:
             result = self.db_con.execute("SELECT * FROM blink_history LIMIT 100").fetchall()
         return result
 
-    def query_blink_history_groupby_minute_since(self, since: float) -> List[Tuple[str, int]]:
+    def query_blink_history_groupby_minute_since(self, since: float) -> dict[str, List[float | int]]:
         """Fetch the last blink history (blink_marker) from since provided timestamp,
         groupby minutes
 
@@ -64,9 +70,12 @@ class BlinkHistory:
                 GROUP BY minute_utc ORDER BY minute_utc ASC;
                 """, (since,))
             rows = cursor.fetchall()
-        return rows
+        x_axis = [datetime.strptime(i[0], "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc).timestamp()
+                  for i in rows]
+        y_axis = [i[1] for i in rows]
+        return {"timestamps": x_axis, "values": y_axis}
 
-    def query_blink_history_groupby_hour_since(self, since: float) -> List[Tuple[str, float]]:
+    def query_blink_history_groupby_hour_since(self, since: float) -> dict[str, List[float | int]]:
         """Fetch the last blink history (blink_marker) from since provided timestamp,
         groupby minutes as a subquery, then aggregate that as a mean over hourly bins.
 
@@ -89,7 +98,10 @@ class BlinkHistory:
         GROUP BY hour_utc
         ORDER BY hour_utc ASC;""", (since,))
             rows = cursor.fetchall()
-        return rows
+        x_axis = [datetime.strptime(i[0], "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc).timestamp()
+                  for i in rows]
+        y_axis = [i[1] for i in rows]
+        return {"timestamps": x_axis, "values": y_axis}
 
 
 def get_sqlite3_thread_safety() -> int:
