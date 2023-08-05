@@ -3,7 +3,6 @@ import logging
 import time
 import os
 from datetime import datetime, timezone
-import pytz
 from typing import Any, List
 from dateutil import tz
 import pyqtgraph as pg
@@ -55,7 +54,7 @@ class BlinkGraph(QWidget):
         self.graph_widget.setLabel("bottom", "x")
 
         # Set the axis font size
-        axis_font = pg.QtGui.QFont()
+        axis_font = pg.QtGui.QFont()  # pylint: disable=no-member
         axis_font.setPointSize(10)
         self.graph_widget.getAxis("left").tickFont = axis_font
         self.graph_widget.getAxis("bottom").tickFont = axis_font

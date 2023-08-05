@@ -1,12 +1,12 @@
 """Class for debug window"""
 import logging
 
+
+from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QComboBox
 
 from dryeye_defender.widgets.blink_window.blink_graph import BlinkGraph
-from PySide6.QtWidgets import QPushButton
 
-from PySide6.QtCore import Slot
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 class BlinkStatsWindow(QWidget):
     """Class to create the Blink Stats window with graphs of historical trends in blinks"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Init
         """
         super().__init__()
@@ -34,14 +34,14 @@ class BlinkStatsWindow(QWidget):
         self.setLayout(qbbox_layout)
 
     @Slot()
-    def draw_selected_plot(self, stats_index) -> None:
+    def draw_selected_plot(self, stats_index: int) -> None:
         """Slot for drawing the selected plot
 
         :param stats_index: index of the selected type of plot to draw
         """
         if stats_index == -1:
             raise RuntimeError("This should not occur as there is no unselected option")
-        elif stats_index == 0:
+        if stats_index == 0:
             self.blink_graph.plot_graph_by_minute()
         elif stats_index == 1:
             self.blink_graph.plot_graph_by_hour()

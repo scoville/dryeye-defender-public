@@ -40,9 +40,9 @@ class BlinkModelThread(QThread):
 
         self.cap: Optional[cv2.VideoCapture] = None  # pylint: disable=no-member
         self.debug = debug
-        # self.init_cap()
+        # self._init_cap()
 
-    def init_cap(self, input_device: int = 0) -> None:
+    def _init_cap(self, input_device: int = 0) -> None:
         """Initialise the capture device with the selected cam
 
         :param input_device: camera to choose, defaults to 0

@@ -100,4 +100,4 @@ def blinkhistory(connection):  # 1
 def test_database(blinkhistory):
     # result = blinkhistory._display_all_rows()
     result = blinkhistory.query_blink_history_groupby_minute_since(MOCK_TIMESTAMP - 60)
-    assert result == [('2023-01-01 12:59', 2)]
+    assert result == {"timestamps": [1672577940.0], "values": [2]}

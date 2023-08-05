@@ -2,10 +2,8 @@
 import logging
 import sqlite3
 from pathlib import Path
-from typing import List, Tuple, Any
+from typing import Optional, List, Any
 from datetime import datetime, timezone
-
-from typing import Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +49,8 @@ class BlinkHistory:
             result = self.db_con.execute("SELECT * FROM blink_history LIMIT 100").fetchall()
         return result
 
-    def query_blink_history_groupby_minute_since(self, since: float) -> dict[str, List[float | int]]:
+    def query_blink_history_groupby_minute_since(self, since: float) \
+            -> dict[str, List[float | int]]:
         """Fetch the last blink history (blink_marker) from since provided timestamp,
         groupby minutes
 
