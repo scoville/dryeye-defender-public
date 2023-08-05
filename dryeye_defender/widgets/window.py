@@ -187,10 +187,10 @@ class Window(QWidget):
         self.toggle_button.setEnabled(True)
         self.select_cam.addItems(cap_indexes)
         selected_cap_index = int(cap_indexes[int(os.environ.get("DEFAULT_CAMERA_INDEX", 0))])
-        self.eye_th._init_cap(selected_cap_index)
+        self.eye_th.init_cap(selected_cap_index)
         # default to first camera index detected if DEFAULT_CAMERA_INDEX env var not specified
         self.select_cam.activated.connect(
-            lambda: self.eye_th._init_cap(int(self.select_cam.currentText())))
+            lambda: self.eye_th.init_cap(int(self.select_cam.currentText())))
 
     def _create_select_blink_reminder_gif(self) -> None:
         """Create select blink reminder gif and label blink reminder gif"""
