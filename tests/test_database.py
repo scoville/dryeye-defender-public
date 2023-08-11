@@ -1,10 +1,13 @@
 """Test logic for databse setup."""
-import time
-from freezegun import freeze_time
-import pytest
-import sqlite3
 import datetime
-from unittest import mock
+import sqlite3
+# pylint: disable = redefined-outer-name
+import time
+from typing import Generator
+
+import pytest
+from freezegun import freeze_time
+
 from dryeye_defender.utils.database import BlinkHistory
 
 MOCK_DATE = "2023-01-01"
@@ -13,19 +16,21 @@ MOCK_TIMESTAMP = datetime.datetime.strptime(MOCK_TIME, "%Y-%m-%d %H:%M:%S").time
 
 
 @pytest.fixture
-def connection():
+def connection() -> Generator[sqlite3.Connection, None, None]:
     """Create a temporary database in memory"""
-    connection = sqlite3.connect(':memory:')
-    yield connection
-    connection.close()
+    conn = sqlite3.connect(":memory:")
+    yield conn
+    conn.close()
 
 
 @pytest.fixture
 @freeze_time(MOCK_TIME)
-def setup_db(connection):
+def setup_db(connection: sqlite3.Connection) -> None:
     """Setup the temporary database in memory"""
-    with connection:
-        connection.execute(
+    # pylint: disable = expression-not-assigned
+    conn = connection
+    with conn:
+        conn.execute(
             """
             CREATE TABLE blink_history
             (frame_number INTEGER,
@@ -35,23 +40,23 @@ def setup_db(connection):
             right_ear FLOAT,
             blink_marker INT)
         """)
-        connection.execute(
+        conn.execute(
             """
             CREATE INDEX idx_blink_timestamp ON blink_history (blink_marker, blink_time);
             """
         )
 
-        connection.create_function("CURRENT_TIME", 0, MOCK_TIME)
-        connection.create_function("CURRENT_DATE", 0, MOCK_DATE)
-        connection.create_function("CURRENT_TIMESTAMP", 0, MOCK_TIME)
+        conn.create_function("CURRENT_TIME", 0, MOCK_TIME)  # type: ignore
+        conn.create_function("CURRENT_DATE", 0, MOCK_DATE)  # type: ignore
+        conn.create_function("CURRENT_TIMESTAMP", 0, MOCK_TIME)  # type: ignore
 
-    with connection:
-        connection.execute(
+    with conn:
+        conn.execute(
             """
-            INSERT INTO blink_history(blink_time, blink_value, left_ear, right_ear, 
+            INSERT INTO blink_history(blink_time, blink_value, left_ear, right_ear,
             blink_marker)
             VALUES(?,?,?,?,?)
-        """,
+            """,
             (
                 time.time() - 3,
                 1,
@@ -60,12 +65,12 @@ def setup_db(connection):
                 1
             ),
         )
-        connection.execute(
+        conn.execute(
             """
-            INSERT INTO blink_history(blink_time, blink_value, left_ear, right_ear, 
+            INSERT INTO blink_history(blink_time, blink_value, left_ear, right_ear,
             blink_marker)
             VALUES(?,?,?,?,?)
-        """,
+            """,
             (
                 time.time() - 2,
                 -1,
@@ -74,12 +79,12 @@ def setup_db(connection):
                 0
             ),
         ),
-        connection.execute(
+        conn.execute(
             """
-            INSERT INTO blink_history(blink_time, blink_value, left_ear, right_ear, 
+            INSERT INTO blink_history(blink_time, blink_value, left_ear, right_ear,
             blink_marker)
             VALUES(?,?,?,?,?)
-        """,
+            """,
             (
                 time.time() - 1,
                 1,
@@ -91,13 +96,15 @@ def setup_db(connection):
 
 
 @pytest.fixture
-def blinkhistory(connection):  # 1
+def blinkhistory(connection: sqlite3.Connection) -> BlinkHistory:
+    """get blink history instance"""
     return BlinkHistory(db_con=connection)
 
 
 @freeze_time(MOCK_TIME)
 @pytest.mark.usefixtures("setup_db")
-def test_database(blinkhistory):
+def test_database_query_blink_history_groupby_minute_since(blinkhistory: BlinkHistory) -> None:
+    """Test query_blink_history_groupby_minute_since"""
     # result = blinkhistory._display_all_rows()
     result = blinkhistory.query_blink_history_groupby_minute_since(MOCK_TIMESTAMP - 60)
     assert result == {"timestamps": [1672577940.0], "values": [2]}
