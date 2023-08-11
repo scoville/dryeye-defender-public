@@ -32,21 +32,6 @@ class MinuteOnlyDateAxisItem(pg.DateAxisItem):
                 values]
 
 
-class DateOnlyDateAxisItem(pg.DateAxisItem):
-    """Replace the timestamps to string datetimes with only the hour/minutes shown"""
-
-    def tickStrings(self, values: List[float], scale: Any, spacing: Any) -> List[str]:
-        """Replace the tick strings with only the hour/minutes shown
-
-        :param values: timestamps to be converted to datetime strings
-        :param scale: scale of the axis
-        :param spacing: spacing of the axis
-        """
-        return [datetime.fromtimestamp(value, tz=timezone.utc).astimezone(
-            local_timezone).strftime("%Y-%m-%d") for value in
-                values]
-
-
 class BlinkGraph(QWidget):
     """Class for the graph displaying the ear values over time"""
 
@@ -78,15 +63,9 @@ class BlinkGraph(QWidget):
         # Set default graph
         self.plot_graph_by_minute()
 
-    def set_minute_xaxis_tick_format(self):
+    def set_minute_xaxis_tick_format(self) -> None:
         """Set the xaxis to show only show %H:$M hours and minutes for each tick"""
         x_axis_handle = MinuteOnlyDateAxisItem()
-        x_axis_handle.setLabel(text="Time", units="s")
-        self.graph_widget.setAxisItems({"bottom": x_axis_handle})
-
-    def set_date_xaxis_tick_format(self):
-        """Set the xaxis to show only show %Y:%m:%d for each tick"""
-        x_axis_handle = DateOnlyDateAxisItem()
         x_axis_handle.setLabel(text="Time", units="s")
         self.graph_widget.setAxisItems({"bottom": x_axis_handle})
 
@@ -99,7 +78,7 @@ class BlinkGraph(QWidget):
         self.graph_widget.clear()
         graph_end_time = time.time()
         graph_start_time = graph_end_time - 60 * 60
-        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.set_minute_xaxis_tick_format()
         data = self.blink_history.query_blink_history_groupby_minute_since(graph_start_time)
         if not data:
@@ -120,7 +99,7 @@ class BlinkGraph(QWidget):
         self.graph_widget.clear()
         graph_end_time = time.time()
         graph_start_time = graph_end_time - 60 * 60 * 24
-        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.set_minute_xaxis_tick_format()
         data = self.blink_history.query_blink_history_groupby_hour_since(graph_start_time)
         if not data:
@@ -141,7 +120,7 @@ class BlinkGraph(QWidget):
         self.graph_widget.clear()
         graph_end_time = time.time()
         graph_start_time = graph_end_time - 60 * 60 * 24 * 30
-        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.graph_widget.setAxisItems({"bottom": pg.DateAxisItem()})
         data = self.blink_history.query_blink_history_groupby_day_since(graph_start_time)
         if not data:
@@ -162,7 +141,7 @@ class BlinkGraph(QWidget):
         self.graph_widget.clear()
         graph_end_time = time.time()
         graph_start_time = graph_end_time - 60 * 60 * 24 * 30 * 12
-        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.graph_widget.setAxisItems({"bottom": pg.DateAxisItem()})
         data = self.blink_history.query_blink_history_groupby_day_since(graph_start_time)
         if not data:
