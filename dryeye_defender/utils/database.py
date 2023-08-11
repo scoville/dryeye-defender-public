@@ -129,6 +129,8 @@ class BlinkHistory:
                   for i in rows]
         y_axis = [i[1] for i in rows]
         return {"timestamps": x_axis, "values": y_axis}
+
+
 def get_sqlite3_thread_safety() -> int:
     """Get the SQLite3 thread safety value
 
