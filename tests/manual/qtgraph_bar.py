@@ -4,7 +4,7 @@ import os
 import signal
 import sys
 from datetime import datetime
-from typing import Any, Tuple, Sequence
+from typing import Any, Tuple, Sequence, List
 
 import pyqtgraph as pg
 from PySide6.QtCore import Slot
@@ -17,8 +17,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 class MinuteOnlyDateAxisItem(pg.DateAxisItem):
-    def tickStrings(self, values, scale, spacing):
-        print(values)
+    """Minute only date axis item"""
+    def tickStrings(self, values: List[float], scale: Any, spacing: Any) -> List[str]:
+        """Replace the tick strings with only the hour/minutes shown
+
+        :param values: timestamps to be converted to datetime strings
+        :param scale: scale of the axis
+        :param spacing: spacing of the axis
+        """
         return [datetime.fromtimestamp(value).strftime("%H:%M") for value in values]
 
 
@@ -34,32 +40,32 @@ class GraphTest(QWidget):
         # thread.update_ear_values.connect(self.update_graph)
 
         # Create the graph widget
-        self.graphWidget = pg.plot()
+        self.graph_widget = pg.plot()
 
-        # self.graphWidget = pg.PlotWidget()
-        self.graphWidget.setBackground("#31313a")  # Set the background color of the graph
+        # self.graph_widget = pg.PlotWidget()
+        self.graph_widget.setBackground("#31313a")  # Set the background color of the graph
 
         # x_axis_handle = MinuteOnlyDateAxisItem()
         # x_axis_handle.setTickSpacing(major=timedelta(minutes=1), minor=timedelta(minutes=1))
         # x_axis_handle.setLabel(text="Time", units="s")
-        # self.graphWidget.setAxisItems({'bottom': x_axis_handle})
+        # self.graph_widget.setAxisItems({'bottom': x_axis_handle})
 
         # Set the axis labels
-        self.graphWidget.setLabel("left", "Blink values")
-        self.graphWidget.setLabel("bottom", "x")
+        self.graph_widget.setLabel("left", "Blink values")
+        self.graph_widget.setLabel("bottom", "x")
 
         # Set the axis font size
-        axis_font = pg.QtGui.QFont()
+        axis_font = pg.QtGui.QFont()  # pylint: disable=no-member
         axis_font.setPointSize(10)
-        self.graphWidget.getAxis("left").tickFont = axis_font
-        self.graphWidget.getAxis("bottom").tickFont = axis_font
+        self.graph_widget.getAxis("left").tickFont = axis_font
+        self.graph_widget.getAxis("bottom").tickFont = axis_font
 
         x_axis_handle = MinuteOnlyDateAxisItem()
         x_axis_handle.setLabel(text="Time", units="s")
-        self.graphWidget.setAxisItems({'bottom': x_axis_handle})
+        self.graph_widget.setAxisItems({"bottom": x_axis_handle})
 
         layout = QVBoxLayout()
-        layout.addWidget(self.graphWidget)
+        layout.addWidget(self.graph_widget)
         self.setLayout(layout)
         self.plot_graph()
 
@@ -69,14 +75,14 @@ class GraphTest(QWidget):
 
         """
         LOGGER.info("plotting")
-        data = [('2023-01-01 12:59', 2), ('2023-01-01 13:00', 3), ('2023-01-01 13:01', 5), ]
+        data = [("2023-01-01 12:59", 2), ("2023-01-01 13:00", 3), ("2023-01-01 13:01", 5), ]
         x_axis = [datetime.strptime(i[0], "%Y-%m-%d %H:%M").timestamp() for i in data]
         y_axis = [i[1] for i in data]
         print(x_axis, y_axis)
-        bargraph = pg.BarGraphItem(x=x_axis, height=y_axis, width=60 - 2, brush='g')
-        self.graphWidget.addItem(bargraph)
+        bargraph = pg.BarGraphItem(x=x_axis, height=y_axis, width=60 - 2, brush="g")
+        self.graph_widget.addItem(bargraph)
 
-        # self.data_line_left = self.graphWidget.plot(x_axis, y_axis, pen=pen, symbol ='o')
+        # self.data_line_left = self.graph_widget.plot(x_axis, y_axis, pen=pen, symbol ='o')
 
 
 class Application(QApplication):
@@ -102,6 +108,6 @@ class Application(QApplication):
 
 
 if __name__ == "__main__":
-    app = Application(sys.argv)
+    APP = Application(sys.argv)
     # Start the application event loop
-    sys.exit(app.exec())
+    sys.exit(APP.exec())

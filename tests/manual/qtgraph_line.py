@@ -29,30 +29,30 @@ class GraphTest(QWidget):
         # thread.update_ear_values.connect(self.update_graph)
 
         # Create the graph widget
-        self.graphWidget = pg.PlotWidget()
-        self.graphWidget.setBackground("#31313a")  # Set the background color of the graph
+        self.graph_widget = pg.PlotWidget()
+        self.graph_widget.setBackground("#31313a")  # Set the background color of the graph
 
         axis = DateAxisItem()
-        self.graphWidget.setAxisItems({'bottom': axis})
+        self.graph_widget.setAxisItems({"bottom": axis})
 
         # Set the axis labels
-        self.graphWidget.setLabel("left", "Blink values")
-        self.graphWidget.setLabel("bottom", "x")
+        self.graph_widget.setLabel("left", "Blink values")
+        self.graph_widget.setLabel("bottom", "x")
 
         # Set the axis font size
-        axis_font = pg.QtGui.QFont()
+        axis_font = pg.QtGui.QFont()  # pylint: disable=no-member
         axis_font.setPointSize(10)
-        self.graphWidget.getAxis("left").tickFont = axis_font
-        self.graphWidget.getAxis("bottom").tickFont = axis_font
+        self.graph_widget.getAxis("left").tickFont = axis_font
+        self.graph_widget.getAxis("bottom").tickFont = axis_font
 
         layout = QVBoxLayout()
         #
         # self.x_axis = deque(range(100), maxlen=100)
         # self.y_axis = deque([0.0 for _ in range(100)], maxlen=100)
 
-        # self.graphWidget.setXRange(0, 100)
+        # self.graph_widget.setXRange(0, 100)
 
-        layout.addWidget(self.graphWidget)
+        layout.addWidget(self.graph_widget)
         self.setLayout(layout)
         self.plot_graph()
 
@@ -62,14 +62,14 @@ class GraphTest(QWidget):
 
         """
         LOGGER.info("plotting")
-        data = [('2023-01-01 12:59', 2), ('2023-01-01 13:00', 3), ('2023-01-01 13:01', 5), ]
+        data = [("2023-01-01 12:59", 2), ("2023-01-01 13:00", 3), ("2023-01-01 13:01", 5), ]
         x_axis = [datetime.strptime(i[0], "%Y-%m-%d %H:%M").timestamp() for i in data]
         y_axis = [i[1] for i in data]
 
         # self.data_line_left.setData(x_axis, y_axis)  # Update the data.
         pen = pg.mkPen(color="#e60049")
         print(x_axis, y_axis)
-        self.data_line_left = self.graphWidget.plot(x_axis, y_axis, pen=pen, symbol='o')
+        self.data_line_left = self.graph_widget.plot(x_axis, y_axis, pen=pen, symbol="o")
 
 
 class Application(QApplication):
