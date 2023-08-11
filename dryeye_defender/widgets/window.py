@@ -269,9 +269,10 @@ class Window(QWidget):
             self.label_fps.setText(f"fps:{str(int(1 / diff_time))}")
 
         if self.eye_th.model_api.lack_of_blink:
-            # Only display popup if it's been > POPUP_DISMISS_SECONDS_COOLDOWN_S since last popup
+            # Only display popup if it's been > ALERT_SECONDS_COOLDOWN since last popup
             # dismissal
-            if (time.time() - self.last_end_of_alert_time) > ALERT_SECONDS_COOLDOWN:
+            time_since_last_alert = time.time() - self.last_end_of_alert_time
+            if time_since_last_alert > ALERT_SECONDS_COOLDOWN:
                 LOGGER.info("Lack of blink detected")
                 if self.alert_mode == "popup":
                     self.blink_reminder.update_duration_lack(
@@ -279,8 +280,8 @@ class Window(QWidget):
                     self.blink_reminder.show_reminder()
                 else:
                     self.tray.showMessage(
-                        f"You didn't blink in the last {self.eye_th.model_api.ear_threshold}"
-                        "seconds",
+                        f"You didn't blink in the last "
+                        f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
                     self._reset_last_end_of_alert_time()
 
