@@ -102,7 +102,33 @@ class BlinkHistory:
         y_axis = [i[1] for i in rows]
         return {"timestamps": x_axis, "values": y_axis}
 
+    def query_blink_history_groupby_hour_since(self, since: float) -> dict[str, List[float | int]]:
+        """Fetch the last blink history (blink_marker) from since provided timestamp,
+        groupby minutes as a subquery, then aggregate that as a mean over daily bins.
 
+        :param since: Only consider timestamps after this, a unix timestamp
+        :return: list of tuples, each is a utc datetime string e.g.
+         [('2023-01-01 00:00', 2.1), ('2023-01-02 00:00', 3.5), ('2023-01-03 00:00', 5.2),]
+          followed by the mean number of blinks that daily bin, averaged over minute bins.
+        """
+        with self.db_con:
+            cursor = self.db_con.execute(
+                """SELECT strftime('%Y-%m-%d 00:00', minute_utc) AS day_utc,
+               AVG(events_per_minute) AS mean_events_per_hour
+        FROM (
+            SELECT strftime('%Y-%m-%d %H:%M', blink_time, 'unixepoch') AS minute_utc,
+                   COUNT(*) AS events_per_minute
+            FROM blink_history
+            WHERE blink_marker = 1 AND blink_time >= ?
+            GROUP BY minute_utc
+        ) AS subquery
+        GROUP BY day_utc
+        ORDER BY day_utc ASC;""", (since,))
+            rows = cursor.fetchall()
+        x_axis = [datetime.strptime(i[0], "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc).timestamp()
+                  for i in rows]
+        y_axis = [i[1] for i in rows]
+        return {"timestamps": x_axis, "values": y_axis}
 def get_sqlite3_thread_safety() -> int:
     """Get the SQLite3 thread safety value
 

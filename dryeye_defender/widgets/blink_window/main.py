@@ -27,7 +27,9 @@ class BlinkStatsWindow(QWidget):
         self.select_stats_label = QLabel("Choose which stats to calculate")
         self.select_stats_dropdown = QComboBox()
         self.select_stats_dropdown.addItems(["Last Hour",
-                                             "Last Day"])
+                                             "Last Day",
+                                             "Last Month",
+                                             "Last Year"])
         self.select_stats_dropdown.currentIndexChanged.connect(self.draw_selected_plot)
         qbbox_layout.addWidget(self.select_stats_dropdown, stretch=3)
         qbbox_layout.addWidget(self.blink_graph, stretch=3)
@@ -54,5 +56,9 @@ class BlinkStatsWindow(QWidget):
             self.blink_graph.plot_graph_by_minute()
         elif stats_index == 1:
             self.blink_graph.plot_graph_by_hour()
+        elif stats_index == 2:
+            self.blink_graph.plot_graph_by_day()
+        elif stats_index == 3:
+            self.blink_graph.plot_graph_by_year()
         else:
             raise RuntimeError("This should not occur as this option does not exist.")

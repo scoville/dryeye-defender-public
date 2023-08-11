@@ -27,9 +27,23 @@ class MinuteOnlyDateAxisItem(pg.DateAxisItem):
         :param scale: scale of the axis
         :param spacing: spacing of the axis
         """
-        print("here", values)
         return [datetime.fromtimestamp(value, tz=timezone.utc).astimezone(
             local_timezone).strftime("%H:%M") for value in
+                values]
+
+
+class DateOnlyDateAxisItem(pg.DateAxisItem):
+    """Replace the timestamps to string datetimes with only the hour/minutes shown"""
+
+    def tickStrings(self, values: List[float], scale: Any, spacing: Any) -> List[str]:
+        """Replace the tick strings with only the hour/minutes shown
+
+        :param values: timestamps to be converted to datetime strings
+        :param scale: scale of the axis
+        :param spacing: spacing of the axis
+        """
+        return [datetime.fromtimestamp(value, tz=timezone.utc).astimezone(
+            local_timezone).strftime("%Y-%m-%d") for value in
                 values]
 
 
@@ -44,6 +58,7 @@ class BlinkGraph(QWidget):
 
         # Create the graph widget
         self.graph_widget = pg.PlotWidget()
+        self.graph_widget.setLimits(yMin=0)
         self.graph_widget.setBackground("#31313a")  # Set the background color of the graph
 
         # Set the axis labels
@@ -56,14 +71,25 @@ class BlinkGraph(QWidget):
         self.graph_widget.getAxis("left").tickFont = axis_font
         self.graph_widget.getAxis("bottom").tickFont = axis_font
 
-        x_axis_handle = MinuteOnlyDateAxisItem()
-        x_axis_handle.setLabel(text="Time", units="s")
-        self.graph_widget.setAxisItems({"bottom": x_axis_handle})
-
         layout = QVBoxLayout()
 
         layout.addWidget(self.graph_widget)
         self.setLayout(layout)
+
+        # Set default graph
+        self.plot_graph_by_minute()
+
+    def set_minute_xaxis_tick_format(self):
+        """Set the xaxis to show only show %H:$M hours and minutes for each tick"""
+        x_axis_handle = MinuteOnlyDateAxisItem()
+        x_axis_handle.setLabel(text="Time", units="s")
+        self.graph_widget.setAxisItems({"bottom": x_axis_handle})
+
+    def set_date_xaxis_tick_format(self):
+        """Set the xaxis to show only show %Y:%m:%d for each tick"""
+        x_axis_handle = DateOnlyDateAxisItem()
+        x_axis_handle.setLabel(text="Time", units="s")
+        self.graph_widget.setAxisItems({"bottom": x_axis_handle})
 
     @Slot()
     def plot_graph_by_minute(self) -> None:
@@ -72,7 +98,11 @@ class BlinkGraph(QWidget):
         """
         LOGGER.info("plot_graph_by_minute called")
         self.graph_widget.clear()
-        data = self.blink_history.query_blink_history_groupby_minute_since(time.time() - 60 * 60)
+        graph_end_time = time.time()
+        graph_start_time = graph_end_time - 60 * 60
+        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.set_minute_xaxis_tick_format()
+        data = self.blink_history.query_blink_history_groupby_minute_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 60 minutes")
             self.graph_widget.setTitle("No blink data available over the last 10 minutes")
@@ -89,7 +119,11 @@ class BlinkGraph(QWidget):
         minute.
         """
         self.graph_widget.clear()
-        data = self.blink_history.query_blink_history_groupby_hour_since(time.time() - 60 * 60 * 24)
+        graph_end_time = time.time()
+        graph_start_time = graph_end_time - 60 * 60 * 24
+        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.set_minute_xaxis_tick_format()
+        data = self.blink_history.query_blink_history_groupby_hour_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 24 hours")
             self.graph_widget.setTitle("No blink data available over the last 24 hours")
@@ -98,4 +132,46 @@ class BlinkGraph(QWidget):
         self.graph_widget.setTitle("Blinks over last 24 hours")
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=60 * 60 - 2, brush="g")
+        self.graph_widget.addItem(bargraph)
+
+    @Slot()
+    def plot_graph_by_day(self) -> None:
+        """Retrieve blink data from DB over last 30 days and plot per day bin, the mean
+        blinks per minute.
+        """
+        self.graph_widget.clear()
+        graph_end_time = time.time()
+        graph_start_time = graph_end_time - 60 * 60 * 24 * 30
+        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.set_date_xaxis_tick_format()
+        data = self.blink_history.query_blink_history_groupby_hour_since(graph_start_time)
+        if not data:
+            LOGGER.info("no data found in last 30 days")
+            self.graph_widget.setTitle("No blink data available over the last 30 days")
+            return
+        LOGGER.info("Retrieved data for plot: %s", data)
+        self.graph_widget.setTitle("Blinks over last 30 days")
+        bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
+                                   width=24 * 60 * 60 - 2, brush="g")
+        self.graph_widget.addItem(bargraph)
+
+    @Slot()
+    def plot_graph_by_year(self) -> None:
+        """Retrieve blink data from DB over last 360 days and plot per day bin, the mean
+        blinks per minute.
+        """
+        self.graph_widget.clear()
+        graph_end_time = time.time()
+        graph_start_time = graph_end_time - 60 * 60 * 24 * 30 * 12
+        self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
+        self.set_date_xaxis_tick_format()
+        data = self.blink_history.query_blink_history_groupby_hour_since(graph_start_time)
+        if not data:
+            LOGGER.info("no data found in last 360 days")
+            self.graph_widget.setTitle("No blink data available over the last 360 days")
+            return
+        LOGGER.info("Retrieved data for plot: %s", data)
+        self.graph_widget.setTitle("Blinks over last 360 days")
+        bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
+                                   width=24 * 60 * 60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
