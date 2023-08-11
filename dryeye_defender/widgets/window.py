@@ -21,7 +21,7 @@ from dryeye_defender.widgets.blink_window.main import BlinkStatsWindow
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
-DEFAULT_INFERENCE_INTERVAL_MS = 50
+DEFAULT_INFERENCE_INTERVAL_MS = 10
 MIN_INFERENCE_INTERVAL_MS = 10
 MAX_INFERENCE_INTERVAL_MS = 1000
 LOGGER = logging.getLogger(__name__)
