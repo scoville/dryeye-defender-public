@@ -75,7 +75,6 @@ class BlinkGraph(QWidget):
 
         layout.addWidget(self.graph_widget)
         self.setLayout(layout)
-
         # Set default graph
         self.plot_graph_by_minute()
 
@@ -143,8 +142,8 @@ class BlinkGraph(QWidget):
         graph_end_time = time.time()
         graph_start_time = graph_end_time - 60 * 60 * 24 * 30
         self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
-        self.set_date_xaxis_tick_format()
-        data = self.blink_history.query_blink_history_groupby_hour_since(graph_start_time)
+        self.graph_widget.setAxisItems({"bottom": pg.DateAxisItem()})
+        data = self.blink_history.query_blink_history_groupby_day_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 30 days")
             self.graph_widget.setTitle("No blink data available over the last 30 days")
@@ -164,8 +163,8 @@ class BlinkGraph(QWidget):
         graph_end_time = time.time()
         graph_start_time = graph_end_time - 60 * 60 * 24 * 30 * 12
         self.graph_widget.setXRange(graph_start_time, graph_end_time, padding=None, update=True)
-        self.set_date_xaxis_tick_format()
-        data = self.blink_history.query_blink_history_groupby_hour_since(graph_start_time)
+        self.graph_widget.setAxisItems({"bottom": pg.DateAxisItem()})
+        data = self.blink_history.query_blink_history_groupby_day_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 360 days")
             self.graph_widget.setTitle("No blink data available over the last 360 days")

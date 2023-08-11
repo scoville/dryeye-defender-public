@@ -102,7 +102,7 @@ class BlinkHistory:
         y_axis = [i[1] for i in rows]
         return {"timestamps": x_axis, "values": y_axis}
 
-    def query_blink_history_groupby_hour_since(self, since: float) -> dict[str, List[float | int]]:
+    def query_blink_history_groupby_day_since(self, since: float) -> dict[str, List[float | int]]:
         """Fetch the last blink history (blink_marker) from since provided timestamp,
         groupby minutes as a subquery, then aggregate that as a mean over daily bins.
 
