@@ -37,11 +37,11 @@ The graphical user interface for the DryEye Defender software: detecting blinks 
 
 #### Quickstart
 
-`git submodule update --init && docker-compose up`
+`git submodule update --init && ./start_app_local_tz.sh`
 Will launch the GUI, performing all the below operations, and update submodule
 
 To run the tests:
-`git submodule update --init && docker-compose run --entrypoint pytest dryeye_defender_service`
+`git submodule update --init && TZ=$(cat /etc/timezone) docker-compose run --entrypoint pytest dryeye_defender_service`
 
 #### Step-by-step
 

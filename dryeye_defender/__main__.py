@@ -56,6 +56,7 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
 
 
 if __name__ == "__main__":
-    app = Application(sys.argv)
+    LOGGER.info("Starting application in timezone (TZ): %s", os.environ.get("TZ"))
+    APP = Application(sys.argv)
     # Start the application event loop
-    sys.exit(app.exec())
+    sys.exit(APP.exec())
