@@ -22,6 +22,7 @@ from dryeye_defender.widgets.blink_window.main import BlinkStatsWindow
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
 DEFAULT_INFERENCE_INTERVAL_MS = 10
+DEFAULT_INFERENCE_TICK_INTERVAL_MS = 50
 MIN_INFERENCE_INTERVAL_MS = 10
 MAX_INFERENCE_INTERVAL_MS = 1000
 LOGGER = logging.getLogger(__name__)
@@ -132,7 +133,7 @@ class Window(QWidget):
         self.frequency_slider = QSlider(Qt.Orientation.Horizontal)
         self.frequency_slider.setSingleStep(MIN_INFERENCE_INTERVAL_MS)
         # self.frequency_spin_box.singleStep(MIN_INFERENCE_INTERVAL_MS)
-        self.frequency_slider.setTickInterval(DEFAULT_INFERENCE_INTERVAL_MS)
+        self.frequency_slider.setTickInterval(DEFAULT_INFERENCE_TICK_INTERVAL_MS)
         self.frequency_slider.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
         self.frequency_spin_box.setRange(MIN_INFERENCE_INTERVAL_MS, MAX_INFERENCE_INTERVAL_MS)
         self.frequency_slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
