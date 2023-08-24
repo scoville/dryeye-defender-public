@@ -2,19 +2,20 @@
 """
 This is a unit test for running the application, and testing the detector on a few dummy frames.
 """
-from typing import Generator, Any
 import time
+from typing import Generator, Any
 from unittest.mock import patch
-import pytest
 
-from pytestqt.qtbot import QtBot  # type: ignore[import]
-import pytest_xvfb  # type: ignore[import]
 import cv2
+import pytest
+import pytest_xvfb  # type: ignore[import]
 from PySide6.QtCore import Qt
+from pytestqt.qtbot import QtBot  # type: ignore[import]
 
 from dryeye_defender.__main__ import Application
-from dryeye_defender.widgets.window import Window
+from dryeye_defender.utils.utils import get_saved_data_path
 from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
+from dryeye_defender.widgets.window import Window
 
 DUMMY_IMAGE_PATH = "tests/assets/dummy.jpg"
 NO_BLINKING_IMAGE_PATH = "tests/assets/no_blink.jpg"
@@ -59,6 +60,12 @@ def qapp() -> Generator[Application, None, None]:
         yield application
     application.quit()
     time.sleep(0.5)
+    try:
+        db_path = get_saved_data_path()
+        print("The fixture teardown is deleting the database at ", db_path)
+        db_path.unlink(missing_ok=False)
+    except FileNotFoundError:
+        print("The fixture teardown did not not need to delete a database as it was not present")
 
 
 def mock_init_cap(self: BlinkModelThread, input_device: int) -> None:
