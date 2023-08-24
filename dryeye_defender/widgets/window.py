@@ -42,12 +42,10 @@ class Window(QWidget):
         :param parent: parent of the widget, defaults to None
         """
         super().__init__(parent)
-        self.blink_history = BlinkHistory(get_saved_data_path())
-
         window_layout = QGridLayout(self)
 
-        self.eye_th = BlinkModelThread(self, DEBUG)
-        time.sleep(1)  # Provide at least a second to create/connect to the database
+        self.eye_th = BlinkModelThread(self, DEBUG)  # also creates the DB if it does not exist
+        self.blink_history = BlinkHistory(get_saved_data_path())
         self.eye_th.finished.connect(self._thread_finished)
         self.eye_th.update_label_output.connect(self._output_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS

@@ -22,12 +22,15 @@ class BlinkHistory:
         """
         if (not db_path) and (not db_con):
             raise RuntimeError("Either db_path or db_con must be provided")
-
+        if db_path and db_con:
+            raise RuntimeError("Only one of db_path or db_con must be provided")
         if db_con:
             self.db_con = db_con
         else:
             if not db_path:
                 raise RuntimeError("db_path must be provided if db_con is not")
+            if not db_path.is_file():
+                raise FileNotFoundError(f"Database not found at {db_path}")
             self.db_con = self._create_connection(db_path)
 
     @staticmethod

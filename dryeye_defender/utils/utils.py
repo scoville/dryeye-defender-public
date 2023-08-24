@@ -35,8 +35,14 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
 def get_saved_data_path() -> Path:
     """Get the path where the data is saved.
 
+    If running os.environ["CI_TESTS"] then simply return "/tmp/saved_blink.db"
+
     :return: path to where to save the database
     """
+    if os.environ.get("CI_TESTS", False):
+        LOGGER.info("Database path: %s", "/tmp/saved_blink.db")
+        return Path("/tmp/saved_blink.db")
+
     if getattr(sys, "frozen", False):
         # The application is frozen(binary file)
 

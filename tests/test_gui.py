@@ -48,24 +48,34 @@ def ensure_xvfb() -> None:
         raise Exception("Tests need Xvfb to run.")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def qapp() -> Generator[Application, None, None]:
     """Override creating a QApplication for the tests with our custom application. The
     get_cap_indexes function is mocked to return a list of two available ports
     """
+    db_path = get_saved_data_path()
+    try:
+        db_path.unlink(missing_ok=False)
+        print("The fixture SETUP is deleted the database at ", db_path)
+    except FileNotFoundError:
+        print("The fixture SETUP did not not need to delete a database as it was not present")
+
     with patch("dryeye_defender.widgets.window.get_cap_indexes",
                new=lambda *args, **kwargs: [0, 1]), \
             patch("dryeye_defender.widgets.window.DEBUG", new=True):
-        application = Application([])
+        # https://forum.qt.io/topic/110418/how-to-destroy-a-singleton-and-then-create-a-new-one/11
+        application = Application.instance()
+        if application == None:
+            application = Application([])
         yield application
     application.quit()
+    del application
     time.sleep(0.5)
     try:
-        db_path = get_saved_data_path()
-        print("The fixture teardown is deleting the database at ", db_path)
         db_path.unlink(missing_ok=False)
+        print("The fixture TEARDOWN is deleted the database at ", db_path)
     except FileNotFoundError:
-        print("The fixture teardown did not not need to delete a database as it was not present")
+        print("The fixture TEARDOWN did not not need to delete a database as it was not present")
 
 
 def mock_init_cap(self: BlinkModelThread, input_device: int) -> None:
