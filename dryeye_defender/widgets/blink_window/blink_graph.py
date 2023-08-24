@@ -1,14 +1,14 @@
 """Contains the a manual test for experimenting with graphs"""
 import logging
 import time
-import os
 from datetime import datetime, timezone
 from typing import Any, List
-from dateutil import tz
+
 import pyqtgraph as pg
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout, QWidget
-from dryeye_defender.utils.utils import get_saved_data_path
+from dateutil import tz
+
 from dryeye_defender.utils.database import BlinkHistory
 
 local_timezone = tz.tzlocal()
@@ -32,14 +32,14 @@ class MinuteOnlyDateAxisItem(pg.DateAxisItem):
 
 
 class BlinkGraph(QWidget):
-    """Class for the graph displaying the ear values over time"""
+    """Class for just the graph COMPONENT of the window displaying the blink-per-minute statistics
+    over time"""
 
-    def __init__(self) -> None:
+    def __init__(self, blink_history: BlinkHistory) -> None:
         """Create the graph
         """
         super().__init__()
-        self.blink_history = BlinkHistory(get_saved_data_path())
-
+        self.blink_history = blink_history
         # Create the graph widget
         self.graph_widget = pg.PlotWidget()
         self.graph_widget.setLimits(yMin=0)

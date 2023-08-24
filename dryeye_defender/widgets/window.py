@@ -12,12 +12,13 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
+from dryeye_defender.utils.database import BlinkHistory
 from dryeye_defender.utils.utils import find_data_file, get_cap_indexes
+from dryeye_defender.utils.utils import get_saved_data_path
 from dryeye_defender.widgets.animated_blink_reminder import AnimatedBlinkReminder
-from dryeye_defender.widgets.blink_window.blink_graph import BlinkGraph
-from dryeye_defender.widgets.debug_window.main import DebugWindow
 from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
 from dryeye_defender.widgets.blink_window.main import BlinkStatsWindow
+from dryeye_defender.widgets.debug_window.main import DebugWindow
 
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
@@ -40,6 +41,7 @@ class Window(QWidget):
         :param parent: parent of the widget, defaults to None
         """
         super().__init__(parent)
+        self.blink_history = BlinkHistory(get_saved_data_path())
 
         window_layout = QGridLayout(self)
 
@@ -77,7 +79,6 @@ class Window(QWidget):
         self.blink_reminder = self._create_blink_reminder()
 
         # Blink Graph window
-        self.blink_graph = BlinkGraph()
         self.open_blink_stats_button = QPushButton(("Blink Statistics"))
         self.open_blink_stats_button.clicked.connect(self._open_blink_stats)
         window_layout.addWidget(self.open_blink_stats_button, 3, 0, 1, 6)
@@ -96,15 +97,26 @@ class Window(QWidget):
         }
         blink_reminder = AnimatedBlinkReminder(
             movie_path=self.blink_reminder_gifs["default"],
-            dismiss_callback=self._reset_last_end_of_alert_time,
+            dismiss_callback=lambda
+                event_type="POPUP_NOTIFICATION": self._reset_last_end_of_alert_time(event_type),
             duration_lack=self.eye_th.model_api.lack_of_blink_threshold,
             alert_seconds_cooldown=ALERT_SECONDS_COOLDOWN
         )
         self.last_end_of_alert_time = time.time() - ALERT_SECONDS_COOLDOWN
         return blink_reminder
 
-    def _reset_last_end_of_alert_time(self) -> None:
-        """Reset the last time the alert ended"""
+    def _reset_last_end_of_alert_time(self, event_type: str) -> None:
+        """Reset the last time the alert (POPUP or SYSTEM NOTIFICATION) ended
+
+        In case of the POPUP, it's a callback, in case of SYSTEM NOTIFICATION, it's called
+        directly after invocation.
+
+        :param event_type: either POPUP_NOTIFICATION OR SYSTEM_TRAY_NOTIFCATION
+        """
+        time_since_last_alert = time.time() - self.last_end_of_alert_time
+        self.blink_history.store_event(time.time(),
+                                       event_type,
+                                       time_since_last_alert)
         self.last_end_of_alert_time = time.time()
 
     def _create_tray(self) -> QSystemTrayIcon:
@@ -279,11 +291,12 @@ class Window(QWidget):
                         self.eye_th.model_api.lack_of_blink_threshold)
                     self.blink_reminder.show_reminder()
                 else:
+                    # Notification Try event
                     self.tray.showMessage(
                         f"You didn't blink in the last "
                         f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
-                    self._reset_last_end_of_alert_time()
+                    self._reset_last_end_of_alert_time("SYSTEM_TRAY_NOTIFICATION")
 
     @Slot()
     def _output_slot(self, output: int) -> None:
@@ -297,7 +310,7 @@ class Window(QWidget):
             if self.alert_mode == "popup":
                 if self.blink_reminder.isVisible():
                     self.blink_reminder.close()
-                    self._reset_last_end_of_alert_time()
+                    self._reset_last_end_of_alert_time("POPUP_NOTIFICATION")
         elif DEBUG:
             self.label_output.setText("No blink detected")
 
@@ -364,7 +377,7 @@ class Window(QWidget):
     @Slot()
     def _open_blink_stats(self) -> None:
         """Create blink stats window and launch it"""
-        self.blink_stats_window = BlinkStatsWindow()
+        self.blink_stats_window = BlinkStatsWindow(self.blink_history)
         # Set default graph
         self.blink_stats_window.show_default_plot()
         self.blink_stats_window.show()

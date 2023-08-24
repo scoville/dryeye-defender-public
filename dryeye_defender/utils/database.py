@@ -153,6 +153,21 @@ class BlinkHistory:
         y_axis = [i[1] for i in rows]
         return {"timestamps": x_axis, "values": y_axis}
 
+    def store_event(self, timestamp: float, event_type: str,
+                    event_numerical_metadata: Optional[float]) -> None:
+        """Store an event into the events table of the database
+        """
+        assert event_type in ["POPUP_NOTIFICATION", "SYSTEM_TRAY_NOTIFICATION"]
+        with self.db_con:
+            self.db_con.execute(
+                """INSERT INTO events(timestamp, event_type,
+                 event_numerical_metadata) VALUES(?,?,?)""", (
+                    timestamp,
+                    event_type,
+                    event_numerical_metadata,
+                ))
+        LOGGER.info("Wrote to database event_type: %s at %s", event_type, timestamp)
+
 
 def get_sqlite3_thread_safety() -> int:
     """Get the SQLite3 thread safety value

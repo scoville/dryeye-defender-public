@@ -1,12 +1,12 @@
 """Class for debug window"""
 import logging
-
 from typing import Optional
+
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QComboBox, QPushButton
 
+from dryeye_defender.utils.database import BlinkHistory
 from dryeye_defender.widgets.blink_window.blink_graph import BlinkGraph
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 class BlinkStatsWindow(QWidget):
     """Class to create the Blink Stats window with graphs of historical trends in blinks"""
 
-    def __init__(self) -> None:
+    def __init__(self, blink_history: BlinkHistory) -> None:
         """Init
         """
         super().__init__()
@@ -22,7 +22,7 @@ class BlinkStatsWindow(QWidget):
         qbbox_layout = QVBoxLayout(self)
         LOGGER.info("init stats window")
 
-        self.blink_graph = BlinkGraph()
+        self.blink_graph = BlinkGraph(blink_history)
 
         self.select_stats_label = QLabel("Choose which stats to calculate")
         self.select_stats_dropdown = QComboBox()
