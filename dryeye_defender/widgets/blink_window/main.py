@@ -31,7 +31,8 @@ class BlinkStatsWindow(QWidget):
                                              "Last Day",
                                              "Last Month",
                                              "Last Year"])
-        self.select_stats_dropdown.setCurrentIndex(1)
+        self.default_plot_index = 1
+        self.select_stats_dropdown.setCurrentIndex(self.default_plot_index)
         self.select_stats_dropdown.currentIndexChanged.connect(self.draw_selected_plot)
         qbbox_layout.addWidget(self.select_stats_dropdown, stretch=3)
         qbbox_layout.addWidget(self.blink_graph, stretch=3)
@@ -40,6 +41,10 @@ class BlinkStatsWindow(QWidget):
         self.open_blink_stats_button = QPushButton(("Update"))
         self.open_blink_stats_button.clicked.connect(self.draw_selected_plot)
         qbbox_layout.addWidget(self.open_blink_stats_button)
+
+    def show_default_plot(self) -> None:
+        """Display the default plot"""
+        self.draw_selected_plot(self.default_plot_index)
 
     @Slot()
     def draw_selected_plot(self, stats_index: Optional[int] = None) -> None:

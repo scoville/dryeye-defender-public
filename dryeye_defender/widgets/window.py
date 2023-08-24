@@ -365,5 +365,7 @@ class Window(QWidget):
     def _open_blink_stats(self) -> None:
         """Create blink stats window and launch it"""
         self.blink_stats_window = BlinkStatsWindow()
+        # Set default graph
+        self.blink_stats_window.show_default_plot()
         self.blink_stats_window.show()
         LOGGER.info("open blink stats windows")

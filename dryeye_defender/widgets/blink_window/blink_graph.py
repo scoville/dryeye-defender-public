@@ -11,7 +11,6 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget
 from dryeye_defender.utils.utils import get_saved_data_path
 from dryeye_defender.utils.database import BlinkHistory
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 local_timezone = tz.tzlocal()
 
 LOGGER = logging.getLogger(__name__)
@@ -60,8 +59,6 @@ class BlinkGraph(QWidget):
 
         layout.addWidget(self.graph_widget)
         self.setLayout(layout)
-        # Set default graph
-        self.plot_graph_by_minute()
 
     def set_minute_xaxis_tick_format(self) -> None:
         """Set the xaxis to show only show %H:$M hours and minutes for each tick"""
