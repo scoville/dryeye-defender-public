@@ -47,6 +47,7 @@ class Window(QWidget):
         window_layout = QGridLayout(self)
 
         self.eye_th = BlinkModelThread(self, DEBUG)
+        time.sleep(1)  # Provide at least a second to create/connect to the database
         self.eye_th.finished.connect(self._thread_finished)
         self.eye_th.update_label_output.connect(self._output_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
