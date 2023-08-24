@@ -64,8 +64,8 @@ def qapp() -> Generator[Application, None, None]:
                new=lambda *args, **kwargs: [0, 1]), \
             patch("dryeye_defender.widgets.window.DEBUG", new=True):
         # https://forum.qt.io/topic/110418/how-to-destroy-a-singleton-and-then-create-a-new-one/11
-        application = Application.instance()
-        if application == None:
+        application: Any = Application.instance()
+        if application is None:
             application = Application([])
         yield application
     application.quit()
