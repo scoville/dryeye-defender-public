@@ -43,7 +43,7 @@ pipeline {
       steps {
         sh '''#!/usr/bin/env bash
           set -Eeuxo pipefail
-          python3 -m coverage run --branch --source . -m pytest  -rf --durations=30 --timeout 60 -v
+          python3 -m coverage run --branch --source . -m pytest  -rf --durations=30 --timeout 60 --log-cli-level=DEBUG -s -v
         '''
       }
     }
