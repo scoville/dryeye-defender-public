@@ -70,6 +70,29 @@ class BlinkGraph(QWidget):
         self.graph_widget.setAxisItems({"bottom": x_axis_handle})
 
     @Slot()
+    def plot_graph_last_5_minutes(self) -> None:
+        """Retrieve blink data from DB over last 5 minutes and plot a point with value 1 at the
+        timestamp of the blink
+        """
+        LOGGER.info("plot_graph_by_minute called")
+        self.graph_widget.clear()
+        graph_end_time = time.time()
+        graph_start_time = graph_end_time - 60 * 5
+        self.graph_widget.setXRange(graph_start_time, graph_end_time)
+        self.set_minute_xaxis_tick_format()
+        data = self.blink_history.query_raw_blink_history_no_grouping(graph_start_time)
+        if not data:
+            LOGGER.info("no data found in last 5 minutes")
+            self.graph_widget.setTitle("No blink data available over the last 10 minutes")
+            return
+        LOGGER.info("Retrieved data for plot: %s", data)
+        self.graph_widget.setTitle("Blinks over last 5 minutes")
+        bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
+                                   width=1, brush="g")
+        self.graph_widget.addItem(bargraph)
+        self.graph_widget.setLabel("left", "Blink Event Detected")
+
+    @Slot()
     def plot_graph_by_minute(self) -> None:
         """Retrieve blink data from DB over last 60 minutes and plot the number of points per
         minute.
@@ -90,6 +113,7 @@ class BlinkGraph(QWidget):
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
+        self.graph_widget.setLabel("left", "Blinks per minute")
 
     @Slot()
     def plot_graph_by_hour(self) -> None:
@@ -111,6 +135,7 @@ class BlinkGraph(QWidget):
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=60 * 60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
+        self.graph_widget.setLabel("left", "Blinks per minute")
 
     @Slot()
     def plot_graph_by_day(self) -> None:
@@ -132,6 +157,7 @@ class BlinkGraph(QWidget):
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=24 * 60 * 60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
+        self.graph_widget.setLabel("left", "Blinks per minute")
 
     @Slot()
     def plot_graph_by_year(self) -> None:
@@ -153,3 +179,4 @@ class BlinkGraph(QWidget):
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=24 * 60 * 60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
+        self.graph_widget.setLabel("left", "Blinks per minute")

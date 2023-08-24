@@ -49,6 +49,29 @@ class BlinkHistory:
             result = self.db_con.execute("SELECT * FROM blink_history LIMIT 100").fetchall()
         return result
 
+    def query_raw_blink_history_no_grouping(self, since: float) \
+            -> dict[str, List[float | int]]:
+        """Fetch the last blink history (blink_marker) from since provided timestamp,
+        with returning the value 1 to represent a blink occurs
+
+        :param since: Only consider timestamps after this, a unix timestamp
+        :return: list of tuples, each is a utc datetime string e.g.
+         [('2023-01-01 12:59:00', 1), ('2023-01-01 13:00:14', 1),] where 1 is always the value
+         for each blink that occured at that timestamp.
+        """
+        with self.db_con:
+            cursor = self.db_con.execute(
+                """
+                SELECT blink_time, 1
+                FROM blink_history
+                WHERE blink_marker = 1 AND blink_time >= ?
+                ORDER BY blink_time ASC;
+                """, (since,))
+            rows = cursor.fetchall()
+        x_axis = [i[0] for i in rows]
+        y_axis = [i[1] for i in rows]
+        return {"timestamps": x_axis, "values": y_axis}
+
     def query_blink_history_groupby_minute_since(self, since: float) \
             -> dict[str, List[float | int]]:
         """Fetch the last blink history (blink_marker) from since provided timestamp,
