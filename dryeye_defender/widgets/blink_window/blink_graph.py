@@ -32,8 +32,10 @@ class MinuteOnlyDateAxisItem(pg.DateAxisItem):
 
 
 class BlinkGraph(QWidget):
-    """Class for just the graph COMPONENT of the window displaying the blink-per-minute statistics
-    over time"""
+    """
+    Class for just the graph COMPONENT of the window displaying the blink-per-minute statistics
+    over time
+    """
 
     def __init__(self, blink_history: BlinkHistory) -> None:
         """Create the graph
