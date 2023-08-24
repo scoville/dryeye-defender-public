@@ -59,7 +59,7 @@ class BlinkStatsWindow(QWidget):
             LOGGER.info("Refreshing graph")
         if stats_index == -1:
             raise RuntimeError("This should not occur as there is no unselected option")
-        elif stats_index == 0:
+        if stats_index == 0:
             self.blink_graph.plot_graph_last_5_minutes()
         elif stats_index == 1:
             self.blink_graph.plot_graph_by_minute()
@@ -70,4 +70,5 @@ class BlinkStatsWindow(QWidget):
         elif stats_index == 4:
             self.blink_graph.plot_graph_by_year()
         else:
-            raise RuntimeError(f"This should not occur as this option does not exist: {stats_index}")
+            raise RuntimeError(f"This should not occur as"
+                               f" this option does not exist: {stats_index}")

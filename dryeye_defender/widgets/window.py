@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import time
+from functools import partial
 from typing import List, Optional
 
 from PySide6.QtCore import Qt, QTimer, Slot
@@ -95,10 +96,11 @@ class Window(QWidget):
             "default": find_data_file("images/blink_animated.gif"),
             "anime": find_data_file("images/blink_animated_anime.gif")
         }
+        event_type = "POPUP_NOTIFICATION"
+        reset_alert_time_partial = partial(self._reset_last_end_of_alert_time, event_type)
         blink_reminder = AnimatedBlinkReminder(
             movie_path=self.blink_reminder_gifs["default"],
-            dismiss_callback=lambda
-                event_type="POPUP_NOTIFICATION": self._reset_last_end_of_alert_time(event_type),
+            dismiss_callback=reset_alert_time_partial,
             duration_lack=self.eye_th.model_api.lack_of_blink_threshold,
             alert_seconds_cooldown=ALERT_SECONDS_COOLDOWN
         )
