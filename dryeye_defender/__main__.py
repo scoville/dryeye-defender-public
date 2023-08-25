@@ -25,12 +25,12 @@ class Application(QApplication):
         """
         super().__init__(argv)
         # Connect the SIGINT signal to a slot
-        signal.signal(signal.SIGINT, self.handle_sigint)  # type: ignore
+        signal.signal(signal.SIGINT, self._handle_sigint)  # type: ignore
         # Create and show the main window
         self.main_window = MainWindow()
         self.main_window.show()
 
-    def handle_sigint(self, *_: Tuple[Any, ...]) -> None:
+    def _handle_sigint(self, *_: Tuple[Any, ...]) -> None:
         """Perform any cleanup or save operations here
         before exiting the application due to a SIGINT/keyboard interrupt
         """
@@ -56,6 +56,7 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
 
 
 if __name__ == "__main__":
-    app = Application(sys.argv)
+    LOGGER.info("Starting application in timezone (TZ): %s", os.environ.get("TZ"))
+    APP = Application(sys.argv)
     # Start the application event loop
-    sys.exit(app.exec())
+    sys.exit(APP.exec())

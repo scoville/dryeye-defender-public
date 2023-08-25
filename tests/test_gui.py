@@ -2,19 +2,20 @@
 """
 This is a unit test for running the application, and testing the detector on a few dummy frames.
 """
-from typing import Generator, Any
 import time
+from typing import Generator, Any
 from unittest.mock import patch
-import pytest
 
-from pytestqt.qtbot import QtBot  # type: ignore[import]
-import pytest_xvfb  # type: ignore[import]
 import cv2
+import pytest
+import pytest_xvfb  # type: ignore[import]
 from PySide6.QtCore import Qt
+from pytestqt.qtbot import QtBot  # type: ignore[import]
 
 from dryeye_defender.__main__ import Application
-from dryeye_defender.widgets.window import Window
+from dryeye_defender.utils.utils import get_saved_data_path
 from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
+from dryeye_defender.widgets.window import Window
 
 DUMMY_IMAGE_PATH = "tests/assets/dummy.jpg"
 NO_BLINKING_IMAGE_PATH = "tests/assets/no_blink.jpg"
@@ -47,18 +48,34 @@ def ensure_xvfb() -> None:
         raise Exception("Tests need Xvfb to run.")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def qapp() -> Generator[Application, None, None]:
     """Override creating a QApplication for the tests with our custom application. The
     get_cap_indexes function is mocked to return a list of two available ports
     """
+    db_path = get_saved_data_path()
+    try:
+        db_path.unlink(missing_ok=False)
+        print("The fixture SETUP is deleted the database at ", db_path)
+    except FileNotFoundError:
+        print("The fixture SETUP did not not need to delete a database as it was not present")
+
     with patch("dryeye_defender.widgets.window.get_cap_indexes",
                new=lambda *args, **kwargs: [0, 1]), \
             patch("dryeye_defender.widgets.window.DEBUG", new=True):
-        application = Application([])
+        # https://forum.qt.io/topic/110418/how-to-destroy-a-singleton-and-then-create-a-new-one/11
+        application: Any = Application.instance()
+        if application is None:
+            application = Application([])
         yield application
     application.quit()
+    del application
     time.sleep(0.5)
+    try:
+        db_path.unlink(missing_ok=False)
+        print("The fixture TEARDOWN is deleted the database at ", db_path)
+    except FileNotFoundError:
+        print("The fixture TEARDOWN did not not need to delete a database as it was not present")
 
 
 def mock_init_cap(self: BlinkModelThread, input_device: int) -> None:

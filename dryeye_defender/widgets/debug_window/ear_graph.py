@@ -23,7 +23,7 @@ class EarGraph(QWidget):
         super().__init__()
 
         # `update graph` is called each time thread emits the `update ear values` signal
-        thread.update_ear_values.connect(self.update_graph)
+        thread.update_ear_values.connect(self._update_graph)
 
         # Create the graph widget
         self.graphWidget = pg.PlotWidget()
@@ -56,8 +56,9 @@ class EarGraph(QWidget):
         self.setLayout(layout)
 
     @Slot()
-    def update_graph(self, left_ear: float, right_ear: float) -> None:
-        """Update the graph with new ear values
+    def _update_graph(self, left_ear: float, right_ear: float) -> None:
+        """Update the graph with new ear values.
+        Called each time thread emits the `update ear values` signal
 
         :param left_ear: left ear value
         :param right_ear: right ear value

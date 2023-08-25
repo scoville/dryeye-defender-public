@@ -101,10 +101,10 @@ class AnimatedBlinkReminder(QWidget):
             self.movie.jumpToFrame(0)
             self.movie.start()
             self.show()
-            self.center_window()
-            self.force_focus()
+            self._center_window()
+            self._force_focus()
 
-    def center_window(self) -> None:
+    def _center_window(self) -> None:
         """Center the window on the screen"""
         center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
         geo = self.frameGeometry()
@@ -121,7 +121,7 @@ class AnimatedBlinkReminder(QWidget):
         assert self.movie.isValid(), f"{path} file invalid"
         self.gif_label.setMovie(self.movie)
 
-    def force_focus(self) -> None:
+    def _force_focus(self) -> None:
         """Force focus on the window, so that it appears on top of all other windows"""
         self.raise_()  # Raises widget to top of parent widget's stack
         if os.name == "nt":  # Windows

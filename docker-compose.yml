@@ -13,6 +13,7 @@ services:
       USERNAME: user
       DISPLAY:
       QT_X11_NO_MITSHM: 1
+      TZ: ${TZ}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - $HOME/.Xauthority:/.Xauthority:rw

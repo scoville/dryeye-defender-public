@@ -37,8 +37,11 @@ The graphical user interface for the DryEye Defender software: detecting blinks 
 
 #### Quickstart
 
-`git submodule update --init && docker-compose up`
+`git submodule update --init && ./start_app_local_tz.sh`
 Will launch the GUI, performing all the below operations, and update submodule
+
+To run the tests:
+`git submodule update --init && TZ=$(cat /etc/timezone) docker-compose run --entrypoint pytest dryeye_defender_service`
 
 #### Step-by-step
 
@@ -98,3 +101,16 @@ To manually add signing:
 ## What is a breaking change for this repo?
 
 - For simplicity, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)  
+
+## Querying DB
+```
+SELECT strftime('%Y-%m-%d %H:%M:%S', blink_time, 'unixepoch') AS minute_utc, * from blink_history ORDER BY blink_time DESC;
+
+
+SELECT strftime('%Y-%m-%d %H:%M', blink_time, 'unixepoch') AS minute_utc,
+       COUNT(*) AS events_per_minute
+FROM blink_history
+WHERE blink_marker = 1 AND blink_time >= strftime('%s', 'now') - (600 * 60)
+GROUP BY minute_utc;
+
+```
