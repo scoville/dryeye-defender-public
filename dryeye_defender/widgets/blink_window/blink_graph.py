@@ -120,6 +120,7 @@ class BlinkGraph(QWidget):
             legend.setParentItem(self.graph_widget.graphicsItem())
             legend.anchor(itemPos=(1, 0), parentPos=(1, 0))
         self.graph_widget.show()
+
     @Slot()
     def plot_graph_by_minute(self) -> None:
         """Retrieve blink data from DB over last 60 minutes and plot the number of points per
