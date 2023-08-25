@@ -160,30 +160,53 @@ class BlinkHistory:
 
     def store_event(self,
                     timestamp: float,
-                    event_type: str,
+                    event_type: EventTypes,
                     event_numerical_metadata: Optional[float] = None,
                     event_textual_metadata: Optional[float] = None) -> None:
         """Store an event into the events table of the database
 
         :param timestamp: unix timestamp of the event
-        :param event_type: The event name string, this will be validated using ENUM and converted
-         to appropriate id for the database.
+        :param event_type: The event name ENUM
         :param event_numerical_metadata: Optional numerical metadata to store with the event
         :param event_textual_metadata: Optional textual metadata to store with the event
         """
-        event_type_id = EventTypes[event_type]
         with self.db_con:
             self.db_con.execute(
                 """INSERT INTO events(timestamp, event_type_id,
-                 event_numerical_metadata, event) VALUES(?,?,?, ?)""", (
+                 event_numerical_metadata, event_textual_metadata) VALUES(?,?,?,?)""", (
                     timestamp,
-                    event_type_id,
+                    event_type.value,
                     event_numerical_metadata,
                     event_textual_metadata
                 ))
         LOGGER.info("Wrote to database event_type: %s at %s with numerical metadata: %s and "
                     "textual metadata: %s", event_type,
                     timestamp, event_numerical_metadata, event_textual_metadata)
+
+    def query_events(self, since: float, event_type_list: list[EventTypes]) \
+            -> dict[str, List[float | int]]:
+        """Fetch the events since the `since` timestamp, and return a list of tuples
+        with the first item being the timestamp and the second being the integer 1 representing
+        an event occurring
+        :param since: Only consider timestamps after this, a unix timestamp
+        :param event_type_list: List of events type string's you'd like to retrieve
+        :return: list of tuples, each is a utc datetime string e.g.
+         [('2023-01-01 12:59:00', 1), ('2023-01-01 13:00:14', 1),] where 1 is a notification
+         event
+        """
+        with self.db_con:
+            query = f"""
+                SELECT timestamp, 1
+                FROM events
+                WHERE event_type_id IN ({','.join('?' for _ in event_type_list)}) AND timestamp >= ?
+                ORDER BY timestamp ASC;
+            """
+            params = [i.value for i in event_type_list] + [since]
+            cursor = self.db_con.execute(query, params)
+            rows = cursor.fetchall()
+        x_axis = [i[0] for i in rows]
+        y_axis = [i[1] for i in rows]
+        return {"timestamps": x_axis, "values": y_axis}
 
 
 def get_sqlite3_thread_safety() -> int:

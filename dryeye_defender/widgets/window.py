@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
+from blinkdetector.utils.database import EventTypes
 from dryeye_defender.utils.database import BlinkHistory
 from dryeye_defender.utils.utils import find_data_file, get_cap_indexes
 from dryeye_defender.utils.utils import get_saved_data_path
@@ -297,7 +298,7 @@ class Window(QWidget):
                         f"You didn't blink in the last "
                         f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
-                    self._reset_last_end_of_alert_time("SYSTEM_TRAY_NOTIFICATION")
+                    self._reset_last_end_of_alert_time(EventTypes["SYSTEM_TRAY_NOTIFICATION"])
 
     @Slot()
     def _output_slot(self, output: int) -> None:
@@ -311,7 +312,7 @@ class Window(QWidget):
             if self.alert_mode == "popup":
                 if self.blink_reminder.isVisible():
                     self.blink_reminder.close()
-                    self._reset_last_end_of_alert_time("POPUP_NOTIFICATION")
+                    self._reset_last_end_of_alert_time(EventTypes["POPUP_NOTIFICATION"])
         elif DEBUG:
             self.label_output.setText("No blink detected")
 
