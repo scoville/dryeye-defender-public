@@ -47,6 +47,8 @@ class Window(QWidget):
 
         self.eye_th = BlinkModelThread(self, DEBUG)  # also creates the DB if it does not exist
         self.blink_history = BlinkHistory(get_saved_data_path())
+        self.blink_history.store_event(time.time(),
+                                       EventTypes.SOFTWARE_STARTUP)
         self.eye_th.finished.connect(self._thread_finished)
         self.eye_th.update_label_output.connect(self._output_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
@@ -362,12 +364,16 @@ class Window(QWidget):
                 self.toggle_tray.setText("Disable")
             self.timer.start()
             LOGGER.info("timer started")
+            self.blink_history.store_event(time.time(),
+                                           EventTypes.DETECTION_ENABLED)
         else:
             self.toggle_button.setText("Enable")
             if self.tray_available:
                 self.toggle_tray.setText("Enable")
             LOGGER.info("timer stop")
             self.timer.stop()
+            self.blink_history.store_event(time.time(),
+                                           EventTypes.DETECTION_DISABLED)
 
     @Slot()
     def _open_debug_window(self) -> None:
