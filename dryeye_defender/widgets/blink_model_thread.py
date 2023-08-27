@@ -23,7 +23,7 @@ class BlinkModelThread(QThread):
     update_debug_img = Signal(QPixmap)
     update_ear_values = Signal(float, float)
 
-    def __init__(self,  parent: Optional[QObject] = None, debug: bool = False) -> None:
+    def __init__(self, parent: Optional[QObject] = None, debug: bool = False) -> None:
         """Initialized the model and class variables,
         these variables are saved between inference and even on different thread
 
@@ -54,13 +54,15 @@ class BlinkModelThread(QThread):
 
     def run(self) -> None:
         """Run the thread, compute model and signal the image and output"""
+        time_pre_read = time.time()
         ret, img = self.cap.read()  # type: ignore[union-attr]
         if not ret:
             raise IOError("No output from camera")
 
         time_start = time.time()
         update_dict = self.model_api.update(img, blink_timestamp_s=time_start)
-        LOGGER.debug("time to compute frame: %s", str(time.time()-time_start))
+        time_grab_frame = time_start - time_pre_read
+        time_compute_frame = time.time() - time_start
         self.update_label_output.emit(update_dict["blink_value"])
         if self.debug:
             annotated_img = cv2.cvtColor(  # pylint: disable=no-member
@@ -68,3 +70,12 @@ class BlinkModelThread(QThread):
             annotated_img = Image.fromarray(annotated_img).convert("RGB")
             self.update_debug_img.emit(QPixmap.fromImage(ImageQt(annotated_img)))
             self.update_ear_values.emit(update_dict["left_ear"], update_dict["right_ear"])
+        time_taken = time.time() - time_pre_read
+        LOGGER.info("inference took: %.6f s, FPS: %.1f. frame_grab took: %.6f s, FPS: %.1f. "
+                    "overall took: %.6f s, FPS: %.1f",
+                    time_compute_frame,
+                    1 / time_compute_frame,
+                    time_grab_frame,
+                    1 / time_grab_frame,
+                    time_taken,
+                    1 / time_taken)
