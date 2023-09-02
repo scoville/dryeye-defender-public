@@ -3,11 +3,13 @@ import logging
 import os
 import signal
 import sys
+import time
 from typing import Any, Tuple, Sequence
 
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow
 
+from blinkdetector.utils.database import EventTypes
 from dryeye_defender.utils.utils import find_data_file
 from dryeye_defender.widgets.window import Window
 
@@ -48,11 +50,18 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
         QMainWindow.__init__(self)
         self.setWindowTitle("DryEye Defender")
         self.resize(800, 700)
-        widget = Window()
-        self.setCentralWidget(widget)
+        self.window_widget = Window()
+        self.setCentralWidget(self.window_widget)
         icon_path = find_data_file("images/blink.png")
         icon = QIcon(icon_path)
         self.setWindowIcon(icon)
+
+    def closeEvent(self, event):
+        """This event handler is called with the given event when Qt receives a window close
+        request for a top-level widget from the window system."""
+        LOGGER.info("The user closed the main window")
+        self.window_widget.blink_history.store_event(time.time(),
+                                                     EventTypes.SOFTWARE_SHUTDOWN)
 
 
 if __name__ == "__main__":

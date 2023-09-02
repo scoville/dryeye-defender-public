@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
 
+from blinkdetector.utils.database import EventTypes
 from dryeye_defender.utils.database import BlinkHistory
 from dryeye_defender.utils.utils import find_data_file, get_cap_indexes
 from dryeye_defender.utils.utils import get_saved_data_path
@@ -46,6 +47,8 @@ class Window(QWidget):
 
         self.eye_th = BlinkModelThread(self, DEBUG)  # also creates the DB if it does not exist
         self.blink_history = BlinkHistory(get_saved_data_path())
+        self.blink_history.store_event(time.time(),
+                                       EventTypes.SOFTWARE_STARTUP)
         self.eye_th.finished.connect(self._thread_finished)
         self.eye_th.update_label_output.connect(self._output_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
@@ -297,7 +300,7 @@ class Window(QWidget):
                         f"You didn't blink in the last "
                         f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
-                    self._reset_last_end_of_alert_time("SYSTEM_TRAY_NOTIFICATION")
+                    self._reset_last_end_of_alert_time(EventTypes["SYSTEM_TRAY_NOTIFICATION"])
 
     @Slot()
     def _output_slot(self, output: int) -> None:
@@ -311,7 +314,7 @@ class Window(QWidget):
             if self.alert_mode == "popup":
                 if self.blink_reminder.isVisible():
                     self.blink_reminder.close()
-                    self._reset_last_end_of_alert_time("POPUP_NOTIFICATION")
+                    self._reset_last_end_of_alert_time(EventTypes["POPUP_NOTIFICATION"])
         elif DEBUG:
             self.label_output.setText("No blink detected")
 
@@ -361,12 +364,16 @@ class Window(QWidget):
                 self.toggle_tray.setText("Disable")
             self.timer.start()
             LOGGER.info("timer started")
+            self.blink_history.store_event(time.time(),
+                                           EventTypes.DETECTION_ENABLED)
         else:
             self.toggle_button.setText("Enable")
             if self.tray_available:
                 self.toggle_tray.setText("Enable")
             LOGGER.info("timer stop")
             self.timer.stop()
+            self.blink_history.store_event(time.time(),
+                                           EventTypes.DETECTION_DISABLED)
 
     @Slot()
     def _open_debug_window(self) -> None:
