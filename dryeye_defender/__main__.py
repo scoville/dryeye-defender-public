@@ -6,7 +6,7 @@ import sys
 import time
 from typing import Any, Tuple, Sequence
 
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QCloseEvent
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from blinkdetector.utils.database import EventTypes
@@ -56,9 +56,10 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
         icon = QIcon(icon_path)
         self.setWindowIcon(icon)
 
-    def closeEvent(self, event):
+    def closeEvent(self, _: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """This event handler is called with the given event when Qt receives a window close
-        request for a top-level widget from the window system."""
+        request for a top-level widget from the window system.
+        """
         LOGGER.info("The user closed the main window")
         self.window_widget.blink_history.store_event(time.time(),
                                                      EventTypes.SOFTWARE_SHUTDOWN)
