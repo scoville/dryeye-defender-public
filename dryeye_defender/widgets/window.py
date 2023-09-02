@@ -20,6 +20,7 @@ from dryeye_defender.utils.utils import get_saved_data_path
 from dryeye_defender.widgets.animated_blink_reminder import AnimatedBlinkReminder
 from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
 from dryeye_defender.widgets.blink_window.main import BlinkStatsWindow
+from dryeye_defender.widgets.components.notification_dropdown import NotificationDropdown
 from dryeye_defender.widgets.debug_window.main import DebugWindow
 
 DEBUG = True
@@ -50,7 +51,7 @@ class Window(QWidget):
         self.blink_history.store_event(time.time(),
                                        EventTypes.SOFTWARE_STARTUP)
         self.eye_th.finished.connect(self._thread_finished)
-        self.eye_th.update_label_output.connect(self._output_slot)
+        self.eye_th.update_label_output.connect(self._blink_value_updated_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
         self.icon = QIcon(find_data_file("images/blink.png"))
 
@@ -75,10 +76,7 @@ class Window(QWidget):
         self.tray_available = (QSystemTrayIcon.isSystemTrayAvailable() and
                                QSystemTrayIcon.supportsMessages())
         if self.tray_available:
-            self.alert_mode = "notification"
             self.tray = self._create_tray()
-        else:
-            self.alert_mode = "popup"
         self.blink_reminder = self._create_blink_reminder()
 
         # Blink Graph window
@@ -172,15 +170,10 @@ class Window(QWidget):
             self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
             self.toggle_tray.triggered.connect(self._set_timer)
 
-    def _create_alert_settings(self) -> None:
-        """Create the alert button and label"""
-        self.alert_mode_label = QLabel("Lack of blink alert (Window popup|OS notification)")
-        self.alert_mode_button = QPushButton()
-        self.alert_mode_button.setText(self.alert_mode)
-        # togalert_mode_buttonEnabled(True)
-        self.alert_mode_button.clicked.connect(self._switch_mode)
-        if not self.tray_available:
-            self.alert_mode_button.setEnabled(False)
+    def _create_notification_dropdown_row(self) -> None:
+        """Create the notification settings dropdown and associated text labek"""
+        self.alert_mode_label = QLabel("Notification Type")
+        self.notification_dropdown = NotificationDropdown(self.tray_available)
 
     def _create_duration_settings(self) -> None:
         """Create duration for settings button and label"""
@@ -224,7 +217,7 @@ class Window(QWidget):
         """Initialize all variable/object for the settings part of the program"""
         group_box = QGroupBox("&Settings")
         self._create_toggle_settings()
-        self._create_alert_settings()
+        self._create_notification_dropdown_row()
         self._create_frequency_slider()
         self._create_duration_settings()
         self._create_select_cam_settings()
@@ -233,15 +226,20 @@ class Window(QWidget):
         grid = QGridLayout()
         grid.addWidget(self.toggle_label, 0, 0, 1, 1)
         grid.addWidget(self.toggle_button, 0, 1, 1, 1)
+
         grid.addWidget(self.frequency_label, 1, 0, 1, 1)
         grid.addWidget(self.frequency_spin_box, 1, 1, 1, 1)
         grid.addWidget(self.frequency_slider, 1, 2, 1, 4)
+
         grid.addWidget(self.duration_lack_label, 2, 0, 1, 1)
         grid.addWidget(self.duration_lack_spin_box, 2, 1, 1, 1)
+
         grid.addWidget(self.alert_mode_label, 3, 0, 1, 1)
-        grid.addWidget(self.alert_mode_button, 3, 1, 1, 1)
+        grid.addWidget(self.notification_dropdown.dropdown, 3, 1, 1, 1)
+
         grid.addWidget(self.select_blink_reminder_gif_label, 4, 0, 1, 1)
         grid.addWidget(self.select_blink_reminder_gif, 4, 1, 1, 1)
+
         grid.addWidget(self.select_cam_label, 5, 0, 1, 1)
         grid.addWidget(self.select_cam, 5, 1, 1, 1)
         # vbox.addStretch(1)
@@ -290,42 +288,42 @@ class Window(QWidget):
             time_since_last_alert = time.time() - self.last_end_of_alert_time
             if time_since_last_alert > ALERT_SECONDS_COOLDOWN:
                 LOGGER.info("Lack of blink detected")
-                if self.alert_mode == "popup":
+                if self.notification_dropdown.get_current_notification_setting() == \
+                        self.notification_dropdown.DropdownOptions["Popup"].name:
                     self.blink_reminder.update_duration_lack(
                         self.eye_th.model_api.lack_of_blink_threshold)
                     self.blink_reminder.show_reminder()
-                else:
-                    # Notification Try event
+                elif self.notification_dropdown.get_current_notification_setting() == \
+                        self.notification_dropdown.DropdownOptions["Tray Notification"].name:
                     self.tray.showMessage(
                         f"You didn't blink in the last "
                         f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
                     self._reset_last_end_of_alert_time(EventTypes["SYSTEM_TRAY_NOTIFICATION"])
+                elif self.notification_dropdown.get_current_notification_setting() == \
+                        self.notification_dropdown.DropdownOptions["None"].name:
+                    LOGGER.info("No GUI notifications enabled, but lack of blink has been "
+                                "detected.")
+                else:
+                    raise NotImplementedError("Only the above notification types have been defined")
 
     @Slot()
-    def _output_slot(self, output: int) -> None:
-        """Slot called when the output from the thread is ready
+    def _blink_value_updated_slot(self, output: int) -> None:
+        """Slot called each frame by the inference thread when the current frame's blink value
+         is emited as `output`
 
         :param output: output for the frame processed 1 for blink detected, -1 for no blink
         """
         if output == 1:
             if DEBUG:
                 self.label_output.setText("Blink detected")
-            if self.alert_mode == "popup":
+            if self.notification_dropdown.get_current_notification_setting() \
+                    == self.notification_dropdown.DropdownOptions["Popup"].name:
                 if self.blink_reminder.isVisible():
                     self.blink_reminder.close()
                     self._reset_last_end_of_alert_time(EventTypes["POPUP_NOTIFICATION"])
         elif DEBUG:
             self.label_output.setText("No blink detected")
-
-    @Slot()
-    def _switch_mode(self) -> None:
-        """Update the button to switch alert mode and also change the alert mode"""
-        if self.alert_mode == "popup":
-            self.alert_mode = "notification"
-        else:
-            self.alert_mode = "popup"
-        self.alert_mode_button.setText(self.alert_mode)
 
     @Slot()
     def _set_timer_interval(self, slider_value: int) -> None:
