@@ -288,20 +288,17 @@ class Window(QWidget):
             time_since_last_alert = time.time() - self.last_end_of_alert_time
             if time_since_last_alert > ALERT_SECONDS_COOLDOWN:
                 LOGGER.info("Lack of blink detected")
-                if self.notification_dropdown.get_current_notification_setting() == \
-                        self.notification_dropdown.DropdownOptions["Popup"].name:
+                if self.notification_dropdown.is_current_setting("Popup"):
                     self.blink_reminder.update_duration_lack(
                         self.eye_th.model_api.lack_of_blink_threshold)
                     self.blink_reminder.show_reminder()
-                elif self.notification_dropdown.get_current_notification_setting() == \
-                        self.notification_dropdown.DropdownOptions["Tray Notification"].name:
+                elif self.notification_dropdown.is_current_setting("Tray Notification"):
                     self.tray.showMessage(
                         f"You didn't blink in the last "
                         f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
                     self._reset_last_end_of_alert_time(EventTypes["SYSTEM_TRAY_NOTIFICATION"])
-                elif self.notification_dropdown.get_current_notification_setting() == \
-                        self.notification_dropdown.DropdownOptions["None"].name:
+                elif self.notification_dropdown.is_current_setting("None"):
                     LOGGER.info("No GUI notifications enabled, but lack of blink has been "
                                 "detected.")
                 else:
@@ -317,8 +314,7 @@ class Window(QWidget):
         if output == 1:
             if DEBUG:
                 self.label_output.setText("Blink detected")
-            if self.notification_dropdown.get_current_notification_setting() \
-                    == self.notification_dropdown.DropdownOptions["Popup"].name:
+            if self.notification_dropdown.is_current_setting("Popup"):
                 if self.blink_reminder.isVisible():
                     self.blink_reminder.close()
                     self._reset_last_end_of_alert_time(EventTypes["POPUP_NOTIFICATION"])
