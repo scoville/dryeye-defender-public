@@ -67,10 +67,13 @@ class NotificationDropdown(QWidget):
             raise RuntimeError("This should not occur as there is no unselected option")
         if selected_index == 0:
             LOGGER.info("Setting notification type to %s", self.dropdown_options(1).name)
+            self.dropdown.setCurrentIndex(0)
         elif selected_index == 1:
             LOGGER.info("Setting notification type to %s", self.dropdown_options(2).name)
+            self.dropdown.setCurrentIndex(1)
         elif selected_index == 2:
             LOGGER.info("Setting notification type to %s", self.dropdown_options(3).name)
+            self.dropdown.setCurrentIndex(2)
         else:
             raise NotImplementedError(f"This should not occur as"
                                       f" this option does not exist: {selected_index}")
