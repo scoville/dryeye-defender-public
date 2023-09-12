@@ -54,9 +54,10 @@ class BlinkStatsWindow(QWidget):
         currentIndexChanged() signal. If called via button.clicked signal (from update() button)
         then instead introspect the index
         """
-        if not stats_index:
-            stats_index = self.select_stats_dropdown.currentIndex()
+        if stats_index is False:
+            # Occurs if called via a clicked.connect signal from the update button
             LOGGER.info("Refreshing graph")
+            stats_index = self.select_stats_dropdown.currentIndex()
         if stats_index == -1:
             raise RuntimeError("This should not occur as there is no unselected option")
         if stats_index == 0:

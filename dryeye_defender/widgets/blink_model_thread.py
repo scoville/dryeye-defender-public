@@ -63,6 +63,7 @@ class BlinkModelThread(QThread):
         update_dict = self.model_api.update(img, blink_timestamp_s=time_start)
         time_grab_frame = time_start - time_pre_read
         time_compute_frame = time.time() - time_start
+        # A signal used to notify other services of this frame's blink value
         self.update_label_output.emit(update_dict["blink_value"])
         if self.debug:
             annotated_img = cv2.cvtColor(  # pylint: disable=no-member

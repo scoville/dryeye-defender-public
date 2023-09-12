@@ -143,9 +143,9 @@ def test_application_popup(qtbot: QtBot, qapp: Application) -> None:
         window = Window(qapp.main_window.centralWidget())
 
         # Set variables so that the popup window will appear
-        window.alert_mode = "popup"
+        window.notification_dropdown.set_current_notification_settings(
+            window.notification_dropdown.dropdown_options.Popup.value-1)
         window.duration_lack_spin_box.setValue(1)  # seconds
-
         qtbot.mouseClick(window.toggle_button, Qt.MouseButton.LeftButton)
         assert window.toggle_button.isChecked()
         assert not window.blink_reminder.isVisible()
