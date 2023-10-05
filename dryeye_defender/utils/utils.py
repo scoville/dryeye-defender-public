@@ -34,7 +34,6 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
 
 def get_saved_data_path() -> Path:
     """Get the path where the data is saved.
-
     If running os.environ["CI_TESTS"] then simply return "/tmp/saved_blink.db"
 
     :return: path to where to save the database
@@ -46,7 +45,7 @@ def get_saved_data_path() -> Path:
     if getattr(sys, "frozen", False):
         # The application is frozen(binary file)
 
-        app_name = Path(sys.executable).name
+        app_name = "dryeye_defender"
 
         if os.name == "nt":  # Windows
             # appdata_path = Path(os.getenv("LOCALAPPDATA"))
@@ -55,6 +54,7 @@ def get_saved_data_path() -> Path:
             saved_data_dir = Path(appdata_path) / app_name
         elif os.name == "posix":  # Linux or macOS
             if "darwin" in sys.platform:  # macOS
+                app_name = "DryEye Defender"
                 saved_data_dir = Path.home() / "Library" / "Application Support" / app_name
             else:  # Assume Linux
                 saved_data_dir = Path.home() / ".local" / "share" / app_name
