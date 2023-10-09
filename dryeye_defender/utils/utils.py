@@ -54,7 +54,6 @@ def get_saved_data_path() -> Path:
             saved_data_dir = Path(appdata_path) / app_name
         elif os.name == "posix":  # Linux or macOS
             if "darwin" in sys.platform:  # macOS
-                app_name = "DryEye Defender"
                 saved_data_dir = Path.home() / "Library" / "Application Support" / app_name
             else:  # Assume Linux
                 saved_data_dir = Path.home() / ".local" / "share" / app_name
