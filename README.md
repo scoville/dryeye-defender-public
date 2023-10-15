@@ -85,7 +85,7 @@ from the venv created before
 
 > Currently, the app works without signing. The reason it was not working before is that cxfreeze was breaking the build with bad mandatory signing, but with pyinstaller the problem is not present and you can still try the app without signing. If we want the user to not have a lot of warning at launch, we will need to sign the app.
 
-https://app.clickup.com/t/7508642/POC-2780
+<https://app.clickup.com/t/7508642/POC-2780>
 
 To manually add signing:
 
@@ -100,10 +100,11 @@ To manually add signing:
 
 ## What is a breaking change for this repo?
 
-- For simplicity, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)  
+- For simplicity, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)
 
 ## Querying DB
-```
+
+```sql
 SELECT strftime('%Y-%m-%d %H:%M:%S', blink_time, 'unixepoch') AS minute_utc, * from blink_history ORDER BY blink_time DESC;
 
 

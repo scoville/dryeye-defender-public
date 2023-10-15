@@ -38,7 +38,7 @@ class Application(QApplication):
         """
         LOGGER.info("SIGINT received. Shutting down gracefully.")
         self.quit()
-        # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
+        # app.setQuitOnLastWindowClosed(False) # useful if we use system tray icon
         # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
 
 
