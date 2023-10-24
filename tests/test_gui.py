@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 import cv2
 import pytest
-import pytest_xvfb  # type: ignore[import]
+import pytest_xvfb  # type: ignore[import-untyped]
 from PySide6.QtCore import Qt
-from pytestqt.qtbot import QtBot  # type: ignore[import]
+from pytestqt.qtbot import QtBot  # type: ignore[import-untyped]
 
 from dryeye_defender.__main__ import Application
 from dryeye_defender.utils.utils import get_saved_data_path
