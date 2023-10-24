@@ -10,7 +10,7 @@ import base64
 from argparse import ArgumentParser
 from typing import Tuple
 
-import ecdsa    # type: ignore[import]
+import ecdsa    # type: ignore[import-untyped]
 
 LOGGER = logging.getLogger(__name__)
 
