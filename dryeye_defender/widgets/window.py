@@ -113,7 +113,7 @@ class Window(QWidget):
         In case of the POPUP, it's a callback, in case of SYSTEM NOTIFICATION, it's called
         directly after invocation.
 
-        :param event_type: either POPUP_NOTIFICATION OR SYSTEM_TRAY_NOTIFCATION
+        :param event_type: either POPUP_NOTIFICATION OR SYSTEM_TRAY_NOTIFICATION
         """
         time_since_last_alert = time.time() - self.last_end_of_alert_time
         self.blink_history.store_event(time.time(),
@@ -182,7 +182,7 @@ class Window(QWidget):
         self.sound_toggle_button.clicked.connect(self._toggle_sound_slot)
 
     def _create_notification_dropdown_row(self) -> None:
-        """Create the notification settings dropdown and associated text labek"""
+        """Create the notification settings dropdown and associated text label"""
         self.alert_mode_label = QLabel("Notification Type")
         self.notification_dropdown = NotificationDropdown(self.tray_available)
 
@@ -323,7 +323,7 @@ class Window(QWidget):
     @Slot()
     def _blink_value_updated_slot(self, output: int) -> None:
         """Slot called each frame by the inference thread when the current frame's blink value
-         is emited as `output`
+         is emitted as `output`
 
         :param output: output for the frame processed 1 for blink detected, -1 for no blink
         """
