@@ -30,7 +30,7 @@ class EarGraph(QWidget):
         self.graphWidget.setBackground("#31313a")  # Set the background color of the graph
 
         # Set the axis labels
-        self.graphWidget.setLabel("left", "EAR ratiovalues")
+        self.graphWidget.setLabel("left", "EAR ratio values")
         self.graphWidget.setLabel("bottom", "x")
 
         # Set the axis font size
