@@ -53,7 +53,7 @@ class Window(QWidget):
         self.eye_th.finished.connect(self._thread_finished)
         self.eye_th.update_label_output.connect(self._blink_value_updated_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
-        self.icon = QIcon(find_data_file("images/blink.png"))
+        self.icon = QIcon(find_data_file("assets/blink.png"))
 
         if DEBUG:
             self.compute_button = QPushButton("Compute one frame")
@@ -93,8 +93,8 @@ class Window(QWidget):
         :return: return the AnimatedBlinkReminder object
         """
         self.blink_reminder_gifs = {
-            "default": find_data_file("images/blink_animated.gif"),
-            "anime": find_data_file("images/blink_animated_anime.gif")
+            "default": find_data_file("assets/blink_animated.gif"),
+            "anime": find_data_file("assets/blink_animated_anime.gif")
         }
         event_type = "POPUP_NOTIFICATION"
         reset_alert_time_partial = partial(self._reset_last_end_of_alert_time, event_type)

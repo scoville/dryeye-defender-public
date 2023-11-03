@@ -17,7 +17,7 @@ msi_data = {
          "Ic:onId", None),
     ],
     "Icon": [
-        ("IconId", "images/icon.ico"),
+        ("IconId", "assets/icon.ico"),
     ],
 }
 
@@ -30,7 +30,7 @@ bdist_msi_options = {
 executables = [
     Executable("dryeye_defender/__main__.py",
                base=BASE,
-               icon="images/icon.ico",
+               icon="assets/icon.ico",
                target_name="dryeye_defender",
                shortcut_name="DryEye Defender",
                shortcut_dir="ProgramMenuFolder",
