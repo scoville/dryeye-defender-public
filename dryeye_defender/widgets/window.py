@@ -170,6 +170,17 @@ class Window(QWidget):
             self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
             self.toggle_tray.triggered.connect(self._set_timer)
 
+    def _sound_notification_toggle(self) -> None:
+        """Create toggle widget for sound notification"""
+        self.sound_toggle_label = QLabel("Enable sound notifications")
+        # self.toggle_label.adjustSize()
+        self.sound_toggle_button = QPushButton()
+        self.sound_toggle_button.setText("Enable")
+        self.sound_toggle_button.setCheckable(True)
+        self.sound_toggle_button.setChecked(True)
+        # toggleButton.setEnabled(True)
+        self.sound_toggle_button.clicked.connect(self._toggle_sound_slot)
+
     def _create_notification_dropdown_row(self) -> None:
         """Create the notification settings dropdown and associated text labek"""
         self.alert_mode_label = QLabel("Notification Type")
@@ -217,6 +228,7 @@ class Window(QWidget):
         """Initialize all variable/object for the settings part of the program"""
         group_box = QGroupBox("&Settings")
         self._create_toggle_settings()
+        self._sound_notification_toggle()
         self._create_notification_dropdown_row()
         self._create_frequency_slider()
         self._create_duration_settings()
@@ -242,6 +254,10 @@ class Window(QWidget):
 
         grid.addWidget(self.select_cam_label, 5, 0, 1, 1)
         grid.addWidget(self.select_cam, 5, 1, 1, 1)
+
+        grid.addWidget(self.sound_toggle_label, 6, 0, 1, 1)
+        grid.addWidget(self.sound_toggle_button, 6, 1, 1, 1)
+
         # vbox.addStretch(1)
         group_box.setLayout(grid)
         return group_box
@@ -346,6 +362,15 @@ class Window(QWidget):
         :param spinbox_value: current value of the spin box
         """
         self.eye_th.model_api.lack_of_blink_threshold = spinbox_value
+
+    @Slot()
+    def _toggle_sound_slot() -> None:
+        """Slot called when the sound toggle button is pressed"""
+        button_state = self.sound_toggle_button.isChecked()
+        if button_state:
+            self.toggle_button.setText("Disable")
+        else:
+            self.toggle_button.setText("Enable")
 
     @Slot()
     def _set_timer(self) -> None:
