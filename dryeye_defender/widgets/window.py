@@ -175,7 +175,7 @@ class Window(QWidget):
         self.sound_toggle_label = QLabel("Enable sound notifications")
         # self.toggle_label.adjustSize()
         self.sound_toggle_button = QPushButton()
-        self.sound_toggle_button.setText("Enable")
+        self.sound_toggle_button.setText("Disable")
         self.sound_toggle_button.setCheckable(True)
         self.sound_toggle_button.setChecked(True)
         # toggleButton.setEnabled(True)
@@ -364,13 +364,14 @@ class Window(QWidget):
         self.eye_th.model_api.lack_of_blink_threshold = spinbox_value
 
     @Slot()
-    def _toggle_sound_slot() -> None:
+    def _toggle_sound_slot(self) -> None:
         """Slot called when the sound toggle button is pressed"""
         button_state = self.sound_toggle_button.isChecked()
+        print(button_state)
         if button_state:
-            self.toggle_button.setText("Disable")
+            self.sound_toggle_button.setText("Disable")
         else:
-            self.toggle_button.setText("Enable")
+            self.sound_toggle_button.setText("Enable")
 
     @Slot()
     def _set_timer(self) -> None:
