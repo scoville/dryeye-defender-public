@@ -4,14 +4,17 @@ import logging
 import os
 import sys
 import time
+from pathlib import Path
 from functools import partial
 from typing import List, Optional
 
-from PySide6.QtCore import Qt, QTimer, Slot
+from PySide6.QtCore import Qt, QTimer, Slot, QUrl
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
+from PySide6.QtMultimedia import QSoundEffect
+
 
 from blinkdetector.utils.database import EventTypes
 from dryeye_defender.utils.database import BlinkHistory
@@ -86,6 +89,8 @@ class Window(QWidget):
 
         # Create Settings
         window_layout.addWidget(self._create_settings(), 1, 0, 2, 6)
+
+        self._prepare_sound_notification()
 
     def _create_blink_reminder(self) -> AnimatedBlinkReminder:
         """Initialize blink reminder for later usage
@@ -279,6 +284,25 @@ class Window(QWidget):
             self._alert_no_cam()
         return get_cap_indexes()
 
+    def _prepare_sound_notification(self) -> None:
+        """Load sound notification (self.effect) ready for playing.
+
+        Note that it takes ~1 second after this method is called before the sound can be played.
+        """
+        filename = "assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav"
+        if not Path(filename).exists:
+            raise FileNotFoundError(f"{filename} not found")
+        self.effect = QSoundEffect()
+        url = QUrl.fromLocalFile(filename)
+        self.effect.setSource(url)
+        self.effect.setLoopCount(1)  # play once
+
+    def _play_sound_notification(self):
+        """Play the sound notification
+        """
+        LOGGER.info("Sound notification triggered")
+        self.effect.play()
+
     @Slot()
     def _start_thread(self) -> None:
         """Slot that call the thread for inference"""
@@ -308,12 +332,16 @@ class Window(QWidget):
                     self.blink_reminder.update_duration_lack(
                         self.eye_th.model_api.lack_of_blink_threshold)
                     self.blink_reminder.show_reminder()
+                    if self.sound_toggle_button.isChecked():
+                        self._play_sound_notification()
                 elif self.notification_dropdown.is_current_setting("Tray Notification"):
                     self.tray.showMessage(
                         f"You didn't blink in the last "
                         f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
                     self._reset_last_end_of_alert_time(EventTypes["SYSTEM_TRAY_NOTIFICATION"])
+                    if self.sound_toggle_button.isChecked():
+                        self._play_sound_notification()
                 elif self.notification_dropdown.is_current_setting("None"):
                     LOGGER.info("No GUI notifications enabled, but lack of blink has been "
                                 "detected.")
@@ -372,6 +400,7 @@ class Window(QWidget):
             self.sound_toggle_button.setText("Disable")
         else:
             self.sound_toggle_button.setText("Enable")
+            self._play_sound_notification()
 
     @Slot()
     def _set_timer(self) -> None:
