@@ -117,7 +117,7 @@ class Window(QWidget):
         self.last_end_of_alert_time = time.time() - ALERT_SECONDS_COOLDOWN
         return blink_reminder
 
-    def _reset_last_end_of_alert_time(self, event_type: str) -> None:
+    def _reset_last_end_of_alert_time(self, event_type: EventTypes) -> None:
         """Reset the last time the alert (POPUP or SYSTEM NOTIFICATION) ended
 
         In case of the POPUP, it's a callback, in case of SYSTEM NOTIFICATION, it's called
@@ -295,14 +295,14 @@ class Window(QWidget):
         Note that it takes ~1 second after this method is called before the sound can be played.
         """
         filename = BEEP_SOUND_EFFECT_PATH
-        if not Path(filename).exists:
+        if not Path(filename).exists():
             raise FileNotFoundError(f"{filename} not found")
         self.effect = QSoundEffect()
         url = QUrl.fromLocalFile(filename)
         self.effect.setSource(url)
         self.effect.setLoopCount(1)  # play once
 
-    def _play_sound_notification(self):
+    def _play_sound_notification(self) -> None:
         """Play the sound notification
         """
         LOGGER.info("Sound notification triggered")

@@ -6,7 +6,7 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtMultimedia import QSoundEffect
 
 
-def main():
+def main() -> None:
     """Demo of sound effect usage"""
     app = QGuiApplication(sys.argv)
     filename = "assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav"
