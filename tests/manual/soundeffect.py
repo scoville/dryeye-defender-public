@@ -15,7 +15,7 @@ def main() -> None:
     effect = QSoundEffect()
     effect.setSource(QUrl.fromLocalFile(filename))
     effect.setLoopCount(1)  # play once
-    time.sleep(2) # wait for it to load
+    time.sleep(2)  # wait for it to load
     effect.play()
     print(f"effect status: {effect.status()}")
     sys.exit(app.exec())

@@ -28,8 +28,10 @@ from dryeye_defender.widgets.debug_window.main import DebugWindow
 
 
 # This beep sound effect is based on https://link.springer.com/article/10.1007/s00347-004-1072-7
-# An acoustic animation signal was generated as a beep (800 Hz, 190 ms) via Assembler with direct hardware support
-# Median of 3.45 blinks/min --> median 8.9 blinks/min (Confidence interval 0.32–0.45). https://app.clickup.com/t/7508642/POC-2537
+# An acoustic animation signal was generated as a beep (800 Hz, 190 ms)
+# via Assembler with direct hardware support
+# Median of 3.45 blinks/min --> median 8.9 blinks/min
+# (Confidence interval 0.32–0.45). https://app.clickup.com/t/7508642/POC-2537
 BEEP_SOUND_EFFECT_PATH = "assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav"
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink

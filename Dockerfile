@@ -45,5 +45,5 @@ ENV PYTHONPATH="submodules/blink-detection:$PYTHONPATH"
 USER user
 
 # Not needed, but makes it easy to run outside of Jenkins:
-workdir /home/user/dryeye_defender
+WORKDIR /home/user/dryeye_defender
 # COPY . .
