@@ -11,8 +11,7 @@ RUN groupadd --gid "${GROUP_ID}" "${USERNAME}" && \
     echo "${AUX_GROUP_IDS}" | xargs -n1 echo | xargs -I% groupadd --gid % group% && \
     echo "${AUX_GROUP_IDS}" | xargs -n1 echo | xargs -I% usermod --append --groups group% "${USERNAME}"
 
-RUN apt-get update
-RUN apt-get autoclean && \
+RUN apt-get update && apt-get autoclean && \
     apt-get install -y --no-install-recommends \
     libegl1-mesa \
     libgl1 \
@@ -29,8 +28,7 @@ RUN apt-get autoclean && \
 
 # Install xvfb
 # Running this separately as running it as part of the command above causes an exit code 100
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends xvfb && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends xvfb && apt-get clean
 
 # Install packages, including CI requirements to overwrite poor package management by other libraries
 COPY requirements.txt .
