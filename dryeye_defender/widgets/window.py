@@ -4,16 +4,15 @@ import logging
 import os
 import sys
 import time
-from pathlib import Path
 from functools import partial
+from playsound import playsound
 from typing import List, Optional
 
-from PySide6.QtCore import Qt, QTimer, Slot, QUrl
+from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
-from PySide6.QtMultimedia import QSoundEffect
 
 
 from blinkdetector.utils.database import EventTypes
@@ -96,8 +95,6 @@ class Window(QWidget):
 
         # Create Settings
         window_layout.addWidget(self._create_settings(), 1, 0, 2, 6)
-
-        self._prepare_sound_notification()
 
     def _create_blink_reminder(self) -> AnimatedBlinkReminder:
         """Initialize blink reminder for later usage
@@ -291,24 +288,11 @@ class Window(QWidget):
             self._alert_no_cam()
         return get_cap_indexes()
 
-    def _prepare_sound_notification(self) -> None:
-        """Load sound notification (self.effect) ready for playing.
-
-        Note that it takes ~1 second after this method is called before the sound can be played.
-        """
-        filename = BEEP_SOUND_EFFECT_PATH
-        if not Path(filename).exists():
-            raise FileNotFoundError(f"{filename} not found")
-        self.effect = QSoundEffect()
-        url = QUrl.fromLocalFile(filename)
-        self.effect.setSource(url)
-        self.effect.setLoopCount(1)  # play once
-
     def _play_sound_notification(self) -> None:
         """Play the sound notification
         """
         LOGGER.info("Sound notification triggered")
-        self.effect.play()
+        playsound(BEEP_SOUND_EFFECT_PATH, block=False)
 
     @Slot()
     def _start_thread(self) -> None:
