@@ -179,7 +179,7 @@ class Window(QWidget):
             self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
             self.toggle_tray.triggered.connect(self._set_timer)
 
-    def _sound_notification_toggle(self) -> None:
+    def _create_toggle_sound_notification(self) -> None:
         """Create toggle widget for sound notification"""
         self.sound_toggle_label = QLabel("Enable sound notifications")
         # self.toggle_label.adjustSize()
@@ -237,7 +237,7 @@ class Window(QWidget):
         """Initialize all variable/object for the settings part of the program"""
         group_box = QGroupBox("&Settings")
         self._create_toggle_settings()
-        self._sound_notification_toggle()
+        self._create_toggle_sound_notification()
         self._create_notification_dropdown_row()
         self._create_frequency_slider()
         self._create_duration_settings()
@@ -386,7 +386,6 @@ class Window(QWidget):
     def _toggle_sound_slot(self) -> None:
         """Slot called when the sound toggle button is pressed"""
         button_state = self.sound_toggle_button.isChecked()
-        print(button_state)
         if button_state:
             self.sound_toggle_button.setText("Disable")
         else:
