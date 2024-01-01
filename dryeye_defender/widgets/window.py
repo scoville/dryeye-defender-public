@@ -6,12 +6,14 @@ import sys
 import time
 from functools import partial
 from typing import List, Optional
+from playsound import playsound
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel,
                                QMenu, QMessageBox, QPushButton, QSlider,
                                QSpinBox, QSystemTrayIcon, QWidget)
+
 
 from blinkdetector.utils.database import EventTypes
 from dryeye_defender.utils.database import BlinkHistory
@@ -23,6 +25,13 @@ from dryeye_defender.widgets.blink_window.main import BlinkStatsWindow
 from dryeye_defender.widgets.components.notification_dropdown import NotificationDropdown
 from dryeye_defender.widgets.debug_window.main import DebugWindow
 
+
+# This beep sound effect is based on https://link.springer.com/article/10.1007/s00347-004-1072-7
+# An acoustic animation signal was generated as a beep (800 Hz, 190 ms)
+# via Assembler with direct hardware support
+# Median of 3.45 blinks/min --> median 8.9 blinks/min
+# (Confidence interval 0.32–0.45). https://app.clickup.com/t/7508642/POC-2537
+BEEP_SOUND_EFFECT_PATH = "assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav"
 DEBUG = True
 MINIMUM_DURATION_LACK_OF_BLINK_MS = 10  # minimum duration for considering lack of blink
 DEFAULT_INFERENCE_INTERVAL_MS = 10
@@ -53,7 +62,7 @@ class Window(QWidget):
         self.eye_th.finished.connect(self._thread_finished)
         self.eye_th.update_label_output.connect(self._blink_value_updated_slot)
         self.eye_th.model_api.lack_of_blink_threshold = MINIMUM_DURATION_LACK_OF_BLINK_MS
-        self.icon = QIcon(find_data_file("images/blink.png"))
+        self.icon = QIcon(find_data_file("blink.png"))
 
         if DEBUG:
             self.compute_button = QPushButton("Compute one frame")
@@ -93,8 +102,8 @@ class Window(QWidget):
         :return: return the AnimatedBlinkReminder object
         """
         self.blink_reminder_gifs = {
-            "default": find_data_file("images/blink_animated.gif"),
-            "anime": find_data_file("images/blink_animated_anime.gif")
+            "default": find_data_file("blink_animated.gif"),
+            "anime": find_data_file("blink_animated_anime.gif")
         }
         event_type = "POPUP_NOTIFICATION"
         reset_alert_time_partial = partial(self._reset_last_end_of_alert_time, event_type)
@@ -107,13 +116,13 @@ class Window(QWidget):
         self.last_end_of_alert_time = time.time() - ALERT_SECONDS_COOLDOWN
         return blink_reminder
 
-    def _reset_last_end_of_alert_time(self, event_type: str) -> None:
+    def _reset_last_end_of_alert_time(self, event_type: EventTypes) -> None:
         """Reset the last time the alert (POPUP or SYSTEM NOTIFICATION) ended
 
         In case of the POPUP, it's a callback, in case of SYSTEM NOTIFICATION, it's called
         directly after invocation.
 
-        :param event_type: either POPUP_NOTIFICATION OR SYSTEM_TRAY_NOTIFCATION
+        :param event_type: either POPUP_NOTIFICATION OR SYSTEM_TRAY_NOTIFICATION
         """
         time_since_last_alert = time.time() - self.last_end_of_alert_time
         self.blink_history.store_event(time.time(),
@@ -170,8 +179,19 @@ class Window(QWidget):
             self.toggle_tray.triggered.connect(self.toggle_button.nextCheckState)
             self.toggle_tray.triggered.connect(self._set_timer)
 
+    def _create_toggle_sound_notification(self) -> None:
+        """Create toggle widget for sound notification"""
+        self.sound_toggle_label = QLabel("Enable sound notifications")
+        # self.toggle_label.adjustSize()
+        self.sound_toggle_button = QPushButton()
+        self.sound_toggle_button.setText("Disable")
+        self.sound_toggle_button.setCheckable(True)
+        self.sound_toggle_button.setChecked(True)
+        # toggleButton.setEnabled(True)
+        self.sound_toggle_button.clicked.connect(self._toggle_sound_slot)
+
     def _create_notification_dropdown_row(self) -> None:
-        """Create the notification settings dropdown and associated text labek"""
+        """Create the notification settings dropdown and associated text label"""
         self.alert_mode_label = QLabel("Notification Type")
         self.notification_dropdown = NotificationDropdown(self.tray_available)
 
@@ -217,6 +237,7 @@ class Window(QWidget):
         """Initialize all variable/object for the settings part of the program"""
         group_box = QGroupBox("&Settings")
         self._create_toggle_settings()
+        self._create_toggle_sound_notification()
         self._create_notification_dropdown_row()
         self._create_frequency_slider()
         self._create_duration_settings()
@@ -242,6 +263,10 @@ class Window(QWidget):
 
         grid.addWidget(self.select_cam_label, 5, 0, 1, 1)
         grid.addWidget(self.select_cam, 5, 1, 1, 1)
+
+        grid.addWidget(self.sound_toggle_label, 6, 0, 1, 1)
+        grid.addWidget(self.sound_toggle_button, 6, 1, 1, 1)
+
         # vbox.addStretch(1)
         group_box.setLayout(grid)
         return group_box
@@ -262,6 +287,13 @@ class Window(QWidget):
             self.toggle_button.setEnabled(False)
             self._alert_no_cam()
         return get_cap_indexes()
+
+    @staticmethod
+    def _play_sound_notification() -> None:
+        """Play the sound notification
+        """
+        LOGGER.info("Sound notification triggered")
+        playsound(BEEP_SOUND_EFFECT_PATH, block=False)
 
     @Slot()
     def _start_thread(self) -> None:
@@ -292,12 +324,16 @@ class Window(QWidget):
                     self.blink_reminder.update_duration_lack(
                         self.eye_th.model_api.lack_of_blink_threshold)
                     self.blink_reminder.show_reminder()
+                    if self.sound_toggle_button.isChecked():
+                        self._play_sound_notification()
                 elif self.notification_dropdown.is_current_setting("Tray Notification"):
                     self.tray.showMessage(
                         f"You didn't blink in the last "
                         f"{self.eye_th.model_api.lack_of_blink_threshold:.0f} seconds",
                         "Blink now !", self.icon, 5000)
                     self._reset_last_end_of_alert_time(EventTypes["SYSTEM_TRAY_NOTIFICATION"])
+                    if self.sound_toggle_button.isChecked():
+                        self._play_sound_notification()
                 elif self.notification_dropdown.is_current_setting("None"):
                     LOGGER.info("No GUI notifications enabled, but lack of blink has been "
                                 "detected.")
@@ -307,7 +343,7 @@ class Window(QWidget):
     @Slot()
     def _blink_value_updated_slot(self, output: int) -> None:
         """Slot called each frame by the inference thread when the current frame's blink value
-         is emited as `output`
+         is emitted as `output`
 
         :param output: output for the frame processed 1 for blink detected, -1 for no blink
         """
@@ -346,6 +382,16 @@ class Window(QWidget):
         :param spinbox_value: current value of the spin box
         """
         self.eye_th.model_api.lack_of_blink_threshold = spinbox_value
+
+    @Slot()
+    def _toggle_sound_slot(self) -> None:
+        """Slot called when the sound toggle button is pressed"""
+        button_state = self.sound_toggle_button.isChecked()
+        if button_state:
+            self.sound_toggle_button.setText("Disable")
+        else:
+            self.sound_toggle_button.setText("Enable")
+            self._play_sound_notification()
 
     @Slot()
     def _set_timer(self) -> None:

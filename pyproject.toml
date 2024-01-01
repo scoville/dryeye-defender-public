@@ -9,11 +9,11 @@ requires-python = ">=3.10"
 excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"]
 optimize = 0
 zip_include_packages = ["encodings", "PySide6"]
-include_files= [ 
+include_files= [
    ['submodules/blink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe/face_landmarker_v2_with_blendshapes.task'],
-   ['images/blink.png', 'assets/images/blink.png'],
-   ['images/blink_animated.gif', 'assets/images/blink_animated.gif'],
-   ['images/blink_animated_anime.gif', 'assets/images/blink_animated_anime.gif']
+   ['assets/blink.png', 'assets/blink.png'],
+   ['assets/blink_animated.gif', 'assets/blink_animated.gif'],
+   ['assets/blink_animated_anime.gif', 'assets/blink_animated_anime.gif']
 ]
 silent_level = 1
 
@@ -33,7 +33,7 @@ silent_level = 1
 #
 # Also ignoring `config-3.py` and `config.py`, it is unknown why they are needed / missing
 # and it is an issue that's been experienced before, possibly to do with an OpenCV bug.
-# 
+#
 # See https://github.com/scoville/tkDNN/blob/e9323647ce68568972767bbacc9a88b203e6fe0b/jenkins/stage_coverage.sh#L23-L25
 #
 

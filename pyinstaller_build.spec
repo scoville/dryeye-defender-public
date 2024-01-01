@@ -11,9 +11,9 @@ a = Analysis(
     binaries=[],
     datas=[
         ['submodules/blink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe'],
-        ['images/blink.png', 'assets/images'],
-        ['images/blink_animated.gif', 'assets/images'],
-        ['images/blink_animated_anime.gif', 'assets/images']
+        ['assets/blink.png', 'assets/images'],
+        ['assets/blink_animated.gif', 'assets/images'],
+        ['assets/blink_animated_anime.gif', 'assets/images']
     ],
     hiddenimports=[],
     hookspath=[],
@@ -58,7 +58,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='DryEye Defender.app',
-    icon='images/icon.icns',
+    icon='assets/icon.icns',
     bundle_identifier=None,
     info_plist={
                 'NSCameraUsageDescription':

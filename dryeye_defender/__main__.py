@@ -38,7 +38,7 @@ class Application(QApplication):
         """
         LOGGER.info("SIGINT received. Shutting down gracefully.")
         self.quit()
-        # app.setQuitOnLastWindowClosed(False)# usefull if we use system tray icon
+        # app.setQuitOnLastWindowClosed(False) # useful if we use system tray icon
         # if QSystemTrayIcon.isSystemTrayAvailable() and QSystemTrayIcon.supportsMessages():
 
 
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
         self.resize(800, 700)
         self.window_widget = Window()
         self.setCentralWidget(self.window_widget)
-        icon_path = find_data_file("images/blink.png")
+        icon_path = find_data_file("blink.png")
         icon = QIcon(icon_path)
         self.setWindowIcon(icon)
 

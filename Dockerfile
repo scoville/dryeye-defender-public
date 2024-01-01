@@ -5,6 +5,8 @@ ARG GROUP_ID=1000
 ARG AUX_GROUP_IDS=""
 ARG USERNAME=user
 
+ENV QT_DEBUG_PLUGINS=1
+
 # Add non-root user and give permissions to workdir:
 RUN groupadd --gid "${GROUP_ID}" "${USERNAME}" && \
     useradd -m --uid "${USER_ID}" --gid "${GROUP_ID}" "${USERNAME}" && \
@@ -17,19 +19,18 @@ RUN apt-get update && apt-get autoclean && \
     libgl1 \
     libdbus-1-3 \
     libxcb1\
-    libxcb-icccm4\ 
+    libxcb-icccm4\
     libxcb-image0\
     libxcb-keysyms1\
     libxcb-randr0\
     libxcb-render-util0\
     x11-xserver-utils \
     libxkbcommon-x11-0 \
-    x11-utils 
+    x11-utils
 
 # Install xvfb
 # Running this separately as running it as part of the command above causes an exit code 100
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends xvfb && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends xvfb && apt-get clean
 
 # Install packages, including CI requirements to overwrite poor package management by other libraries
 COPY requirements.txt .
@@ -45,5 +46,5 @@ ENV PYTHONPATH="submodules/blink-detection:$PYTHONPATH"
 USER user
 
 # Not needed, but makes it easy to run outside of Jenkins:
-workdir /home/user/dryeye_defender
+WORKDIR /home/user/dryeye_defender
 # COPY . .

@@ -14,6 +14,8 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
     """Search where the file is, depending if the app is compiled(frozen) or not
 
     :param filename: name of the file to find
+    :param submodule: if True and not frozen binary,
+      the assets are searched for in the submodule folder
     :return: path to the file
     """
     if getattr(sys, "frozen", False):
@@ -27,7 +29,7 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
                                    "../../submodules/blink-detection/assets/")
         else:
             datadir = os.path.join(os.path.dirname(__file__),
-                                   "../../")
+                                   "../../assets/")
 
     return os.path.join(datadir, filename)
 
