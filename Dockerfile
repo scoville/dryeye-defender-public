@@ -5,6 +5,8 @@ ARG GROUP_ID=1000
 ARG AUX_GROUP_IDS=""
 ARG USERNAME=user
 
+ENV QT_DEBUG_PLUGINS=1
+
 # Add non-root user and give permissions to workdir:
 RUN groupadd --gid "${GROUP_ID}" "${USERNAME}" && \
     useradd -m --uid "${USER_ID}" --gid "${GROUP_ID}" "${USERNAME}" && \
@@ -22,7 +24,6 @@ RUN apt-get update && apt-get autoclean && \
     libxcb-keysyms1\
     libxcb-randr0\
     libxcb-render-util0\
-    pulseaudio\
     x11-xserver-utils \
     libxkbcommon-x11-0 \
     x11-utils

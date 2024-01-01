@@ -1,7 +1,9 @@
 -r submodules/blink-detection/requirements.txt
-pyside6~=6.6.0
+pyside6~=6.4.2
 pillow~=9.5
 pyqtgraph~=0.13.3
 ecdsa~=0.18.0
 types-pywin32==306.0.0.1
 playsound==1.3.0
+vext==0.7.6 # needed for playsound
+vext.gi==0.7.6 # needed for playsound
