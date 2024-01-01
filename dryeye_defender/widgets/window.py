@@ -7,7 +7,6 @@ import time
 from functools import partial
 from typing import List, Optional
 from playsound import playsound
-# comment
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
