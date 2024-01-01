@@ -6,4 +6,4 @@ ecdsa~=0.18.0
 types-pywin32==306.0.0.1
 playsound==1.3.0
 vext==0.7.6 # needed for playsound
-vext.gi==0.7.6 # needed for playsound
+vext.gi==0.7.4 # needed for playsound
