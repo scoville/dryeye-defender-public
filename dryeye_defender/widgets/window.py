@@ -5,8 +5,9 @@ import os
 import sys
 import time
 from functools import partial
-from playsound import playsound
 from typing import List, Optional
+from playsound import playsound
+# comment
 
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
@@ -288,7 +289,8 @@ class Window(QWidget):
             self._alert_no_cam()
         return get_cap_indexes()
 
-    def _play_sound_notification(self) -> None:
+    @staticmethod
+    def _play_sound_notification() -> None:
         """Play the sound notification
         """
         LOGGER.info("Sound notification triggered")
