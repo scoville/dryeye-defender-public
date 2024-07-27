@@ -42,10 +42,16 @@ class BlinkHistory:
         :param db_path: Path to sqlite3 database on disk
         :return: connection to the database
         """
+        logging.info("Sqlite thread safety level: %s", sqlite3.threadsafety)
         if sqlite3.threadsafety == 3:
             check_same_thread = False
         else:
             check_same_thread = True
+            raise RuntimeError("SQLite3 threadsafety level is not 3."
+                               " Python >=3.11 is expected to be used to provide this - check"
+                               " this is installed. The DryEye Defender thread and "
+                               " blinkdetector thread share a connection to DB,"
+                               " so SQLite3 threadsafety level must be 3.")
         return sqlite3.connect(db_path, check_same_thread=check_same_thread)
 
     def _display_all_rows(self) -> List[Any]:
