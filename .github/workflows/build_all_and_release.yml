@@ -11,7 +11,7 @@ jobs:
       binary_name: dryeye_defender
       deb_name: dryeye_defender
       app_name: 'DryEye Defender'
-      python_version: '3.10'
+      python_version: '3.11'
     strategy:
       matrix:
         os:
@@ -89,7 +89,7 @@ jobs:
             echo "Running Linux build"
 
             # build to binary with cxfreeze library, it uses the setup.py and pyproject.toml files
-            RELEASE_VERSION=${{github.ref_name}} python3 setup.py build 
+            RELEASE_VERSION=${{github.ref_name}} python3 setup.py build
 
             # how the file structure looks like
             find . -maxdepth 2 -type d -ls
