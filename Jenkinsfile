@@ -33,8 +33,10 @@ pipeline {
           echo "\${PIPESTATUS[0]}" | tee mypy_status.log
           python3 -m pycodestyle ${PYTHON_MODULES} |& tee pycodestyle.log
           echo "\${PIPESTATUS[0]}" | tee pycodestyle_status.log
-          python -m pydocstyle ${PYTHON_MODULES} |& tee pydocstyle.log
-          echo "\${PIPESTATUS[0]}" | tee pydocstyle_status.log
+          # I have commented out pydocstyle as it's set to DEBUG mode and I cannot figure out why
+          # This is resulting in too much spam logs, which breaks the PR report.
+          # python -m pydocstyle ${PYTHON_MODULES} |& tee pydocstyle.log
+          # echo "\${PIPESTATUS[0]}" | tee pydocstyle_status.log
           """
       }
     }

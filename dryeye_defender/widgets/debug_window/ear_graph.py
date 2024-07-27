@@ -7,7 +7,7 @@ import pyqtgraph as pg
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
+from dryeye_defender.widgets.components.blink_model_thread import BlinkModelThread
 
 LOGGER = logging.getLogger(__name__)
 

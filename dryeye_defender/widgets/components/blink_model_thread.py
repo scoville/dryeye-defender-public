@@ -7,7 +7,7 @@ import cv2
 from blinkdetector.api.filtered_mediapipe_api import FilteredMediaPipeAPI
 from PIL import Image
 from PIL.ImageQt import ImageQt
-from PySide6.QtCore import QObject, QThread, Signal
+from PySide6.QtCore import QObject, QThread, Signal, Slot
 from PySide6.QtGui import QPixmap
 
 from dryeye_defender.utils.utils import find_data_file, get_saved_data_path
@@ -23,11 +23,17 @@ class BlinkModelThread(QThread):
     update_debug_img = Signal(QPixmap)
     update_ear_values = Signal(float, float)
 
-    def __init__(self, parent: Optional[QObject] = None, debug: bool = False) -> None:
+    def __init__(self,
+                 blink_value_updated_slot: Slot,
+                 thread_finished_slot: Slot,
+                 minimum_duration_lack_of_blink_ms: int,
+                 parent: Optional[QObject] = None,
+                 debug: bool = False) -> None:
         """Initialized the model and class variables,
         these variables are saved between inference and even on different thread
 
         :param parent: parent of the thread, defaults to None
+        :param minimum_duration_lack_of_blink_ms: minimum duration of lack of blink to be considered
         """
         QThread.__init__(self, parent)
 
@@ -40,7 +46,11 @@ class BlinkModelThread(QThread):
 
         self.cap: Optional[cv2.VideoCapture] = None  # pylint: disable=no-member
         self.debug = debug
-        # self.init_cap()
+        self.finished.connect(thread_finished_slot)
+        self.update_label_output.connect(blink_value_updated_slot)
+        self.model_api.lack_of_blink_threshold = (
+            minimum_duration_lack_of_blink_ms
+        )
 
     def init_cap(self, input_device: int = 0) -> None:
         """Initialise the capture device with the selected cam
@@ -80,3 +90,15 @@ class BlinkModelThread(QThread):
                     1 / time_grab_frame,
                     time_taken,
                     1 / time_taken)
+
+    @Slot()
+    def start_thread(self) -> None:
+        """Slot that call the thread for inference"""
+        # The following line ensures we only have one thread processing a frame at a time
+        if not self.isRunning():
+            LOGGER.debug("starting thread for computing one frame")
+            self.start()
+        else:
+            LOGGER.debug(
+                "inference thread already running so skipping computing this frame"
+            )

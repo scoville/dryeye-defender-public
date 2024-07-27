@@ -42,7 +42,7 @@ class BlinkHistory:
         :param db_path: Path to sqlite3 database on disk
         :return: connection to the database
         """
-        if get_sqlite3_thread_safety() == 3:
+        if sqlite3.threadsafety == 3:
             check_same_thread = False
         else:
             check_same_thread = True
@@ -207,23 +207,3 @@ class BlinkHistory:
         x_axis = [i[0] for i in rows]
         y_axis = [i[1] for i in rows]
         return {"timestamps": x_axis, "values": y_axis}
-
-
-def get_sqlite3_thread_safety() -> int:
-    """Get the SQLite3 thread safety value
-
-    :return: thread safety value
-    """
-    sqlite_threadsafe2python_dbapi = {0: 0, 2: 1, 1: 3}
-    conn = sqlite3.connect(":memory:")
-    threadsafety = conn.execute(
-        """
-    select * from pragma_compile_options
-    where compile_options like 'THREADSAFE=%'
-    """
-    ).fetchone()[0]
-    conn.close()
-
-    threadsafety_value = int(threadsafety.split("=")[1])
-
-    return sqlite_threadsafe2python_dbapi[threadsafety_value]

@@ -30,8 +30,10 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
         else:
             datadir = os.path.join(os.path.dirname(__file__),
                                    "../../assets/")
-
-    return os.path.join(datadir, filename)
+    path = os.path.join(datadir, filename)
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"File {filename} not found in {datadir}")
+    return path
 
 
 def get_saved_data_path() -> Path:

@@ -31,6 +31,9 @@ class MinuteOnlyDateAxisItem(pg.DateAxisItem):
             local_timezone).strftime("%H:%M") for value in
                 values]
 
+    def generateSvg(self, *args: Any, **kwargs: Any) -> None:  # pylint: disable=invalid-name
+        """This method is implemented to satisfy the abstract method in the parent class"""
+
 
 class BlinkGraph(QWidget):
     """

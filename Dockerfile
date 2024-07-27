@@ -1,11 +1,11 @@
-FROM python:3.10
+FROM python:3.11
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG AUX_GROUP_IDS=""
 ARG USERNAME=user
 
-ENV QT_DEBUG_PLUGINS=1
+# ENV QT_DEBUG_PLUGINS=1
 
 # Add non-root user and give permissions to workdir:
 RUN groupadd --gid "${GROUP_ID}" "${USERNAME}" && \
@@ -26,7 +26,8 @@ RUN apt-get update && apt-get autoclean && \
     libxcb-render-util0\
     x11-xserver-utils \
     libxkbcommon-x11-0 \
-    x11-utils
+    x11-utils \
+    libxcb-cursor-dev 
 
 # Install xvfb
 # Running this separately as running it as part of the command above causes an exit code 100

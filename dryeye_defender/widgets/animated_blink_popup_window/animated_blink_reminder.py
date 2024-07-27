@@ -70,12 +70,13 @@ class AnimatedBlinkReminder(QWidget):
         # Set up the button
         self.button = QPushButton("Dismiss")
         self.button.setFixedWidth(width)
-        self.button.clicked.connect(
-            lambda: (
-                dismiss_callback(),
-                self.close()
-            )
-        )
+
+        def on_button_click() -> None:
+            """On button click dismiss and close window"""
+            dismiss_callback()
+            self.close()
+
+        self.button.clicked.connect(on_button_click)
         layout.addWidget(self.button)
 
         # Prepare force focus on Windows

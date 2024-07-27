@@ -6,7 +6,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from dryeye_defender.widgets.debug_window.ear_graph import EarGraph
-from dryeye_defender.widgets.blink_model_thread import BlinkModelThread
+from dryeye_defender.widgets.components.blink_model_thread import BlinkModelThread
 
 LOGGER = logging.getLogger(__name__)
 MAX_CAMERA_VIEW_WIDTH = 600
