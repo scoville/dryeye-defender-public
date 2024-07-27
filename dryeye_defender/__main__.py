@@ -5,6 +5,7 @@ import signal
 import sys
 import time
 from typing import Any, Tuple, Sequence
+import warnings
 
 from PySide6.QtGui import QIcon, QCloseEvent
 from PySide6.QtWidgets import QApplication, QMainWindow
@@ -12,6 +13,10 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 from blinkdetector.utils.database import EventTypes
 from dryeye_defender.utils.utils import find_data_file
 from dryeye_defender.widgets.window import Window
+
+warnings.filterwarnings("ignore",
+                        category=UserWarning,
+                        message="SymbolDatabase\\.GetPrototype\\(\\) is deprecated")
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
