@@ -1,5 +1,5 @@
 -r submodules/blink-detection/requirements.txt
-pyside6==6.7.2
+pyside6==6.7.2 # Note in github actions you'll need to match Qt version https://stackoverflow.com/questions/77707139/libqt6core-so-6-version-qt-6-6-not-found
 pillow~=10.2.0
 pyqtgraph~=0.13.3
 ecdsa~=0.18.0
