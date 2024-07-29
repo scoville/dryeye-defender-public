@@ -2,6 +2,8 @@
 
 The graphical user interface for the DryEye Defender software: detecting blinks and providing reminders to blink.
 
+![demo.png](docs/demo.png)
+
 ## Repos
 
 - [This repo](https://github.com/scoville/dryeye-defender)
