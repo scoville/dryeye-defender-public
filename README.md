@@ -8,6 +8,19 @@ The graphical user interface for the DryEye Defender software: detecting blinks 
   - [Submodule: Backend repo](https://github.com/scoville/blink-detection)
     - [Submodule of Submodule: Evaluation repo](https://github.com/scoville/blink-detection-evaluation)
 
+## Code Structure
+
+1. `__main__.py` is the entry point for the GUI. It creates the main window and sets up the main loop.
+ `Application() --> MainWindow() --> Window()`
+
+2. `Window()` is in `widgets/settings_window.py` and hold the 'Single Page Application'.
+
+The API for the DB is held in an instance of `BlinkHistoryDryEyeDefender(get_saved_data_path())` which connects to the database (or creates it) at `get_saved_data_path()`
+
+In Window().__init__() we first initialize this instance, then pass it to `BlinkModelThread()` which is a dedicated instance for managing inference from the submodule `blinkdetector`. The inference is done by one frame per thread, and threads are arranged in a FIFO manner where only one thread operates at a time, DryEye Defender uses a timer to schedule delay between thread invocations so we can control how resource heavy the inference is.
+
+So on the master thread we have the GUI, and on slave thread(s) we have managing of the inference. Both master and child share connection to the DB through `BlinkHistoryDryEyeDefender()` API, and the child thread writes data each frame to the DB via this API.
+
 ## How to install
 
 ### Local
