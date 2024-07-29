@@ -1,2 +1,9 @@
 #!/bin/bash
-rm /usr/bin/dryeye_defender
+FILE="/usr/bin/dryeye_defender"
+
+if [ -w "$FILE" ]; then
+  rm "$FILE"
+  echo "File removed successfully."
+else
+  echo "File does not exist or no write access. Exiting gracefully."
+fi
