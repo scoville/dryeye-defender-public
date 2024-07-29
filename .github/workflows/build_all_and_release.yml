@@ -15,9 +15,9 @@ jobs:
     strategy:
       matrix:
         os:
-          - windows-latest
+          # - windows-latest
           - ubuntu-latest
-          - macos-latest
+          # - macos-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -55,13 +55,20 @@ jobs:
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
             pip install -r requirements_windows.txt
             pip install -r requirements_build.txt
+            pip install -r requirements_submodule.txt
 
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             pip install -r requirements_mac.txt
             pip install -r requirements_build_mac.txt
+            pip install -r requirements_submodule.txt
           else
             pip install -r requirements_linux.txt
+            python -c "import wheel; print(wheel.__version__)"
+            python -c "import setuptools; print(setuptools.__version__)"
             pip install -r requirements_build.txt
+            python -c "import wheel; print(wheel.__version__)"
+            python -c "import setuptools; print(setuptools.__version__)"
+            pip install -r requirements_submodule.txt
           fi
         shell: bash
       - name: Set software version based on current tag name
