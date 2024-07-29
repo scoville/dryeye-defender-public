@@ -43,6 +43,7 @@ jobs:
         uses: jurplel/install-qt-action@v3.2.1
         with:
           version: '6.7.1'
+          arch: linux_gcc_64 # TODO change for OSX and windows
           install-deps: 'true'
           modules: 'qtcharts'
           setup-python: 'false'
