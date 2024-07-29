@@ -14,7 +14,7 @@ MAX_CAMERA_VIEW_HEIGHT = 800
 
 
 class DebugWindow(QWidget):
-    """Class to create the debug window with a juste a simple image of the output of the model"""
+    """Class to create the debug window with a just a simple image of the output of the model"""
 
     def __init__(self, thread: BlinkModelThread):
         """Init the debug window

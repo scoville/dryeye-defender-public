@@ -4,9 +4,12 @@ from typing import Optional
 
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QComboBox, QPushButton
+from PySide6.QtGui import QFont
 
-from dryeye_defender.utils.database import BlinkHistory
-from dryeye_defender.widgets.blink_window.blink_graph import BlinkGraph
+from dryeye_defender.utils.database import BlinkHistoryDryEyeDefender
+from dryeye_defender.widgets.stats_window.blink_graph import BlinkGraph
+
+from dryeye_defender.utils.utils import update_font
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 class BlinkStatsWindow(QWidget):
     """Class to create the Blink Stats window with graphs of historical trends in blinks"""
 
-    def __init__(self, blink_history: BlinkHistory) -> None:
+    def __init__(self, db_api: BlinkHistoryDryEyeDefender) -> None:
         """Init
         """
         super().__init__()
@@ -22,13 +25,12 @@ class BlinkStatsWindow(QWidget):
         qbbox_layout = QVBoxLayout(self)
         LOGGER.info("init stats window")
 
-        self.blink_graph = BlinkGraph(blink_history)
+        self.blink_graph = BlinkGraph(db_api)
 
         self.select_stats_label = QLabel("Choose which stats to calculate")
         self.select_stats_dropdown = QComboBox()
-        self.select_stats_dropdown.addItems(["Last 5 Minutes",
-                                             "Last Hour",  # default view
-                                             "Last Day",
+        update_font(self.select_stats_dropdown)
+        self.select_stats_dropdown.addItems(["Last 5 Minutes",  "Last Hour",  "Last Day",
                                              "Last Month",
                                              "Last Year"])
         self.default_plot_index = 1
@@ -39,7 +41,9 @@ class BlinkStatsWindow(QWidget):
         self.setLayout(qbbox_layout)
 
         self.open_blink_stats_button = QPushButton(("Update"))
+        self.open_blink_stats_button.setFont(QFont("Avenir Next LT Pro", 10))
         self.open_blink_stats_button.clicked.connect(self.draw_selected_plot)
+        update_font(self.open_blink_stats_button)
         qbbox_layout.addWidget(self.open_blink_stats_button)
 
     def show_default_plot(self) -> None:

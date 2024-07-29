@@ -10,14 +10,14 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget
 from dateutil import tz
 
 from blinkdetector.utils.database import EventTypes
-from dryeye_defender.utils.database import BlinkHistory
+from dryeye_defender.utils.database import BlinkHistoryDryEyeDefender
 
 local_timezone = tz.tzlocal()
 
 LOGGER = logging.getLogger(__name__)
 
 
-class MinuteOnlyDateAxisItem(pg.DateAxisItem):
+class MinuteOnlyDateAxisItem(pg.DateAxisItem):  # pylint: disable=abstract-method
     """Replace the timestamps to string datetimes with only the hour/minutes shown"""
 
     def tickStrings(self, values: List[float], scale: Any, spacing: Any) -> List[str]:
@@ -41,11 +41,11 @@ class BlinkGraph(QWidget):
     over time
     """
 
-    def __init__(self, blink_history: BlinkHistory) -> None:
+    def __init__(self, db_api: BlinkHistoryDryEyeDefender) -> None:
         """Create the graph
         """
         super().__init__()
-        self.blink_history = blink_history
+        self.db_api = db_api
         # Create the graph widget
         self.graph_widget = pg.PlotWidget()
         self.graph_widget.setLimits(yMin=0)
@@ -90,7 +90,7 @@ class BlinkGraph(QWidget):
         self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.graph_widget.setLabel("left", "Event Detected")
         self.set_default_xaxis_tick_format()
-        data = self.blink_history.query_raw_blink_history_no_grouping(graph_start_time)
+        data = self.db_api.query_raw_blink_history_no_grouping(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 5 minutes")
             self.graph_widget.setTitle("No blink data available over the last 10 minutes")
@@ -102,9 +102,9 @@ class BlinkGraph(QWidget):
                                    width=1, brush="g")
         self.graph_widget.addItem(bargraph)
 
-        events = self.blink_history.query_events(graph_start_time,
-                                                 [EventTypes["SYSTEM_TRAY_NOTIFICATION"],
-                                                  EventTypes["POPUP_NOTIFICATION"], ])
+        events = self.db_api.query_events(graph_start_time,
+                                          [EventTypes["SYSTEM_TRAY_NOTIFICATION"],
+                                           EventTypes["POPUP_NOTIFICATION"], ])
         LOGGER.info("Retrieved data for plot: %s", data)
         if not events:
             LOGGER.info("no events found")
@@ -135,13 +135,13 @@ class BlinkGraph(QWidget):
         graph_start_time = graph_end_time - 60 * 60
         self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.set_minute_xaxis_tick_format()
-        data = self.blink_history.query_blink_history_groupby_minute_since(graph_start_time)
+        data = self.db_api.query_blink_history_groupby_minute_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 60 minutes")
             self.graph_widget.setTitle("No blink data available over the last 10 minutes")
             return
         LOGGER.info("Retrieved data for plot: %s", data)
-        self.graph_widget.setTitle("Blinks over last 60 minutes")
+        self.graph_widget.setTitle("Blink rate over last 60 minutes")
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
@@ -157,13 +157,13 @@ class BlinkGraph(QWidget):
         graph_start_time = graph_end_time - 60 * 60 * 24
         self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.set_minute_xaxis_tick_format()
-        data = self.blink_history.query_blink_history_groupby_hour_since(graph_start_time)
+        data = self.db_api.query_blink_history_groupby_hour_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 24 hours")
             self.graph_widget.setTitle("No blink data available over the last 24 hours")
             return
         LOGGER.info("Retrieved data for plot: %s", data)
-        self.graph_widget.setTitle("Blinks over last 24 hours")
+        self.graph_widget.setTitle("Blink rate over last 24 hours")
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=60 * 60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
@@ -179,13 +179,13 @@ class BlinkGraph(QWidget):
         graph_start_time = graph_end_time - 60 * 60 * 24 * 30
         self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.set_default_xaxis_tick_format()
-        data = self.blink_history.query_blink_history_groupby_day_since(graph_start_time)
+        data = self.db_api.query_blink_history_groupby_day_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 30 days")
             self.graph_widget.setTitle("No blink data available over the last 30 days")
             return
         LOGGER.info("Retrieved data for plot: %s", data)
-        self.graph_widget.setTitle("Blinks over last 30 days")
+        self.graph_widget.setTitle("Blink rate over last 30 days")
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=24 * 60 * 60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)
@@ -201,13 +201,13 @@ class BlinkGraph(QWidget):
         graph_start_time = graph_end_time - 60 * 60 * 24 * 30 * 12
         self.graph_widget.setXRange(graph_start_time, graph_end_time)
         self.set_default_xaxis_tick_format()
-        data = self.blink_history.query_blink_history_groupby_day_since(graph_start_time)
+        data = self.db_api.query_blink_history_groupby_day_since(graph_start_time)
         if not data:
             LOGGER.info("no data found in last 360 days")
             self.graph_widget.setTitle("No blink data available over the last 360 days")
             return
         LOGGER.info("Retrieved data for plot: %s", data)
-        self.graph_widget.setTitle("Blinks over last 360 days")
+        self.graph_widget.setTitle("Blink rate over last 360 days")
         bargraph = pg.BarGraphItem(x=data["timestamps"], height=data["values"],
                                    width=24 * 60 * 60 - 2, brush="g")
         self.graph_widget.addItem(bargraph)

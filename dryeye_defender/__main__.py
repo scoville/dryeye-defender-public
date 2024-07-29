@@ -1,4 +1,5 @@
 """Main qt file, containing code for the qt window etc"""
+
 import logging
 import os
 import signal
@@ -7,12 +8,13 @@ import time
 from typing import Any, Tuple, Sequence
 import warnings
 
-from PySide6.QtGui import QIcon, QCloseEvent
+
+from PySide6.QtGui import QIcon, QFontDatabase, QCloseEvent, QPalette, QColor
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from blinkdetector.utils.database import EventTypes
-from dryeye_defender.utils.utils import find_data_file
-from dryeye_defender.widgets.window import Window
+from dryeye_defender.utils.utils import find_data_file, update_font
+from dryeye_defender.widgets.settings_window import Window
 
 warnings.filterwarnings("ignore",
                         category=UserWarning,
@@ -31,11 +33,35 @@ class Application(QApplication):
         :param argv: sys.argv
         """
         super().__init__(argv)
+        LOGGER.info("Starting application")
         # Connect the SIGINT signal to a slot
         signal.signal(signal.SIGINT, self._handle_sigint)  # type: ignore
         # Create and show the main window
         self.main_window = MainWindow()
         self.main_window.show()
+
+        # Set the default background color
+        # palette = self.palette()
+        # default_background_color = QColor(255, 255, 255)
+        # palette.setColor(QPalette.Window, default_background_color)
+        # palette.setColor(QPalette.Base, default_background_color)
+        # self.setPalette(palette)
+        # background_color = "background-color: rgb(255, 255, 255);"  # Set your desired color here
+        # group_box_color = "background-color: rgb(255, 255, 255);"  # Set color for QGroupBox
+        # style_sheet = f"QWidget {{ {background_color} }}" \
+        #               f"QGroupBox {{ border: 4px solid gray; border-radius: 20px;" \
+        #               f" {group_box_color} }}"
+        # ## The below code sets a global font, but its not easy to override that font on
+        # ## individual elements without using style sheets everywhere, so I we set it on a per
+        # ## component basis.
+        # # font_stylesheet = """
+        # #     * {
+        # #         font-family: Avenir Next LT Pro;
+        # #         font-size: 30pt;
+        # #     }
+        # # """
+        # # style_sheet += font_stylesheet
+        # self.setStyleSheet(style_sheet)
 
     def _handle_sigint(self, *_: Tuple[Any, ...]) -> None:
         """Perform any cleanup or save operations here
@@ -55,23 +81,53 @@ class MainWindow(QMainWindow):  # pylint: disable=too-few-public-methods
         QMainWindow.__init__(self)
         self.setWindowTitle("DryEye Defender")
         self.resize(800, 700)
+
+        # Set main window's background to grey
+        palette = QPalette()
+        palette.setColor(QPalette.ColorRole.Window, QColor(243, 243, 243))
+        self.setPalette(palette)
+
         self.window_widget = Window()
         self.setCentralWidget(self.window_widget)
         icon_path = find_data_file("blink.png")
         icon = QIcon(icon_path)
         self.setWindowIcon(icon)
+        self.load_fonts()
+        update_font(self)
 
     def closeEvent(self, _: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """This event handler is called with the given event when Qt receives a window close
         request for a top-level widget from the window system.
         """
         LOGGER.info("The user closed the main window")
-        self.window_widget.blink_history.store_event(time.time(),
-                                                     EventTypes.SOFTWARE_SHUTDOWN)
+        self.window_widget.db_api.store_event(
+            time.time(), EventTypes.SOFTWARE_SHUTDOWN
+        )
+
+    @staticmethod
+    def load_fonts() -> None:
+        """Load fonts from disk into global database"""
+        # Set the default fonts
+        # Load a font from a font file on disk
+        font_paths = [
+            "AvenirNextLTPro-Regular.otf",
+            "AvenirNextLTPro-Bold.otf",
+            "AvenirNextLTPro-It.otf",
+        ]
+        for font_name in font_paths:
+            font_id = QFontDatabase.addApplicationFont(find_data_file(font_name))
+            LOGGER.info(
+                "Font id: %s, Font name: %s",
+                font_id,
+                QFontDatabase.applicationFontFamilies(font_id),
+            )
+            if font_id == -1:
+                LOGGER.error("Issue loading font %s", font_name)
 
 
 if __name__ == "__main__":
     LOGGER.info("Starting application in timezone (TZ): %s", os.environ.get("TZ"))
     APP = Application(sys.argv)
+
     # Start the application event loop
     sys.exit(APP.exec())

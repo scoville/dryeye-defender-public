@@ -1,4 +1,4 @@
-"""Test logic for databse setup."""
+"""Test logic for database setup."""
 import datetime
 import sqlite3
 # pylint: disable = redefined-outer-name
@@ -8,7 +8,7 @@ from typing import Generator
 import pytest
 from freezegun import freeze_time
 
-from dryeye_defender.utils.database import BlinkHistory
+from dryeye_defender.utils.database import BlinkHistoryDryEyeDefender
 
 MOCK_DATE = "2023-01-01"
 MOCK_TIME = f"{MOCK_DATE} 13:00:00"
@@ -96,14 +96,15 @@ def setup_db(connection: sqlite3.Connection) -> None:
 
 
 @pytest.fixture
-def blinkhistory(connection: sqlite3.Connection) -> BlinkHistory:
+def blinkhistory(connection: sqlite3.Connection) -> BlinkHistoryDryEyeDefender:
     """get blink history instance"""
-    return BlinkHistory(db_con=connection)
+    return BlinkHistoryDryEyeDefender(db_con=connection)
 
 
 @freeze_time(MOCK_TIME)
 @pytest.mark.usefixtures("setup_db")
-def test_database_query_blink_history_groupby_minute_since(blinkhistory: BlinkHistory) -> None:
+def test_database_query_blink_history_groupby_minute_since(
+        blinkhistory: BlinkHistoryDryEyeDefender) -> None:
     """Test query_blink_history_groupby_minute_since"""
     # result = blinkhistory._display_all_rows()
     result = blinkhistory.query_blink_history_groupby_minute_since(MOCK_TIMESTAMP - 60)

@@ -15,7 +15,7 @@ from pytestqt.qtbot import QtBot  # type: ignore[import-untyped]
 from dryeye_defender.__main__ import Application
 from dryeye_defender.utils.utils import get_saved_data_path
 from dryeye_defender.widgets.components.blink_model_thread import BlinkModelThread
-from dryeye_defender.widgets.window import Window
+from dryeye_defender.widgets.settings_window import Window
 
 DUMMY_IMAGE_PATH = "tests/assets/dummy.jpg"
 NO_BLINKING_IMAGE_PATH = "tests/assets/no_blink.jpg"
@@ -56,21 +56,25 @@ def qapp() -> Generator[Application, None, None]:
     db_path = get_saved_data_path()
     try:
         db_path.unlink(missing_ok=False)
-        print("The fixture SETUP is deleted the database at ", db_path)
+        print("The fixture SETUP deleted the database at ", db_path)
     except FileNotFoundError:
         print(
             "The fixture SETUP did not not need to delete a database as it was not present"
         )
 
     with patch(
-        "dryeye_defender.widgets.window.get_cap_indexes",
+        "dryeye_defender.widgets.settings_window.get_cap_indexes",
         new=lambda *args, **kwargs: [0, 1],
-    ), patch("dryeye_defender.widgets.window.DEBUG", new=True):
+    ):
         # https://forum.qt.io/topic/110418/how-to-destroy-a-singleton-and-then-create-a-new-one/11
         application: Any = Application.instance()
         if application is None:
             application = Application([])
         yield application
+
+    print("Force child thread to exit")
+    application.main_window.window_widget.blink_thread.terminate()
+    application.main_window.window_widget.blink_thread.wait()
     application.quit()
     del application
     time.sleep(0.5)
@@ -81,6 +85,7 @@ def qapp() -> Generator[Application, None, None]:
         print(
             "The fixture TEARDOWN did not not need to delete a database as it was not present"
         )
+    time.sleep(0.5)
 
 
 def mock_init_cap(self: BlinkModelThread, input_device: int) -> None:
@@ -107,14 +112,14 @@ def test_application(qtbot: QtBot, qapp: Application) -> None:
     frames on a dummy image
     """
     with patch(
-        "dryeye_defender.widgets.window.BlinkModelThread.init_cap", new=mock_init_cap
+        "dryeye_defender.widgets.settings_window.BlinkModelThread.init_cap", new=mock_init_cap
     ):
         window = Window(qapp.main_window.centralWidget())
         for _ in range(5):
             with qtbot.waitSignal(
                 window.blink_thread.finished, timeout=BLINK_MODEL_THREAD_TIMEOUT_MS
             ):
-                qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
+                window.blink_thread.start_thread()
                 assert window.blink_thread.isRunning()
 
 
@@ -123,16 +128,20 @@ def test_application_no_blink(qtbot: QtBot, qapp: Application) -> None:
     on an image of a face that isn't blinking
     """
     with patch(
-        "dryeye_defender.widgets.window.BlinkModelThread.init_cap",
+        "dryeye_defender.widgets.settings_window.BlinkModelThread.init_cap",
         new=mock_init_cap_no_blink,
     ):
         window = Window(qapp.main_window.centralWidget())
         with qtbot.waitSignal(
             window.blink_thread.finished, timeout=BLINK_MODEL_THREAD_TIMEOUT_MS
         ):
-            qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
+            window.blink_thread.start_thread()  # run one frame
             assert window.blink_thread.isRunning()
-        assert window.label_output.text() == "No blink detected"
+
+        for row in window.db_api._display_all_rows():
+            blink_value = row[1]
+            assert blink_value == -1
+        assert len(window.db_api._display_all_rows()) == 1, "1 row of data recorded"
 
 
 def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
@@ -140,16 +149,20 @@ def test_application_blink(qtbot: QtBot, qapp: Application) -> None:
     on an image of a face that is blinking
     """
     with patch(
-        "dryeye_defender.widgets.window.BlinkModelThread.init_cap",
+        "dryeye_defender.widgets.settings_window.BlinkModelThread.init_cap",
         new=mock_init_cap_blink,
     ):
         window = Window(qapp.main_window.centralWidget())
         with qtbot.waitSignal(
             window.blink_thread.finished, timeout=BLINK_MODEL_THREAD_TIMEOUT_MS
         ):
-            qtbot.mouseClick(window.compute_button, Qt.MouseButton.LeftButton)
+            window.blink_thread.start_thread()  # run one frame
             assert window.blink_thread.isRunning()
-        assert window.label_output.text() == "Blink detected"
+
+        for row in window.db_api._display_all_rows():
+            blink_value = row[1]
+            assert blink_value == 1
+        assert len(window.db_api._display_all_rows()) == 1, "1 row of data recorded"
 
 
 def test_application_popup(qtbot: QtBot, qapp: Application) -> None:
@@ -157,7 +170,7 @@ def test_application_popup(qtbot: QtBot, qapp: Application) -> None:
     that the popup window appears
     """
     with patch(
-        "dryeye_defender.widgets.window.BlinkModelThread.init_cap",
+        "dryeye_defender.widgets.settings_window.BlinkModelThread.init_cap",
         new=mock_init_cap_no_blink,
     ):
         window = Window(qapp.main_window.centralWidget())

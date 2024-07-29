@@ -1,16 +1,20 @@
-"""Database class to interact with SQLite3 database"""
+"""Database class to interact with SQLite3 database
+
+A similar class exists in the submodule for limited use without GUI,
+but this is the only class that should be used for the dryeye defender software.
+"""
 import logging
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, List, Any
 
-from blinkdetector.utils.database import EventTypes
+from blinkdetector.utils.database import EventTypes, BlinkHistory
 
 LOGGER = logging.getLogger(__name__)
 
 
-class BlinkHistory:
+class BlinkHistoryDryEyeDefender(BlinkHistory):
     """Database class to interact with SQLite3 database"""
 
     def __init__(self,
@@ -22,39 +26,9 @@ class BlinkHistory:
         :param db_con: Optionally, a direct connection object to a database can be provided
         instead of the path to the database itself, useful for testing.
         """
-        if (not db_path) and (not db_con):
-            raise RuntimeError("Either db_path or db_con must be provided")
-        if db_path and db_con:
-            raise RuntimeError("Only one of db_path or db_con must be provided")
-        if db_con:
-            self.db_con = db_con
-        else:
-            if not db_path:
-                raise RuntimeError("db_path must be provided if db_con is not")
-            if not db_path.is_file():
-                raise FileNotFoundError(f"Database not found at {db_path}")
-            self.db_con = self._create_connection(db_path)
+        super().__init__(db_path, db_con)
 
-    @staticmethod
-    def _create_connection(db_path: Path) -> sqlite3.Connection:
-        """Create the SQLite3 connection
-
-        :param db_path: Path to sqlite3 database on disk
-        :return: connection to the database
-        """
-        logging.info("Sqlite thread safety level: %s", sqlite3.threadsafety)
-        if sqlite3.threadsafety == 3:
-            check_same_thread = False
-        else:
-            check_same_thread = True
-            raise RuntimeError("SQLite3 threadsafety level is not 3."
-                               " Python >=3.11 is expected to be used to provide this - check"
-                               " this is installed. The DryEye Defender thread and "
-                               " blinkdetector thread share a connection to DB,"
-                               " so SQLite3 threadsafety level must be 3.")
-        return sqlite3.connect(db_path, check_same_thread=check_same_thread)
-
-    def _display_all_rows(self) -> List[Any]:
+    def _display_all_rows(self) -> Any:
         """A debugging function to display all rows of DB up to max of 100"""
         with self.db_con:
             result = self.db_con.execute("SELECT * FROM blink_history LIMIT 100").fetchall()
@@ -213,3 +187,12 @@ class BlinkHistory:
         x_axis = [i[0] for i in rows]
         y_axis = [i[1] for i in rows]
         return {"timestamps": x_axis, "values": y_axis}
+
+    # _create_db() from BlinkHistory()
+    # store_blink() from BlinkHistory()
+    # write_blink_history() from BlinkHistory()
+    # get_blink_history_count() from BlinkHistory()
+    # reset_create_db() from BlinkHistory()
+    # fetch_last_n_blink() from BlinkHistory()
+    # fetch_last_n_blink() from BlinkHistory()
+    # _create_connection() from BlinkHistory()

@@ -10,7 +10,8 @@ from PIL.ImageQt import ImageQt
 from PySide6.QtCore import QObject, QThread, Signal, Slot
 from PySide6.QtGui import QPixmap
 
-from dryeye_defender.utils.utils import find_data_file, get_saved_data_path
+from dryeye_defender.utils.database import BlinkHistoryDryEyeDefender
+from dryeye_defender.utils.utils import find_data_file
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,7 +24,8 @@ class BlinkModelThread(QThread):
     update_debug_img = Signal(QPixmap)
     update_ear_values = Signal(float, float)
 
-    def __init__(self,
+    def __init__(self,  # pylint: disable=too-many-arguments
+                 db_api: BlinkHistoryDryEyeDefender,
                  blink_value_updated_slot: Slot,
                  thread_finished_slot: Slot,
                  minimum_duration_lack_of_blink_ms: int,
@@ -32,6 +34,7 @@ class BlinkModelThread(QThread):
         """Initialized the model and class variables,
         these variables are saved between inference and even on different thread
 
+        :param db_api: database api with connection to DB
         :param parent: parent of the thread, defaults to None
         :param minimum_duration_lack_of_blink_ms: minimum duration of lack of blink to be considered
         """
@@ -39,9 +42,10 @@ class BlinkModelThread(QThread):
 
         LOGGER.info("init thread")
 
-        self.model_api = FilteredMediaPipeAPI(model_path=find_data_file(
-            "mediapipe/face_landmarker_v2_with_blendshapes.task", submodule=True),
-            db_path=get_saved_data_path(),
+        self.model_api = FilteredMediaPipeAPI(
+            db_api,
+            model_path=find_data_file(
+                "mediapipe/face_landmarker_v2_with_blendshapes.task", submodule=True),
             debug=True)
 
         self.cap: Optional[cv2.VideoCapture] = None  # pylint: disable=no-member

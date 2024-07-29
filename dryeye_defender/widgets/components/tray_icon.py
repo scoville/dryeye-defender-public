@@ -1,9 +1,10 @@
+"""A widget to display a icon in the tray menu"""
+import logging
 import sys
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon, QWidget
 from PySide6.QtGui import QIcon
 
 from dryeye_defender.utils.utils import find_data_file
-import logging
 
 
 LOGGER = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class TrayIcon(QWidget):
         self.tray.setVisible(True)
         self.tray.showMessage("DryEye Defender initialized", "", self.icon, 5000)
 
-    def showTrayBlinkReminder(self, time_since_last_reminder_seconds: float) -> None:
+    def show_tray_blink_reminder(self, time_since_last_reminder_seconds: float) -> None:
         """Display a blink reminder as a system tray message
 
         :param time_since_last_reminder_seconds: time since last blink reminder
@@ -43,6 +44,6 @@ class TrayIcon(QWidget):
             5000,
         )
 
-    def setTrayToggleText(self, text: str) -> None:
+    def set_tray_toggle_text(self, text: str) -> None:
         """Set the tray toggle's text to enabled or disable"""
         self.toggle_tray.setText(text)

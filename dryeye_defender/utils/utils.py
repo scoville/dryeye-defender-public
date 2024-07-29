@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 import os
 import sys
-from typing import List
+from typing import List, Any
 
 import cv2
 
@@ -76,6 +76,9 @@ def get_saved_data_path() -> Path:
 def get_cap_indexes() -> List[str]:
     """Test the ports and returns a tuple with the available ports and the ones that are working.
 
+    TODO: Use device names:
+    https://abhitronix.github.io/deffcode/v0.2.5-stable/recipes/basic/decode-camera-devices/
+
     :return: List of indexes that are available for reading, in str format
     """
     # non_working_ports = []
@@ -98,3 +101,20 @@ def get_cap_indexes() -> List[str]:
                 LOGGER.info("Port %s for camera ( %s x %s) is present but does not reads.")
                 # available_ports.append(dev_port)
     return working_ports
+
+
+def update_font(instance_self: Any,
+                font_family: str = "AvenirNext LT Pro Bold",
+                font_size: int = 15) -> None:
+    """
+    Update the font of the instance_self to the font_family and font_size.
+
+    :param instance_self: instance of a class that has a self.font() method
+    :param font_family: name of the font family, e.g. Avenir Next LT Pro
+    :param font_size: size of the font
+    """
+    font = instance_self.font()
+    font.setPixelSize(font_size)
+    LOGGER.info("Setting default MainWindow font: %s", font_family)
+    font.setFamily(font_family)
+    instance_self.setFont(font)
