@@ -39,6 +39,12 @@ jobs:
         run: |
           git submodule update --init
 
+      - name: Install libxcb-cursor-dev
+        if: matrix.os == 'ubuntu-latest'
+        # without this unbale to run installed .deb on Ubuntu
+        # https://stackoverflow.com/questions/77725761/from-6-5-0-xcb-cursor0-or-libxcb-cursor0-is-needed-to-load-the-qt-xcb-platform
+        run: sudo apt-get install -y libxcb-cursor-dev
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v4.0.0
         with:
