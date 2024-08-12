@@ -1,4 +1,5 @@
 #!/bin/bash
+## Create a Linux .deb file locally for testing
 # Provide release version as first argument to this script
 
 binary_name=dryeye_defender
@@ -17,4 +18,5 @@ find deb_build/opt/${binary_name} -type f -exec chmod 644 -- {} +
 find deb_build/opt/${binary_name} -type d -exec chmod 755 -- {} +
 
 chmod +x deb_build/opt/${binary_name}/${binary_name}
-#dpkg-deb --build --root-owner-group deb_build ${deb_name}_${RELEASE_VERSION}_all.deb
+
+dpkg-deb --build --root-owner-group deb_build ${deb_name}_${RELEASE_VERSION}_all.deb
