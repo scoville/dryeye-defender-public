@@ -58,7 +58,7 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='eyehealth',
+    name='dryeye_defender',
 )
 app = BUNDLE(
     coll,
