@@ -70,7 +70,11 @@ jobs:
 
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             pip install -r requirements_mac.txt
+            python -c "import wheel; print(wheel.__version__)"
+            python -c "import setuptools; print(setuptools.__version__)"
             pip install -r requirements_build_mac.txt
+            python -c "import wheel; print(wheel.__version__)"
+            python -c "import setuptools; print(setuptools.__version__)"
             pip install -r requirements_submodule.txt
           else
             pip install -r requirements_linux.txt
