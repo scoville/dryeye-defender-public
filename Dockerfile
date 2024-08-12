@@ -27,7 +27,14 @@ RUN apt-get update && apt-get autoclean && \
     x11-xserver-utils \
     libxkbcommon-x11-0 \
     x11-utils \
-    libxcb-cursor-dev 
+    libxcb-cursor-dev \
+    libgirepository1.0-dev \
+    gcc \
+    libcairo2-dev \
+    pkg-config \
+    python3-dev \
+    gir1.2-gtk-4.0
+
 
 # Install xvfb
 # Running this separately as running it as part of the command above causes an exit code 100
