@@ -64,7 +64,7 @@ pipeline {
         sh '''#!/usr/bin/env bash
           set -Eeux
           # build to binary with cxfreeze library, it uses the setup_windows.py and pyproject.toml files
-          RELEASE_VERSION="0.0.1rc1" python3 setup_windows.py build
+          RELEASE_VERSION="0.0.1" python3 setup_windows.py build
         '''
       }
     }
