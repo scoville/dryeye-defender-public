@@ -48,7 +48,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version='6.0.0.rc12o'
+    version='6.0.0.rc12o2'
 )
 coll = COLLECT(
     exe,
@@ -69,6 +69,6 @@ app = BUNDLE(
                 'NSCameraUsageDescription':
                     'This app requires access to the camera for the blink detection feature.'
                     ' Please enable this in your system settings.',
-                'CFBundleShortVersionString': '6.0.0.rc12o',
+                'CFBundleShortVersionString': '6.0.0.rc12o2',
              }
 )
