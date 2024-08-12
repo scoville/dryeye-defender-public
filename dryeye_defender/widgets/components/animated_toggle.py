@@ -55,7 +55,7 @@ class AnimatedToggle(QCheckBox):  # pylint: disable=too-many-instance-attributes
             self, b"handle_position", self
         )
         self.animation.setEasingCurve(
-            QEasingCurve.InOutCubic  # type: ignore
+            QEasingCurve.InOutCubic
         )
         self.animation.setDuration(200)  # time in ms
 
@@ -76,7 +76,7 @@ class AnimatedToggle(QCheckBox):  # pylint: disable=too-many-instance-attributes
         """Return a hint as to expected size of the button"""
         return QSize(58, 45)
 
-    def hitButton(self, pos: QPoint) -> bool:
+    def hitButton(self, pos: QPoint) -> Any:
         """Return true if the provided mouse cursor point is within the button hit box"""
         return self.contentsRect().contains(pos)
 

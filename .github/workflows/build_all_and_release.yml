@@ -46,9 +46,9 @@ jobs:
         run: sudo apt-get install -y libxcb-cursor-dev
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v4.0.0
+        uses: jurplel/install-qt-action@v3.2.1
         with:
-          version: '6.7.1'
+          version: '6.4.3'
           install-deps: 'true'
           modules: 'qtcharts'
           setup-python: 'false'
