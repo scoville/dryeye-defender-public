@@ -12,7 +12,7 @@ fi
 
 ./update_version_strings.sh ${VERSION}
 
-git add setup.py pyproject.toml deb_build/DEBIAN/control pyinstaller_build.spec
-git commit -m "feat(versions): update setup.py, pyproject.toml and deb_build/DEBIAN/control to ${VERSION}"
+git add setup_windows.py pyproject.toml deb_build/DEBIAN/control pyinstaller_build.spec
+git commit -m "feat(versions): update setup_windows.py, pyproject.toml and deb_build/DEBIAN/control to ${VERSION}"
 
-# now finish hotfix (e.g.  git flow hotfix finish 2.0.2 and push the develop/main and push tags)  
+# now finish hotfix (e.g.  git flow hotfix finish 2.0.2 and push the develop/main and push tags)

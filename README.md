@@ -77,7 +77,7 @@ To run the tests:
 from the venv created before
 
 1. `pip install -e submodules/blink-detection/` Only locally (not needed for docker)
-2. `python setup.py build`
+2. `python setup_windows.py build`
 3. `build/exe.linux-x86_64-3.8/eyehealth` to run the binary file
 
 #### Deb file

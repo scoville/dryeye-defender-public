@@ -5,7 +5,14 @@ description = "Software for improving eye health and preventing dry eye disease"
 readme = "README.md"
 requires-python = ">=3.11"
 
-[tool.distutils.build_exe]
+[tool.cxfreeze]
+executables = [
+    {script = "dryeye_defender/__main__.py", base = "gui", icon="assets/icon.ico",  target_name="dryeye_defender", shortcut_name="DryEye Defender", shortcut_dir="ProgramMenuFolder"}
+]
+
+[tool.cxfreeze.build_exe]
+packages = ["playsound"]
+includes = ["playsound"]
 excludes = ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy","mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"]
 optimize = 0
 zip_include_packages = ["encodings", "PySide6"]
@@ -20,7 +27,7 @@ include_files= [
    ['assets/AvenirNextLTPro-Bold.otf', 'assets/AvenirNextLTPro-Bold.otf'],
    ['assets/AvenirNextLTPro-It.otf', 'assets/AvenirNextLTPro-It.otf']
 ]
-silent_level = 1
+silent_level = 0
 
 # `shiboken6`, which creates the python bindings for `Qt` C++ source, imports from a
 # `zip` file into the top-level directory at runtime. These files are deleted after
