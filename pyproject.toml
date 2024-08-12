@@ -27,7 +27,7 @@ include_files= [
    ['assets/AvenirNextLTPro-Bold.otf', 'assets/AvenirNextLTPro-Bold.otf'],
    ['assets/AvenirNextLTPro-It.otf', 'assets/AvenirNextLTPro-It.otf']
 ]
-silent_level = 0
+silent_level = 1
 
 # `shiboken6`, which creates the python bindings for `Qt` C++ source, imports from a
 # `zip` file into the top-level directory at runtime. These files are deleted after

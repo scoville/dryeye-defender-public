@@ -1,2 +1,3 @@
 -r requirements.txt
 opencv-python~=4.9
+PyGObject==3.48.2 # gi: needed to avoid playsound launching a subprocess which doesn't bake well into an exe https://github.com/TaylorSMarks/playsound/blob/9cf4af20caa5ae8586f88b65659681b24f0c4e69/playsound.py#L237

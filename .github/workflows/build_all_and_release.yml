@@ -45,6 +45,16 @@ jobs:
         # https://stackoverflow.com/questions/77725761/from-6-5-0-xcb-cursor0-or-libxcb-cursor0-is-needed-to-load-the-qt-xcb-platform
         run: sudo apt-get install -y libxcb-cursor-dev
 
+      - name: Ubuntu install pygobject needed for native `playsound` library usage in binary
+        if: matrix.os == 'ubuntu-latest'
+        #https://pygobject.gnome.org/getting_started.html#ubuntu-getting-started
+        run: sudo apt-get install -y libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-4.0
+
+      - name: OSX install pygobject needed for native `playsound` library usage in binary
+        if: matrix.os == 'macos-latest'
+        #https://pygobject.gnome.org/getting_started.html#macosx-logo-macos
+        run: sudo brew install pygobject3 gtk4
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v3.2.1
         with:
