@@ -1,4 +1,5 @@
 """Class for the animated blink reminder widget"""
+import logging
 import os
 from pathlib import Path
 from typing import Callable
@@ -6,6 +7,8 @@ from typing import Callable
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMovie, QScreen
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QApplication
+
+LOGGER = logging.getLogger(__name__)
 
 if os.name == "nt":  # Windows
     import win32gui  # pylint: disable=import-error
@@ -79,13 +82,18 @@ class AnimatedBlinkReminder(QWidget):
         self.button.clicked.connect(on_button_click)
         layout.addWidget(self.button)
 
-        # Prepare force focus on Windows
-        if os.name == "nt":  # Windows
-            win32gui.SystemParametersInfo(
-                win32con.SPI_SETFOREGROUNDLOCKTIMEOUT,
-                0,
-                win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE
-            )
+        try:
+            # Prepare force focus on Windows
+            if os.name == "nt":  # Windows
+                win32gui.SystemParametersInfo(
+                    win32con.SPI_SETFOREGROUNDLOCKTIMEOUT,
+                    0,
+                    win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE
+                )
+        except Exception:
+            # I saw on windows 11 this crashes out with Invalid Parameter on windows
+            # TODO: support windows 11 for force-focus
+            LOGGER.warning("Unable to set force-focus on this version of windows")
 
     def update_duration_lack(self, duration_lack: int) -> None:
         """Update the text label with the new duration lack
