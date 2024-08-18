@@ -21,6 +21,29 @@ msi_data = {
     ],
 }
 
+# At time of writing it seems CX_Freeze 7.2 does not support using pyproject.toml for windows
+# builds, hence why this is not DRY with much overlap with pyproject.toml.
+# Note that build_exe_options is not omittted, I found assets were not included in windows.
+build_exe_options = {
+    "packages": ["playsound"],
+    "includes": ["playsound"],
+    "excludes": ["tkinter", "pytest", "cx-Freeze", "coverage", "mypy", "mypy-extensions", "pycodestyle", "pydocstyle", "pylint", "pylint-quotes", "pytest-timeout", "pytest-timeout", "pytest-xdist", "openvino-dev", "stubs"],
+    "optimize": 0,
+    "zip_include_packages": ["encodings", "PySide6"],
+    "include_files": [
+        ['submodules/blink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe/face_landmarker_v2_with_blendshapes.task'],
+        ['assets/blink.png', 'assets/blink.png'],
+        ['assets/blink_animated.gif', 'assets/blink_animated.gif'],
+        ['assets/blink_animated_anime.gif', 'assets/blink_animated_anime.gif'],
+        ['assets/Logo.png', 'assets/Logo.png'],
+        ['assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav', 'assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav'],
+        ['assets/AvenirNextLTPro-Regular.otf', 'assets/AvenirNextLTPro-Regular.otf'],
+        ['assets/AvenirNextLTPro-Bold.otf', 'assets/AvenirNextLTPro-Bold.otf'],
+        ['assets/AvenirNextLTPro-It.otf', 'assets/AvenirNextLTPro-It.otf']
+    ],
+    "silent_level": 1
+}
+
 bdist_msi_options = {
     "add_to_path": False,
     "data": msi_data,
@@ -41,5 +64,6 @@ setup(version=os.environ["RELEASE_VERSION"],
       executables=executables,
       options={
           "bdist_msi": bdist_msi_options,
+          "build_exe": build_exe_options
       },
       )
