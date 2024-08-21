@@ -102,7 +102,7 @@ jobs:
             # MacOS commands
             set -Eeuxo pipefail
             echo "Running MacOS build"
-            pyinstaller pyinstaller_build.spec
+            pyinstaller pyinstaller_build.spec --clean --noconfirm
             # compress the folder, because app on mac os are in a fake folder.app so we need to zip it for uploading
             ditto -c -k --sequesterRsrc --keepParent "dist/${{env.app_name}}.app" ${{ env.binary_name }}_${{  github.ref_name }}.zip
           else

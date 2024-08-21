@@ -11,14 +11,14 @@ a = Analysis(
     binaries=[],
     datas=[
         ['submodules/blink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe'],
-        ['assets/blink.png', 'assets/images'],
-        ['assets/blink_animated.gif', 'assets/images'],
-        ['assets/blink_animated_anime.gif', 'assets/images'],
-        ['assets/Logo.png', 'assets/Logo.png'],
-        ['assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav', 'assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav'],
-        ['assets/AvenirNextLTPro-Regular.otf', 'assets/AvenirNextLTPro-Regular.otf'],
-        ['assets/AvenirNextLTPro-Bold.otf', 'assets/AvenirNextLTPro-Bold.otf'],
-        ['assets/AvenirNextLTPro-It.otf', 'assets/AvenirNextLTPro-It.otf']
+        ['assets/blink.png', 'assets/'],
+        ['assets/blink_animated.gif', 'assets/'],
+        ['assets/blink_animated_anime.gif', 'assets/'],
+        ['assets/Logo.png', 'assets/'],
+        ['assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav', 'assets/'],
+        ['assets/AvenirNextLTPro-Regular.otf', 'assets/'],
+        ['assets/AvenirNextLTPro-Bold.otf', 'assets/'],
+        ['assets/AvenirNextLTPro-It.otf', 'assets/']
     ],
     hiddenimports=[],
     hookspath=[],

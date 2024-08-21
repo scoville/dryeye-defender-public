@@ -27,8 +27,8 @@ So on the master thread we have the GUI, and on slave thread(s) we have managing
 
 ### Local
 
-1. Create a venv of python3.8
-    1. `python3.8 -m venv .venv`
+1. Create a venv of python3.11
+    1. `python3.11 -m venv .venv`
     2. `source .venv/bin/activate`
 
 2. Update submodules

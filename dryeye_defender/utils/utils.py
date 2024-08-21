@@ -20,7 +20,10 @@ def find_data_file(filename: str, submodule: bool = False) -> str:
     """
     if getattr(sys, "frozen", False):
         # The application is frozen(binary file)
-        datadir = os.path.join(os.path.dirname(sys.executable), "assets/")
+        if sys.platform == "darwin":
+            datadir = os.path.join(os.path.dirname(sys.executable), "../Resources/assets/")
+        else:
+            datadir = os.path.join(os.path.dirname(sys.executable), "assets/")
     else:
         # The application is not frozen (python mode)
         # where we store your data files:
