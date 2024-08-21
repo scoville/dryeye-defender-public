@@ -1,6 +1,6 @@
 [project]
 name = "dryeye_defender"
-version = "6.0.0.rc17"
+version = "6.0.0.rc18"
 description = "Software for improving eye health and preventing dry eye disease"
 readme = "README.md"
 requires-python = ">=3.11"
