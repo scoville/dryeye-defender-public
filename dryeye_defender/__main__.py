@@ -40,6 +40,7 @@ logging.getLogger().setLevel(LEVEL)
 # Create a logger for this module
 LOGGER = logging.getLogger(__name__)
 
+
 class Application(QApplication):
     """The entire application encapsulated in this class"""
 
