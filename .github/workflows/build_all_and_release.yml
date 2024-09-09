@@ -15,9 +15,9 @@ jobs:
     strategy:
       matrix:
         os:
-          # - windows-latest
+          - windows-latest
           # - ubuntu-latest
-          - macos-latest
+          # - macos-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
