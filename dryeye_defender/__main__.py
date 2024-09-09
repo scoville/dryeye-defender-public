@@ -1,6 +1,7 @@
 """Main qt file, containing code for the qt window etc"""
 
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 import signal
 import sys
@@ -19,11 +20,25 @@ from dryeye_defender.widgets.settings_window import Window
 warnings.filterwarnings("ignore",
                         category=UserWarning,
                         message="SymbolDatabase\\.GetPrototype\\(\\) is deprecated")
+LEVEL = os.environ.get("LOGLEVEL", "INFO")
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
+# Configure the root logger
+logging.basicConfig(level=LEVEL, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Create a rotating file handler
+file_handler = RotatingFileHandler('dryeye-defender.log', maxBytes=5*1024*1024, backupCount=5)
+file_handler.setLevel(LEVEL)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+
+# Add the file handler to the root logger
+logging.getLogger().addHandler(file_handler)
+
+# This line is not redundant on my machine, not sure why it's needed to set twice.
+logging.getLogger().setLevel(LEVEL)
+
+# Create a logger for this module
 LOGGER = logging.getLogger(__name__)
-
 
 class Application(QApplication):
     """The entire application encapsulated in this class"""
