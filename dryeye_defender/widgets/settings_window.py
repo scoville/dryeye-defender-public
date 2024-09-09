@@ -60,6 +60,13 @@ LOGGER = logging.getLogger(__name__)
 ALERT_SECONDS_COOLDOWN = 10
 MARGIN_PX = 70
 
+# https://stackoverflow.com/a/72368992/24131637 sadly this mad line of code is
+# required for windows to play sound correctly
+try:
+    playsound(BEEP_SOUND_EFFECT_PATH)
+except Exception:
+    pass
+
 
 class SettingType(TypedDict):
     """Type to describe the label, subtitle and
