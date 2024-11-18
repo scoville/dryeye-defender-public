@@ -1,4 +1,4 @@
 [submodule "submodules/blink-detection"]
-	path = submodules/blink-detection
-	url = git@github.com:scoville/blink-detection.git
+	path = submodules/blink-detection-public
+	url = git@github.com:scoville/blink-detection-public.git
 	branch = develop
