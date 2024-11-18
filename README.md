@@ -1,7 +1,7 @@
 
 # Deprecation Notice
 
-This repo has been cloned to https://github.com/bml1g12/dryeye-defender-public which will be made open source to public, so this private repo has been archived.
+This repo has been cloned to https://github.com/scoville/dryeye-defender-public which will be made open source to public, so this private repo has been archived.
 
 # DryEye Defender
 
