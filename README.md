@@ -1,8 +1,3 @@
-
-# Deprecation Notice
-
-This repo has been cloned to https://github.com/scoville/dryeye-defender-public which will be made open source to public, so this private repo has been archived.
-
 # DryEye Defender
 
 The graphical user interface for the DryEye Defender software: detecting blinks and providing reminders to blink.
