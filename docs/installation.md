@@ -2,7 +2,7 @@
 
 The graphical user interface for the DryEye Defender software: detecting blinks and providing reminders to blink.
 
-![demo.png](docs/demo.png)
+![demo.png](./demo.png)
 
 ## Repos
 
@@ -15,12 +15,13 @@ For details see [code_structure](docs/code_structure.md) but in short, we this r
 
 ## How to install and run
 
+Ensure you have `git lfs` installed: `git lfs install && git lfs pull`
+
 ### Docker
 
 - To start via docker, simply run `docker-compose up`
 - For the webcam, the docker-compose mounts a few video sockets in the hope of capturing the correct one for your machine, you may need to edit docker-compose if your webcam is not one of these devices.
 - We mount the current repo so edits to code will be reflected live in the container.
-
 
 ### Local
 
@@ -52,7 +53,7 @@ See the github actions scripts for details on how to build a binary for your pla
 
 We use a sqlite3 DB to store blink data, for which the Entity-Relationship diagram is shown below:
 
-![docs/ERD.jpg](docs/ERD.jpg)
+![./ERD.jpg](./ERD.jpg)
 
 The `blink_history` table stores the blink data indexed by `timestamp`.
 
@@ -60,4 +61,4 @@ The `blink_marker` column is used to indicate whether the blink was detected by 
 
 `blink_value` represents the eye state: it is either -1 (closed) or 1 (open)
 
-`left_ear` and `right_ear` are floating point numbers representing the [Eye Aspect (EAR) Ratio](https://www.mdpi.com/2079-9292/11/19/3183).
+`left_ear` and `right_ear` are floating point numbers representing the [Eye Aspect (EAR) Ratio](https://www.mdpi.com/2079-9292/11/19/3183). This is in range -1 to 1 due to normalizing via a rolling window median filter (i.e. centering EAR around 0)

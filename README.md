@@ -13,7 +13,7 @@ DryEye Defender takes advantage of the latest advancements in Computer Vision an
 
 ## ✨ Key Features
 
-- 🎯 **Real-time Blink Detection**: Advanced facial keypoint tracking using MediaPipe for accurate blink detection
+- 🎯 **Real-time Blink Detection**: Advanced facial keypoint tracking powered by MediaPipe's face mesh detection
 - 📊 **Personal Analytics**: Track your blink rate over time with detailed statistics and visualizations
 - 🔔 **Smart Reminders**: Customizable notifications when you're not blinking enough
 - 🔒 **Privacy First**: All processing happens locally - no data leaves your device

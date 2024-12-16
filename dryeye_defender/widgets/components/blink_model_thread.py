@@ -1,4 +1,9 @@
-"""Class for the thread computing the model"""
+"""
+Class for the thread computing the model
+#
+This module uses MediaPipe (https://github.com/google/mediapipe)
+for facial landmark detection.
+"""
 import logging
 import time
 from typing import Optional

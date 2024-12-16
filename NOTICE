@@ -5,3 +5,7 @@ This product includes software developed by Scoville Inc. (https://scoville.jp).
 
 The initial version of this software was created by Scoville Inc.
 for helping prevent digital eye strain and dry eye syndrome.
+
+This software includes code from MediaPipe (https://github.com/google/mediapipe)
+Copyright 2019-2024 The MediaPipe Authors.
+Licensed under the Apache License, Version 2.0.
