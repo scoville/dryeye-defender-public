@@ -39,7 +39,9 @@ build_exe_options = {
         ['assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav', 'assets/audiocheck.net_sin_800Hz_-3dBFS_0.19s.wav'],
         ['assets/AvenirNextLTPro-Regular.otf', 'assets/AvenirNextLTPro-Regular.otf'],
         ['assets/AvenirNextLTPro-Bold.otf', 'assets/AvenirNextLTPro-Bold.otf'],
-        ['assets/AvenirNextLTPro-It.otf', 'assets/AvenirNextLTPro-It.otf']
+        ['assets/AvenirNextLTPro-It.otf', 'assets/AvenirNextLTPro-It.otf'],
+        ['LICENSE', 'LICENSE'],
+        ['NOTICE', 'NOTICE']
     ],
     "silent_level": 1
 }

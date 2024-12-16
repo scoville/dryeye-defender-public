@@ -10,6 +10,8 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
+        ('LICENSE', '.'),
+        ('NOTICE', '.'),
         ['submodules/blink-detection/assets/mediapipe/face_landmarker_v2_with_blendshapes.task', 'assets/mediapipe'],
         ['assets/blink.png', 'assets/'],
         ['assets/blink_animated.gif', 'assets/'],

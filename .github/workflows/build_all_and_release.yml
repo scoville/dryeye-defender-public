@@ -97,12 +97,18 @@ jobs:
             set -Eeuxo pipefail
             echo "Running Windows build"
             RELEASE_VERSION=${{github.ref_name}} python3 setup_windows.py bdist_msi
+            # Copy LICENSE and NOTICE to the MSI build directory
+            cp LICENSE "dist/${{ env.binary_name }}-${{github.ref_name}}-win64/"
+            cp NOTICE "dist/${{ env.binary_name }}-${{github.ref_name}}-win64/"
             ls -lst dist/  # the output is placed to dist/dryeye_defender-RELEASE_VERSION-win64.msi folder
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             # MacOS commands
             set -Eeuxo pipefail
             echo "Running MacOS build"
             pyinstaller pyinstaller_build.spec --clean --noconfirm
+            # Copy LICENSE and NOTICE into the .app bundle
+            cp LICENSE "dist/${{env.app_name}}.app/Contents/Resources/"
+            cp NOTICE "dist/${{env.app_name}}.app/Contents/Resources/"
             # compress the folder, because app on mac os are in a fake folder.app so we need to zip it for uploading
             ditto -c -k --sequesterRsrc --keepParent "dist/${{env.app_name}}.app" ${{ env.binary_name }}_${{  github.ref_name }}.zip
           else
@@ -120,13 +126,19 @@ jobs:
             # create the folder structure for the deb package
             # all the files for the program will be in /opt/${{ env.binary_name }}, so easy handle of dependencies
             mkdir -p deb_build/opt/${{ env.binary_name }}
-            # we copy the files from the build folder to the deb package folder before deb creation
+            mkdir -p deb_build/usr/share/doc/${{ env.binary_name }}
+
+            # Copy program files
             cp -R "build/exe.linux-x86_64-${python_version}/." deb_build/opt/${{ env.binary_name }}/
 
+            # Copy LICENSE and NOTICE to standard Debian documentation location
+            cp LICENSE deb_build/usr/share/doc/${{ env.binary_name }}/copyright
+            cp NOTICE deb_build/usr/share/doc/${{ env.binary_name }}/NOTICE
 
             # we change the permissions of the files and folders because files will keep permissions after packaging
             find deb_build/opt/${{ env.binary_name }} -type f -exec chmod 644 -- {} +
             find deb_build/opt/${{ env.binary_name }} -type d -exec chmod 755 -- {} +
+            find deb_build/usr/share/doc/${{ env.binary_name }} -type f -exec chmod 644 -- {} +
             # we make the binary executable (not done by cxfreeze)
             chmod +x deb_build/opt/${{ env.binary_name }}/${{ env.binary_name }}
 
