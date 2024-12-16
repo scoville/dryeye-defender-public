@@ -56,29 +56,6 @@ class Application(QApplication):
         self.main_window = MainWindow()
         self.main_window.show()
 
-        # Set the default background color
-        # palette = self.palette()
-        # default_background_color = QColor(255, 255, 255)
-        # palette.setColor(QPalette.Window, default_background_color)
-        # palette.setColor(QPalette.Base, default_background_color)
-        # self.setPalette(palette)
-        # background_color = "background-color: rgb(255, 255, 255);"  # Set your desired color here
-        # group_box_color = "background-color: rgb(255, 255, 255);"  # Set color for QGroupBox
-        # style_sheet = f"QWidget {{ {background_color} }}" \
-        #               f"QGroupBox {{ border: 4px solid gray; border-radius: 20px;" \
-        #               f" {group_box_color} }}"
-        # ## The below code sets a global font, but its not easy to override that font on
-        # ## individual elements without using style sheets everywhere, so I we set it on a per
-        # ## component basis.
-        # # font_stylesheet = """
-        # #     * {
-        # #         font-family: Avenir Next LT Pro;
-        # #         font-size: 30pt;
-        # #     }
-        # # """
-        # # style_sheet += font_stylesheet
-        # self.setStyleSheet(style_sheet)
-
     def _handle_sigint(self, *_: Tuple[Any, ...]) -> None:
         """Perform any cleanup or save operations here
         before exiting the application due to a SIGINT/keyboard interrupt

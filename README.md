@@ -8,24 +8,23 @@ The graphical user interface for the DryEye Defender software: detecting blinks 
 
 - [This repo](https://github.com/scoville/dryeye-defender)
   - [Submodule: Backend repo](https://github.com/scoville/blink-detection)
-    - [Submodule of Submodule: Evaluation repo](https://github.com/scoville/blink-detection-evaluation)
 
 ## Code Structure
 
-1. `__main__.py` is the entry point for the GUI. It creates the main window and sets up the main loop.
- `Application() --> MainWindow() --> Window()`
+For details see [code_structure](docs/code_structure.md) but in short, we this repo contains the GUI implemented in pyside6, and creates a local sqlite3 DB for storing blink data. No personal data is shared to the internet. The module uses a submodule `blink-detection` to perform inference on webcam frames.
 
-2. `Window()` is in `widgets/settings_window.py` and hold the 'Single Page Application'.
+## How to install and run
 
-The API for the DB is held in an instance of `BlinkHistoryDryEyeDefender(get_saved_data_path())` which connects to the database (or creates it) at `get_saved_data_path()`
+### Docker
 
-In Window().__init__() we first initialize this instance, then pass it to `BlinkModelThread()` which is a dedicated instance for managing inference from the submodule `blinkdetector`. The inference is done by one frame per thread, and threads are arranged in a FIFO manner where only one thread operates at a time, DryEye Defender uses a timer to schedule delay between thread invocations so we can control how resource heavy the inference is.
+- To start via docker, simply run `docker-compose up`
+- For the webcam, the docker-compose mounts a few video sockets in the hope of capturing the correct one for your machine, you may need to edit docker-compose if your webcam is not one of these devices.
+- We mount the current repo so edits to code will be reflected live in the container.
 
-So on the master thread we have the GUI, and on slave thread(s) we have managing of the inference. Both master and child share connection to the DB through `BlinkHistoryDryEyeDefender()` API, and the child thread writes data each frame to the DB via this API.
-
-## How to install
 
 ### Local
+
+Alternatively, you can run the program locally.
 
 1. Create a venv of python3.11
     1. `python3.11 -m venv .venv`
@@ -35,98 +34,30 @@ So on the master thread we have the GUI, and on slave thread(s) we have managing
    1. `git submodule update --init`
 
 3. Install `requirement.txt`
-    1. `python -m pip install -r requirements.txt` (or `requirements_mac.txt` / `requirements_windows.txt` if on Mac or Windows)
+    1. `python -m pip install -r requirements_linux.txt` for linux (or `requirements_mac.txt` / `requirements_windows.txt` if on Mac or Windows)
     1. for linting and ci libraries : `python -m pip install -r requirements_ci.txt`
 
-4. Install other repo with pip
-    1. `python -m pip install submodules/blink-detection`
-    2. or using another solution `python -m pip install "git+https://github.com/scoville/blink-detection.git"`
+3. Install the submodule `python -m pip install -e submodules/blink-detection`
+    3. or using another solution `python -m pip install "git@github.com:scoville/blink-detection-public.gitt"`
 
 5. Run program
    1. `python -m dryeye_defender`
 
-### Docker
 
-- For the webcam, the docker-compose mounts a few video sockets in the hope of capturing the correct one for your machine, you may need to edit docker-compose if your webcam is not one of these devices.
-- We mount the current repo so edits to code will be reflected live in the container.
+### Building binaries
 
-#### Quickstart
+See the github actions scripts for details on how to build a binary for your platform.
 
-`git submodule update --init && ./start_app_local_tz.sh`
-Will launch the GUI, performing all the below operations, and update submodule
+### Database
 
-To run the tests:
-`git submodule update --init && TZ=$(cat /etc/timezone) docker-compose run --entrypoint pytest dryeye_defender_service`
+We use a sqlite3 DB to store blink data, for which the Entity-Relationship diagram is shown below:
 
-#### Step-by-step
+![docs/ERD.jpg](docs/ERD.jpg)
 
-1. Building docker image
-   1. `docker compose build`
-   1. or `docker-compose build`
+The `blink_history` table stores the blink data indexed by `timestamp`.
 
-2. Running docker container
-   1. `docker compose up`
+The `blink_marker` column is used to indicate whether the blink was detected by the model or by the user (0 most of the time, 1 if a blink is detected).
 
-3. Run program
-   1. `python -m dryeye_defender`
+`blink_value` represents the eye state: it is either -1 (closed) or 1 (open)
 
-### Export program
-
-#### Binary
-
-from the venv created before
-
-1. `pip install -e submodules/blink-detection/` Only locally (not needed for docker)
-2. `python setup_windows.py build`
-3. `build/exe.linux-x86_64-3.8/eyehealth` to run the binary file
-
-#### Deb file
-
-1. `mkdir -p deb_build/opt/eyehealth`
-2. we copy the files from the build folder to the deb package folder before deb creation
-   1. `cp -R build/exe.linux-x86_64-3.8/* deb_build/opt/eyehealth`
-3. we change the permissions of the files and folders because files will keep permissions after packaging
-   1. `find deb_build/opt/eyehealth -type f -exec chmod 644 -- {} +`
-   2. `find deb_build/opt/eyehealth -type d -exec chmod 755 -- {} +`
-   3. `find deb_build/usr/share -type f -exec chmod 644 -- {} +`
-4. we make the binary and desktop file executable
-   1. `chmod +x deb_build/opt/eyehealth/eyehealth`
-   2. `chmod +x deb_build/usr/share/applications/eyehealth.desktop`
-5. build the deb package with the official tool
-   1. `dpkg-deb --build --root-owner-group deb_build`
-6. `sudo apt install ./deb_build.deb` Only work locally not on docker
-
-#### Signing the app for mac os
-
-> Currently, the app works without signing. The reason it was not working before is that cxfreeze was breaking the build with bad mandatory signing, but with pyinstaller the problem is not present and you can still try the app without signing. If we want the user to not have a lot of warning at launch, we will need to sign the app.
-
-<https://app.clickup.com/t/7508642/POC-2780>
-
-To manually add signing:
-
-- Add a signing certificate on mac os keychain
-- If it's a dev certificate we need to add this certificate also to trust our certificate <https://developer.apple.com/forums/thread/662300>
-- On the certificate, get more info to see what is the `common name` of the certificate
-  - e.g `Mac Developer: Benjamin Lowe (FDFD2FE)`
-- use this command to sign the app :
-  - `codesign --deep --force --verify --verbose --sign "Mac Developer: Benjamin Lowe (NKNH9AYUS2)" /full/path/to/the/app/DryEye_Defender.app`
-- verify the signing
-  - `codesign -dv --verbose=4 /Users/felix/Documents/poc/blink-detection-gui/dist/DryEye_Defender.app`
-
-## What is a breaking change for this repo?
-
-- For simplicity, for time being (as we don't have pip dependency resolution), we'd basically release a new release of GUI with every backend release after testing compatibility. Once we have a private pip package for the backend, we can do more complex version dependency, e.g. allowing us to make this repo dependent on all backwards compatible versions of the backend, such that a breaking change is only when there is a changed interaction with the backend (e.g. requiring a new attribute from the backend)
-
-## Querying DB
-
-```sql
-SELECT strftime('%Y-%m-%d %H:%M:%S', blink_time, 'unixepoch') AS minute_utc, * from blink_history ORDER BY blink_time DESC;
-
-
-SELECT strftime('%Y-%m-%d %H:%M', blink_time, 'unixepoch') AS minute_utc,
-       COUNT(*) AS events_per_minute
-FROM blink_history
-WHERE blink_marker = 1 AND blink_time >= strftime('%s', 'now') - (600 * 60)
-GROUP BY minute_utc;
-
-```
+`left_ear` and `right_ear` are floating point numbers representing the [Eye Aspect (EAR) Ratio](https://www.mdpi.com/2079-9292/11/19/3183).
