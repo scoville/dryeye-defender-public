@@ -1,63 +1,87 @@
-# DryEye Defender
+# DryEye Defender 👁️
 
-The graphical user interface for the DryEye Defender software: detecting blinks and providing reminders to blink.
+<img src="assets/Logo.png" width="800" alt="Scoville Logo">
+
+Protect your eye health with smart blink detection and reminders. DryEye Defender is an open-source application that helps prevent digital eye strain and dry eye syndrome.
+
+## How does it work?
+
+DryEye Defender takes advantage of the latest advancements in Computer Vision and AI to analyse your face for the eyelid position and uses that to measure the extent of your blink over time. If it detects blinks have not occurred for a sufficient duration (configurable by you), you’ll be notified by a system tray notification, a sound notification, or a blink animation - you can personalise the best notification method for you.
+
 
 ![demo.png](docs/demo.png)
 
-## Repos
+## ✨ Key Features
 
-- [This repo](https://github.com/scoville/dryeye-defender)
-  - [Submodule: Backend repo](https://github.com/scoville/blink-detection)
+- 🎯 **Real-time Blink Detection**: Advanced facial keypoint tracking using MediaPipe for accurate blink detection
+- 📊 **Personal Analytics**: Track your blink rate over time with detailed statistics and visualizations
+- 🔔 **Smart Reminders**: Customizable notifications when you're not blinking enough
+- 🔒 **Privacy First**: All processing happens locally - no data leaves your device
+- 💻 **Cross Platform**: Supports Windows, macOS, and Linux
+- 📱 **System Tray Integration**: Runs quietly in the background while protecting your eyes
 
-## Code Structure
+## 🔬 Science Behind DryEye Defender
 
-For details see [code_structure](docs/code_structure.md) but in short, we this repo contains the GUI implemented in pyside6, and creates a local sqlite3 DB for storing blink data. No personal data is shared to the internet. The module uses a submodule `blink-detection` to perform inference on webcam frames.
+- 🔊 Sound Design: Our notification tone (800Hz, 190ms) is scientifically calibrated to optimize blink response [[1](https://link.springer.com/article/10.1007/s00347-004-1072-7)]
 
-## How to install and run
+- 👁️ Visual Reminders: Animated blink reminders have been proven to increase blink rates by up to 139% in clinical studies [[2](http://www.blinknow.co.uk/index.php?act=viewDoc&docId=11)][[3](https://pubmed.ncbi.nlm.nih.gov/26164310/)]
 
-### Docker
+- ⚖️ Validated Fairness: Our facial detection models are tested across faces from 17 regions [[4](https://drive.google.com/file/d/1QvwWNfFoweGVjsXF3DXzcrCnz-mx-Lha/preview)]
 
-- To start via docker, simply run `docker-compose up`
-- For the webcam, the docker-compose mounts a few video sockets in the hope of capturing the correct one for your machine, you may need to edit docker-compose if your webcam is not one of these devices.
-- We mount the current repo so edits to code will be reflected live in the container.
+## 🚀 Quick Start
 
+### Download
 
-### Local
+Get the latest version for your platform:
+- [Windows Installer](https://github.com/scoville/dryeye-defender/releases/latest)
+- [macOS App](https://github.com/scoville/dryeye-defender/releases/latest)
+- [Linux Package](https://github.com/scoville/dryeye-defender/releases/latest)
 
-Alternatively, you can run the program locally.
+### Usage
 
-1. Create a venv of python3.11
-    1. `python3.11 -m venv .venv`
-    2. `source .venv/bin/activate`
+1. Install and launch DryEye Defender
+2. Grant camera permissions when prompted
+3. The app will run in your system tray, monitoring your blink rate
+4. Customize reminder settings and view your blink statistics from the main interface
 
-2. Update submodules
-   1. `git submodule update --init`
+For detailed setup instructions and advanced configuration, see our [Installation Guide](docs/installation.md).
 
-3. Install `requirement.txt`
-    1. `python -m pip install -r requirements_linux.txt` for linux (or `requirements_mac.txt` / `requirements_windows.txt` if on Mac or Windows)
-    1. for linting and ci libraries : `python -m pip install -r requirements_ci.txt`
+## 🤝 Contributing
 
-3. Install the submodule `python -m pip install -e submodules/blink-detection`
-    3. or using another solution `python -m pip install "git@github.com:scoville/blink-detection-public.gitt"`
+We have limited resources for this proejct so please understand that we may not be able to review contributions promptly but they are welcome nonetheless:
 
-5. Run program
-   1. `python -m dryeye_defender`
+See our [Contributing Guide](CONTRIBUTING.md) for more details.
 
+Otherwise, we encourage you to build off this framework and create your own blink detection software with attribution to this project.
 
-### Building binaries
+## 📚 Learn More
 
-See the github actions scripts for details on how to build a binary for your platform.
+- [How Blinking Keeps Your Eyes Healthy](https://dryeye-defender.sc0ville.com/how-does-blinking-keep-my-eye-healthy)
+- [Why Blink Rate Matters](https://dryeye-defender.sc0ville.com/why-should-i-care-about-blink-rate)
+- [How DryEye Defender Works](https://dryeye-defender.sc0ville.com/how-does-the-dryeye-defender-software-work)
 
-### Database
+## 🏢 About Us
 
-We use a sqlite3 DB to store blink data, for which the Entity-Relationship diagram is shown below:
+DryEye Defender is developed and maintained by [Scoville Inc.](https://scoville.jp), a leading provider of digital technology consulting and product solutions. We specialize in developing innovative solutions that make a difference in people's lives.
 
-![docs/ERD.jpg](docs/ERD.jpg)
+## 📄 License
 
-The `blink_history` table stores the blink data indexed by `timestamp`.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details. This license allows you to freely use, modify, and distribute this software, while ensuring proper attribution:
 
-The `blink_marker` column is used to indicate whether the blink was detected by the model or by the user (0 most of the time, 1 if a blink is detected).
+- You must include appropriate attribution notices
+- You must document any significant modifications you make
+- You must retain all copyright, patent, trademark, and attribution notices
+- You receive patent usage rights
+- You can use the code commercially and make closed-source modifications
 
-`blink_value` represents the eye state: it is either -1 (closed) or 1 (open)
+---
 
-`left_ear` and `right_ear` are floating point numbers representing the [Eye Aspect (EAR) Ratio](https://www.mdpi.com/2079-9292/11/19/3183).
+<p align="center">
+  <a href="https://scoville.jp">
+    Built by Scoville Ltd. 🌶
+  </a>
+  <br/>
+  <a href="https://scoville.jp">
+    <img src="docs/scoville-logo.svg" width="200" alt="Scoville Logo">
+  </a>
+</p>
