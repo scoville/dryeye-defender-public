@@ -8,7 +8,7 @@ Protect your eye health with smart blink detection and reminders. DryEye Defende
 
 DryEye Defender takes advantage of the latest advancements in Computer Vision and AI to analyse your face for the eyelid position and uses that to measure the extent of your blink over time. If it detects blinks have not occurred for a sufficient duration (configurable by you), you’ll be notified by a system tray notification, a sound notification, or a blink animation - you can personalise the best notification method for you.
 
-
+![demo](docs/demo.gif)
 ![demo.png](docs/demo.png)
 
 ## ✨ Key Features
