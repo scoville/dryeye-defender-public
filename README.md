@@ -33,9 +33,9 @@ DryEye Defender takes advantage of the latest advancements in Computer Vision an
 ### Download
 
 Get the latest version for your platform:
-- [Windows Installer](https://github.com/scoville/dryeye-defender/releases/latest)
-- [macOS App](https://github.com/scoville/dryeye-defender/releases/latest)
-- [Linux Package](https://github.com/scoville/dryeye-defender/releases/latest)
+- [Windows Installer](https://github.com/scoville/dryeye-defender-public/releases/download/1.0.3/dryeye_defender-1.0.3-win64.msi)
+- [macOS App](https://github.com/scoville/dryeye-defender-public/releases/download/1.0.3/dryeye_defender_1.0.3.zip)
+- [Linux Package](https://github.com/scoville/dryeye-defender-public/releases/download/1.0.3/dryeye_defender_1.0.3_all.deb)
 
 ### Usage
 
