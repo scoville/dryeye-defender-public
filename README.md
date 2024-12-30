@@ -48,7 +48,7 @@ For detailed setup instructions and advanced configuration, see our [Installatio
 
 ## 🤝 Contributing
 
-We have limited resources for this proejct so please understand that we may not be able to review contributions promptly but they are welcome nonetheless:
+We have limited resources for this project so please understand that we may not be able to review contributions promptly but they are welcome nonetheless:
 
 See our [Contributing Guide](CONTRIBUTING.md) for more details.
 
