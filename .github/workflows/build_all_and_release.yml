@@ -40,13 +40,13 @@ jobs:
           git submodule update --init
 
       - name: Install libxcb-cursor-dev
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         # without this unbale to run installed .deb on Ubuntu
         # https://stackoverflow.com/questions/77725761/from-6-5-0-xcb-cursor0-or-libxcb-cursor0-is-needed-to-load-the-qt-xcb-platform
         run: sudo apt-get install -y libxcb-cursor-dev
 
       - name: Ubuntu install pygobject needed for native `playsound` library usage in binary
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         #https://pygobject.gnome.org/getting_started.html#ubuntu-getting-started
         run: sudo apt-get install -y libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-4.0
 
@@ -63,12 +63,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          if [[ "${{ matrix.os }}" == "windows-2022" ]]; then
             pip install -r requirements_windows.txt
             pip install -r requirements_build.txt
             pip install -r requirements_submodule.txt
 
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          elif [[ "${{ matrix.os }}" == "macos-14" ]]; then
             pip install -r requirements_mac.txt
             python -c "import wheel; print(wheel.__version__)"
             python -c "import setuptools; print(setuptools.__version__)"
@@ -92,7 +92,7 @@ jobs:
         shell: bash
       - name: Build with cx_Freeze or pyinstaller
         run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          if [[ "${{ matrix.os }}" == "windows-2022" ]]; then
             # Windows commands
             set -Eeuxo pipefail
             echo "Running Windows build"
@@ -101,7 +101,7 @@ jobs:
             cp LICENSE "dist/${{ env.binary_name }}-${{github.ref_name}}-win64/"
             cp NOTICE "dist/${{ env.binary_name }}-${{github.ref_name}}-win64/"
             ls -lst dist/  # the output is placed to dist/dryeye_defender-RELEASE_VERSION-win64.msi folder
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          elif [[ "${{ matrix.os }}" == "macos-14" ]]; then
             # MacOS commands
             set -Eeuxo pipefail
             echo "Running MacOS build"
@@ -153,14 +153,14 @@ jobs:
         with:
           name: '${{ matrix.os }}_build'
           path: |
-            ${{ matrix.os == 'windows-latest' && format('dist/{0}-{1}-win64.msi', env.binary_name, github.ref_name) || '' }}
-            ${{ matrix.os == 'macos-latest' && format('{0}_{1}.zip', env.binary_name, github.ref_name) || '' }}
-            ${{ matrix.os == 'ubuntu-latest' && format('{0}_{1}_all.deb', env.deb_name, github.ref_name) || '' }}
+            ${{ matrix.os == 'windows-2022' && format('dist/{0}-{1}-win64.msi', env.binary_name, github.ref_name) || '' }}
+            ${{ matrix.os == 'macos-14' && format('{0}_{1}.zip', env.binary_name, github.ref_name) || '' }}
+            ${{ matrix.os == 'ubuntu-22.04' && format('{0}_{1}_all.deb', env.deb_name, github.ref_name) || '' }}
   release:
     env:
       binary_name: dryeye_defender
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
@@ -172,9 +172,9 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: >-
-            ./windows-latest_build/${{ env.binary_name }}-${{  github.ref_name }}-win64.msi,
-            ./macos-latest_build/${{ env.binary_name }}_${{  github.ref_name }}.zip,
-            ./ubuntu-latest_build/${{ env.binary_name }}_${{  github.ref_name }}_all.deb
+            ./windows-2022_build/${{ env.binary_name }}-${{  github.ref_name }}-win64.msi,
+            ./macos-14_build/${{ env.binary_name }}_${{  github.ref_name }}.zip,
+            ./ubuntu-22.04_build/${{ env.binary_name }}_${{  github.ref_name }}_all.deb
           token: '${{ secrets.GITHUB_TOKEN }}'
           name: 'Release ${{ github.ref_name }}'
           tag: '${{ github.ref_name }}'
