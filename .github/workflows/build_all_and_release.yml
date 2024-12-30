@@ -98,8 +98,6 @@ jobs:
             echo "Running Windows build"
             RELEASE_VERSION=${{github.ref_name}} python3 setup_windows.py bdist_msi
             # Copy LICENSE and NOTICE to the MSI build directory
-            cp LICENSE "dist/${{ env.binary_name }}-${{github.ref_name}}-win64/"
-            cp NOTICE "dist/${{ env.binary_name }}-${{github.ref_name}}-win64/"
             ls -lst dist/  # the output is placed to dist/dryeye_defender-RELEASE_VERSION-win64.msi folder
           elif [[ "${{ matrix.os }}" == "macos-14" ]]; then
             # MacOS commands
@@ -149,13 +147,14 @@ jobs:
           fi
         shell: bash
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: '${{ matrix.os }}_build'
           path: |
             ${{ matrix.os == 'windows-2022' && format('dist/{0}-{1}-win64.msi', env.binary_name, github.ref_name) || '' }}
             ${{ matrix.os == 'macos-14' && format('{0}_{1}.zip', env.binary_name, github.ref_name) || '' }}
             ${{ matrix.os == 'ubuntu-22.04' && format('{0}_{1}_all.deb', env.deb_name, github.ref_name) || '' }}
+          include-hidden-files: true # not sure if needed but including as it was present in v3 by default
   release:
     env:
       binary_name: dryeye_defender
@@ -163,7 +162,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Ls downloads
         run: |
