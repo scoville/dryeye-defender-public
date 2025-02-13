@@ -35,6 +35,7 @@ DryEye Defender takes advantage of the latest advancements in Computer Vision an
 Get the latest version for your platform:
 - [Windows Installer](https://github.com/scoville/dryeye-defender-public/releases/download/1.0.3/dryeye_defender-1.0.3-win64.msi)
 - [macOS App](https://github.com/scoville/dryeye-defender-public/releases/download/1.0.3/dryeye_defender_1.0.3.zip)
+  - You may get an error that the app is unsigned. To force the opening you can follow [these instructions](https://support.apple.com/en-gb/guide/mac-help/mh40616/mac)
 - [Linux Package](https://github.com/scoville/dryeye-defender-public/releases/download/1.0.3/dryeye_defender_1.0.3_all.deb)
 
 ### Usage
