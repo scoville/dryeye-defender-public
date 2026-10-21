@@ -1,4 +1,5 @@
 wheel
-# Lower bound closes GHSA-5rjg-fvgr-3xxf and GHSA-h35f-9h28-mq5c.
-setuptools>=83.0.0,<85
+# Closes GHSA-5rjg-fvgr-3xxf and GHSA-h35f-9h28-mq5c.
+# No upper bound: PyInstaller does not cap setuptools. The <85 cap is cx_Freeze's.
+setuptools>=83.0.0
 pyinstaller~=6.10.0

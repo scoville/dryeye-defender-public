@@ -114,8 +114,7 @@ jobs:
             # Linux commands
             echo "Running Linux build"
 
-            # build to binary with cxfreeze library, it uses the setup_windows.py and pyproject.toml files
-            # cxfreeze uses the pyproject.toml for linux builds and setup_windows.py for windows builds.
+            # Linux cxfreeze build reads pyproject.toml only. Windows uses setup_windows.py.
             RELEASE_VERSION=${{github.ref_name}} cxfreeze build
 
             # how the file structure looks like

@@ -4,11 +4,12 @@
 # See: https://piprogramming.org/articles/Ultimate-Introduction-to-cracking-Software-and-how-to-
 #      protect-against-it--Reverse-Engineering-0000000022.html
 
+import binascii
 import logging
-import traceback
 import base64
 from argparse import ArgumentParser
 
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
@@ -47,7 +48,7 @@ def validate_license_key(
 
     :param license_key: the license key
     :param verifying_key_string: the verifying key
-    :return: True if the license key is valid, False otherwise or if an error occurred
+    :return: True if the license key is valid, False if it is malformed or the signature does not match
     """
     try:
         verifying_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(verifying_key_string))
@@ -56,8 +57,8 @@ def validate_license_key(
         signature_bytes = base64.b64decode(signature)
         verifying_key.verify(signature_bytes, data_bytes)
         return True
-    except Exception:
-        LOGGER.warning("Handled the following user error:\n%s", traceback.format_exc())
+    except (InvalidSignature, ValueError, binascii.Error) as exc:
+        LOGGER.warning("License key rejected: %s", exc)
         return False
 
 

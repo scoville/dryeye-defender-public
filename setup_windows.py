@@ -21,9 +21,10 @@ msi_data = {
     ],
 }
 
-# At time of writing it seems CX_Freeze does not support using pyproject.toml for windows
-# builds, hence why this is not DRY with much overlap with pyproject.toml.
-# Note that build_exe_options is not omittted, I found assets were not included in windows.
+# Windows keeps this script because the MSI Directory/ProgId/Icon tables and the
+# LICENSE/NOTICE include_files are not in pyproject.toml. Linux `cxfreeze build`
+# reads pyproject.toml only. include_files must stay in build_exe_options;
+# dropping that option omitted assets from the Windows build.
 build_exe_options = {
     "packages": ["playsound"],
     "includes": ["playsound"],
