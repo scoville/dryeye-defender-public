@@ -1,3 +1,4 @@
 wheel
-setuptools<71,>=65.6.3 # as requested by cx-freeze
+# Lower bound closes GHSA-5rjg-fvgr-3xxf and GHSA-h35f-9h28-mq5c.
+setuptools>=83.0.0,<85
 pyinstaller~=6.10.0

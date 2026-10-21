@@ -21,7 +21,7 @@ msi_data = {
     ],
 }
 
-# At time of writing it seems CX_Freeze 7.2 does not support using pyproject.toml for windows
+# At time of writing it seems CX_Freeze does not support using pyproject.toml for windows
 # builds, hence why this is not DRY with much overlap with pyproject.toml.
 # Note that build_exe_options is not omittted, I found assets were not included in windows.
 build_exe_options = {

@@ -8,9 +8,12 @@ import logging
 import traceback
 import base64
 from argparse import ArgumentParser
-from typing import Tuple
 
-import ecdsa    # type: ignore[import-untyped]
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+    Ed25519PublicKey,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,10 +29,7 @@ def generate_license_key(user_email: str, order_num: int, signing_key_string: st
     :return: the license key
 
     """
-    signing_key = ecdsa.SigningKey.from_string(
-        bytes.fromhex(signing_key_string),
-        curve=ecdsa.Ed25519
-    )
+    signing_key = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(signing_key_string))
     data = f"{user_email}.{order_num}".encode()
     signature = signing_key.sign(data)
 
@@ -41,7 +41,7 @@ def generate_license_key(user_email: str, order_num: int, signing_key_string: st
 
 def validate_license_key(
         license_key: str,
-        verifying_key_string: ecdsa.VerifyingKey = VERIFYING_KEY_STRING
+        verifying_key_string: str = VERIFYING_KEY_STRING
 ) -> bool:
     """Validate a license key
 
@@ -50,27 +50,34 @@ def validate_license_key(
     :return: True if the license key is valid, False otherwise or if an error occurred
     """
     try:
-        verifying_key = ecdsa.VerifyingKey.from_string(
-            bytes.fromhex(verifying_key_string),
-            curve=ecdsa.Ed25519  # pylint: disable=no-member
-        )
+        verifying_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(verifying_key_string))
         data, signature = license_key.split(".")
         data_bytes = base64.b64decode(data)
         signature_bytes = base64.b64decode(signature)
-        return bool(verifying_key.verify(signature_bytes, data_bytes))
+        verifying_key.verify(signature_bytes, data_bytes)
+        return True
     except Exception:
         LOGGER.warning("Handled the following user error:\n%s", traceback.format_exc())
         return False
 
 
-def generate_sk_and_vk() -> Tuple[str, str]:
+def generate_sk_and_vk() -> tuple[str, str]:
     """Generate a signing key and a verifying key
 
     :return: a tuple containing the signing key and the verifying key
     """
-    signing_key = ecdsa.SigningKey.generate(curve=ecdsa.Ed25519)
-    verifying_key = signing_key.get_verifying_key()
-    return signing_key.hex(), verifying_key.hex()  # pylint: disable=no-member
+    signing_key = Ed25519PrivateKey.generate()
+    verifying_key = signing_key.public_key()
+    signing_key_string = signing_key.private_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PrivateFormat.Raw,
+        encryption_algorithm=serialization.NoEncryption(),
+    ).hex()
+    verifying_key_string = verifying_key.public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
+    return signing_key_string, verifying_key_string
 
 
 def parse_args_and_generate_license_key() -> None:
