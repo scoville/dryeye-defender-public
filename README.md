@@ -55,6 +55,22 @@ See our [Contributing Guide](CONTRIBUTING.md) for more details.
 
 Otherwise, we encourage you to build off this framework and create your own blink detection software with attribution to this project.
 
+## Release
+
+1. Put `release.py` from [github-release-tool](https://github.com/scoville/github-release-tool) on your `PATH`.
+2. Check out a branch named `release/<version>` that already has the code to ship. Example: `release/1.0.6`.
+3. Run `./releaser.sh <version>`.
+
+`releaser.sh` writes that version into `pyproject.toml`, `deb_build/DEBIAN/control`, and `pyinstaller_build.spec`, commits it, and pushes the branch. `release.py` merges the branch into `main` and pushes a tag of the same name.
+
+A tag push starts [Build and Release on all platforms](.github/workflows/build_all_and_release.yml). That workflow builds the Windows, macOS, and Linux installers and creates the GitHub Release, including the release notes. `releaser.sh` does not write the notes. If the build fails, the tag exists and the Release does not.
+
+The workflow clones `submodules/blink-detection` with the `DEPLOY_BLINK_DETECTION_BACKEND` secret. If that key cannot read the submodule, the build stops before the Release is created.
+
+If `develop` has commits that are not on `main`, the push back to `develop` fails. Merge `main` into `develop` and push.
+
+For a hotfix, check out `hotfix/<version>`, run `./hotfix.sh <version>`, finish the hotfix, and push `main`, `develop`, and the tag.
+
 ## 📚 Learn More
 
 - [How Blinking Keeps Your Eyes Healthy](https://dryeye-defender.sc0ville.com/how-does-blinking-keep-my-eye-healthy)
